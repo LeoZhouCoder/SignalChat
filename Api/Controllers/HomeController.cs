@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-//using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
@@ -9,13 +9,13 @@ namespace Api.Controllers
         public HomeController() {}
         public IActionResult Get()
         {
-            return Content("Hello from SignalChat Api");
+            return Content("Hello from iMarket Api");
         }
 
-        /*[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult AuthorizeGet()
         {
-            return Content("Hello from SignalChat Authorize Api");
-        }*/
+            return Content("Hello from iMarket Authorize Api");
+        }
     }
 }
