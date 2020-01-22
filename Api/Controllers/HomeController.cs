@@ -7,7 +7,7 @@ namespace Api.Controllers
     public class HomeController : Controller
     {
         public HomeController() {}
-        public IActionResult Get()
+        public IActionResult Index()
         {
             return Content("Hello from iMarket Api");
         }
