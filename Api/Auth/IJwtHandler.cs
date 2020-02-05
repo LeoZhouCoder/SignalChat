@@ -4,7 +4,7 @@ namespace Api.Auth
 {
     public interface IJwtHandler
     {
-        JsonWebToken Create(string userId, string userRole, bool isSignUp);
+        JsonWebToken Create(string userId);
         ClaimsPrincipal ValidateToken(string token);
     }
 }

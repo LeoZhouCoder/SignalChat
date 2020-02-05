@@ -54,8 +54,7 @@ namespace Api.Services
                     IsDeleted = false
                 };
                 await _userRepository.Add(userModel);
-                var jsonWebToken = _jwtHandler.Create(userModel.Id, user.UserRole.ToString(), true);
-                jsonWebToken.Username = user.Email;
+                var jsonWebToken = _jwtHandler.Create(userModel.Id);
                 return jsonWebToken;
             }
             catch (Exception ex)
@@ -70,25 +69,49 @@ namespace Api.Services
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public async Task<JsonWebToken> SignIn(string email, string password)
+        public async Task<AuthenticationResult> SignIn(string email, string password)
         {
             email = string.IsNullOrEmpty(email) ? "" : email.ToLower();
             User user = (await _userRepository.Get(x => x.Email == email)).FirstOrDefault();
 
-            if (user == null) throw new ApplicationException("User is not found");
+            if (user == null)
+            {
+                return new AuthenticationResult
+                {
+                    Success = false,
+                    Message = "User is not found",
+                };
+            }
 
             if (string.IsNullOrEmpty(password) || !_encryptPassword.VerifyPassword(password, user.PasswordHash))
             {
-                throw new ApplicationException("Password is incorrect");
+                return new AuthenticationResult
+                {
+                    Success = false,
+                    Message = "Password is incorrect",
+                };
             }
             if (user.IsDeleted)
             {
                 user.IsDeleted = false;
                 await _userRepository.Update(user);
             }
-            var jsonWebToken = _jwtHandler.Create(user.Id, user.UserType, false);
-            jsonWebToken.Username = email;
-            return jsonWebToken;
+            
+            var jsonWebToken = _jwtHandler.Create(user.Id);
+
+            var userProfile = new UserProfile
+            {
+                UserName = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
+
+            return new AuthenticationResult
+            {
+                Success = true,
+                Token = jsonWebToken,
+                User = userProfile
+            }; ;
         }
     }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {
+/*import {
   Button,
   Form,
   Grid,
@@ -13,9 +13,9 @@ import {
   Image,
   List,
   Menu
-} from "semantic-ui-react";
+} from "semantic-ui-react";*/
 
-import Sidebar from "react-sidebar";
+//import Sidebar from "react-sidebar";
 
 export default class ChatRoom extends Component {
   constructor(props) {
@@ -30,8 +30,8 @@ export default class ChatRoom extends Component {
     this.setState({ sidebarOpen: open });
   }
   render() {
-    return (
-      <Sidebar
+    return (<div>ChatRoom Page</div>
+      /*<Sidebar
         sidebar={<b>Sidebar content</b>}
         open={true}
         onSetOpen={this.onSetSidebarOpen}
@@ -40,7 +40,7 @@ export default class ChatRoom extends Component {
         <button onClick={() => this.onSetSidebarOpen(true)}>
           Open sidebar
         </button>
-      </Sidebar>
+      </Sidebar>*/
     );
   }
 }

@@ -30,7 +30,7 @@ namespace Api.Auth
             };
         }
 
-        public JsonWebToken Create(string userId, string userRole, bool isSignUp)
+        public JsonWebToken Create(string userId)
         {
             var nowUtc = DateTime.UtcNow;
             var expires = nowUtc.AddMinutes(_options.ExpiryMinutes);
@@ -41,7 +41,6 @@ namespace Api.Auth
 
             var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
-                new Claim(ClaimTypes.Role, userRole)
             };
             var payload = new JwtPayload
             {
@@ -50,7 +49,6 @@ namespace Api.Auth
                 { "iat",iat },
                 { "exp",exp },
                 { "unique_name",userId },
-                { "userrole" ,userRole }
             };
             payload.AddClaims(claims);
             var jwt = new JwtSecurityToken(_jwtHeader, payload);
@@ -59,8 +57,7 @@ namespace Api.Auth
             return new JsonWebToken
             {
                 Token = token,
-                Expires = exp,
-                UserRole = userRole
+                Expires = exp
             };
         }
 

@@ -9,13 +9,13 @@ namespace Api.Controllers
         public HomeController() {}
         public IActionResult Index()
         {
-            return Content("Hello from iMarket Api");
+            return Content("Hello from SignalChat Api");
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult AuthorizeGet()
         {
-            return Content("Hello from iMarket Authorize Api");
+            return Content("Hello from SignalChat Authorize Api");
         }
     }
 }

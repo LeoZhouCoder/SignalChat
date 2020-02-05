@@ -19,10 +19,6 @@ namespace Api.Controllers
         {
             _authenticationService = authenticationService;
         }
-        public IActionResult Get()
-        {
-            return Content("Hello from iMarket Api");
-        }
 
         /// <summary>
         /// Create a new account
@@ -89,9 +85,7 @@ namespace Api.Controllers
                 {
                     return BadRequest(new { Message = ModelState.Values.SelectMany(e => e.Errors.Select(m => m.ErrorMessage)) });
                 }
-                var authenticatedToken = await _authenticationService.SignIn(command.Email, command.Password);
-
-                return Ok(new { Success = true, Token = authenticatedToken });
+                return Ok(await _authenticationService.SignIn(command.Email, command.Password));
             }
             catch (ApplicationException e)
             {

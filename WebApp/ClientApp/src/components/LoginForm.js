@@ -176,32 +176,32 @@ export default class LoginForm extends Component {
   };
 
   handleClickButton = (e, data) => {
-    console.log(this.state);
-    var response = this.postData("http://192.168.1.2:60501/auth/signIn", {
-      email: this.state.email,
-      password: this.state.password
+    var result = this.postData("http://localhost:60601/auth/signIn", {
+      email: this.state.formData.email,
+      password: this.state.formData.password
+    }).then(result=>{
+      console.log(result);
     });
-    console.log(response);
+
+    console.log("signIn result: ", result);
   };
 
   postData = async (url = "", data = {}) => {
     const response = await fetch(url, {
       method: "POST",
-      mode: "no-cors",
+      mode: "cors",
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
       },
-      body: data
-    })
-      .then(res => {
-        if (res.ok) {
-          return response.json();
-        } else {
-          console.log("response false: ", res);
-        }
-      })
-      .catch(error => console.log("error:", error));
+      body: JSON.stringify(data)
+    }).catch(error => console.log("fetch error: ", error));
+    if (!response) return;
+    if (response.ok) {
+      return response
+    } else {
+      console.log("fetch error: ", response);
+    }
   };
 
   render() {
