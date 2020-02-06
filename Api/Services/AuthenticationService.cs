@@ -30,13 +30,17 @@ namespace Api.Services
         /// Register new user
         /// </summary>
         /// <param name="user"></param>
-        public async Task<JsonWebToken> SignUp(CreateUser user)
+        public async Task<AuthenticationResult> SignUp(CreateUser user)
         {
             user.Email = string.IsNullOrEmpty(user.Email) ? "" : user.Email.ToLower();
             var existingUser = (await _userRepository.Get(x => x.Email == user.Email)).FirstOrDefault();
             if (existingUser != null)
             {
-                throw new ApplicationException("This email address is already in use by another account");
+                return new AuthenticationResult
+                {
+                    Success = false,
+                    Message = "This email address is already in use by another account",
+                };
             }
             try
             {
@@ -46,20 +50,35 @@ namespace Api.Services
                     UId = Guid.NewGuid(),
                     Email = user.Email,
                     PasswordHash = _encryptPassword.CreateHash(user.Password),
-                    UserType = user.UserRole.ToString(),
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    TermsAccepted = user.TermsConditionsAccepted,
                     CreatedOn = DateTime.UtcNow,
                     IsDeleted = false
                 };
                 await _userRepository.Add(userModel);
                 var jsonWebToken = _jwtHandler.Create(userModel.Id);
-                return jsonWebToken;
+
+                var userProfile = new UserProfile
+                {
+                    UserName = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName
+                };
+
+                return new AuthenticationResult
+                {
+                    Success = true,
+                    Token = jsonWebToken,
+                    User = userProfile
+                };
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Register error - " + ex.Message);
+                return new AuthenticationResult
+                {
+                    Success = false,
+                    Message = "Register error - " + ex.Message,
+                };
             }
         }
 
@@ -96,7 +115,7 @@ namespace Api.Services
                 user.IsDeleted = false;
                 await _userRepository.Update(user);
             }
-            
+
             var jsonWebToken = _jwtHandler.Create(user.Id);
 
             var userProfile = new UserProfile
@@ -111,7 +130,7 @@ namespace Api.Services
                 Success = true,
                 Token = jsonWebToken,
                 User = userProfile
-            }; ;
+            };
         }
     }
 }

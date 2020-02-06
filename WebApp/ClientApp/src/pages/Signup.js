@@ -1,6 +1,11 @@
 import React, { Component } from "react";
 import { Button, Form } from "semantic-ui-react";
+
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
+
 import { AuthForm, AuthLink } from "../components/AuthForm";
+import { register } from "../redux/actions";
 
 class Signup extends Component {
   constructor(props) {
@@ -81,36 +86,18 @@ class Signup extends Component {
     return content;
   };
 
-  handleClickButton = (e, data) => {
-    var result = this.postData("http://localhost:60601/auth/signIn", {
-      email: this.state.formData.email,
-      password: this.state.formData.password
-    }).then(result => {
-      console.log(result);
-    });
-
-    console.log("signIn result: ", result);
-  };
-
-  postData = async (url = "", data = {}) => {
-    const response = await fetch(url, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    }).catch(error => console.log("fetch error: ", error));
-    if (!response) return;
-    if (response.ok) {
-      return response;
-    } else {
-      console.log("fetch error: ", response);
-    }
+  handleClickButton = event => {
+    event.preventDefault();
+    this.props.register(this.state.formData);
   };
 
   render() {
+    if (this.props.currentUser) {
+      const referer = this.props.location.state
+        ? this.props.location.state.referer || "/"
+        : "/";
+      return <Redirect to={referer} />;
+    }
     return (
       <AuthForm
         link={
@@ -185,4 +172,13 @@ class Signup extends Component {
   }
 }
 
-export default Signup;
+
+const mapStateToProps = state => ({
+  currentUser: state.authReducer.currentUser
+});
+
+const mapDispatchToProps = dispatch => ({
+  register: user => dispatch(register(user))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Signup);

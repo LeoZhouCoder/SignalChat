@@ -67,10 +67,7 @@ class Login extends Component {
 
   handleClickButton = event => {
     event.preventDefault();
-    this.props.login({
-      email: this.state.formData.email,
-      password: this.state.formData.password
-    });
+    this.props.login(this.state.formData);
   };
 
   render() {

@@ -14,16 +14,5 @@ namespace Api.Commands
         public string FirstName { get; set; }
         [Required(ErrorMessage = "The Last Name field is required.")]
         public string LastName { get; set; }
-        [Required]
-        [EnumDataType(typeof(UserRole), ErrorMessage = "Invaild inputs.")]
-        public UserRole UserRole { get; set; }
-        [Required]
-        [Range(typeof(bool), "true", "true", ErrorMessage = "Please accept the terms and conditions.")]
-        public bool TermsConditionsAccepted { get; set; }
-        /*public CreateUser()
-        {
-            //Email = string.IsNullOrEmpty(email) ? "" : email.ToLower();
-        }*/
     }
-    public enum UserRole { Customer = 1, Wholesaler, Employee, Administrator }
 }

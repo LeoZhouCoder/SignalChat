@@ -30,3 +30,29 @@ export const login = user => {
       .catch(error => console.log("login fetch error: ", error));
   };
 };
+
+export const register = request => {
+  console.log("register start:", request);
+  return dispatch => {
+    return fetch("http://localhost:60601/auth/signUp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify(request)
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          let { user, token } = data;
+          dispatch(loginUser(user));
+          localStorage.setItem("token", token.token);
+          console.log("register success: ", user);
+        } else {
+          console.log("register error: ", data.message);
+        }
+      })
+      .catch(error => console.log("register fetch error: ", error));
+  };
+};

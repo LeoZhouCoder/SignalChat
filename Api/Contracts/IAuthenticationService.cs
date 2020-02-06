@@ -6,7 +6,7 @@ namespace Api.Services
 {
     public interface IAuthenticationService
     {
-        Task<JsonWebToken> SignUp(CreateUser user);
+        Task<AuthenticationResult> SignUp(CreateUser user);
         Task<AuthenticationResult> SignIn(string email, string password);
     }
 }
