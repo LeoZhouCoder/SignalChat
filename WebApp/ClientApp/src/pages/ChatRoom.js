@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-/*import {
+import {
   Button,
   Form,
   Grid,
@@ -13,9 +13,11 @@ import React, { Component } from "react";
   Image,
   List,
   Menu
-} from "semantic-ui-react";*/
+} from "semantic-ui-react";
 
 //import Sidebar from "react-sidebar";
+
+import ChatHistory from "../components/ChatHistory";
 
 export default class ChatRoom extends Component {
   constructor(props) {
@@ -30,7 +32,7 @@ export default class ChatRoom extends Component {
     this.setState({ sidebarOpen: open });
   }
   render() {
-    return (<div>ChatRoom Page</div>
+    return (<FixedMenuLayout/>
       /*<Sidebar
         sidebar={<b>Sidebar content</b>}
         open={true}
@@ -45,7 +47,7 @@ export default class ChatRoom extends Component {
   }
 }
 
-/*const FixedMenuLayout = () => (
+const FixedMenuLayout = () => (
   <div>
     <Menu fixed="top" inverted>
       <Container>
@@ -176,5 +178,3 @@ export default class ChatRoom extends Component {
     </Segment>
   </div>
 );
-
-export default FixedMenuLayout;*/

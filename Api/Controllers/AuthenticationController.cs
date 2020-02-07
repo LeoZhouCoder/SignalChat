@@ -51,7 +51,7 @@ namespace Api.Controllers
 
                 var authenticatedToken = await _authenticationService.SignUp(command);
 
-                return Ok(new { Success = true, Token = authenticatedToken });
+                return Ok(authenticatedToken);
             }
             catch (ApplicationException e)
             {
