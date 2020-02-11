@@ -71,7 +71,7 @@ class Login extends Component {
   };
 
   render() {
-    if (this.props.currentUser) {
+    if (this.props.user) {
       const referer = this.props.location.state
         ? this.props.location.state.referer || "/"
         : "/";
@@ -117,7 +117,7 @@ class Login extends Component {
 }
 
 const mapStateToProps = state => ({
-  currentUser: state.authReducer.currentUser
+  user: state.authReducer.user
 });
 
 const mapDispatchToProps = dispatch => ({

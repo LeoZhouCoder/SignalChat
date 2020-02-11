@@ -18,11 +18,11 @@ export function Routes(props) {
           exact
           path="/"
           component={ChatRoom}
-          currentUser={props.currentUser}
+          user={props.user}
         />
       </div>
     </BrowserRouter>
   );
 }
-const mapStateToProps = state => ({ currentUser: state.authReducer.currentUser });
+const mapStateToProps = state => ({ user: state.authReducer.user });
 export default connect(mapStateToProps)(Routes);

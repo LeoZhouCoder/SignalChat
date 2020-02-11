@@ -1,8 +1,8 @@
 import { USER_LOGIN } from "./actionTypes";
 
-const loginUser = user => ({
+const loginUser = loginResult => ({
   type: USER_LOGIN,
-  payload: user
+  payload: loginResult
 });
 
 export const login = user => {
@@ -19,10 +19,9 @@ export const login = user => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          let { user, token } = data;
-          dispatch(loginUser(user));
-          localStorage.setItem("token", token.token);
-          console.log("login success: ", user);
+          // TODO: validation token user
+          dispatch(loginUser(data));
+          console.log("login success: ", data);
         } else {
           console.log("login error: ", data.message);
         }
