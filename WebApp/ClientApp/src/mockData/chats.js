@@ -18,6 +18,34 @@ export function getChatList() {
   return list;
 }
 
+export function getChatRecord(groupId) {
+  let currentRecord = null;
+  records.forEach(record => {
+    if (record.id === groupId) currentRecord = record;
+  });
+  if (!currentRecord) return null;
+  let record = {};
+  record.id = currentRecord.id;
+  record.name = getName(currentRecord);
+  record.users = currentRecord.users;
+  let chats = [];
+  currentRecord.chats.forEach(chat => {
+    let chatModel = {};
+    let user = getUser(chat.uid);
+    chatModel.img = user.img;
+    chatModel.name = user.name;
+    chatModel.time = chat.time;
+    chatModel.msg = chat.msg;
+    chats.unshift(chatModel);
+  });
+  record.chats = chats;
+  return record;
+}
+
+function getUser(uid) {
+  return users[uid] ? users[uid] : { name: "", img: "" };
+}
+
 function getName(record) {
   if (record.name) return record.name;
   let names = [];
@@ -53,6 +81,48 @@ export const records = [
         time: "2010-10-12 15:45",
         msg:
           "Hi all, the regional scrum is starting now, please join your meeting room respectively"
+      },
+      {
+        uid: "uid1",
+        time: "2010-10-12 13:45",
+        msg:
+          `Lorem ipsum dolor sit amet, nibh ipsum. Cum class sem inceptos
+          incidunt sed sed. Tempus wisi enim id, arcu sed lectus aliquam,
+          nulla vitae est bibendum molestie elit risus.Lorem ipsum dolor sit amet, nibh ipsum. Cum class sem inceptos
+          incidunt sed sed. Tempus wisi enim id, arcu sed lectus aliquam,
+          nulla vitae est bibendum molestie elit risus. Lorem ipsum dolor sit amet, nibh ipsum. Cum class sem inceptos
+          incidunt sed sed. Tempus wisi enim id, arcu sed lectus aliquam,
+          nulla vitae est bibendum molestie elit risus.`
+      },
+      {
+        uid: "uid1",
+        time: "2010-10-12 13:25",
+        msg:
+          "Chilltime is going to be an app for you to view videos with friends"
+      },
+      {
+        uid: "uid0",
+        time: "2010-10-12 10:59",
+        msg:
+          "You can sign-up now to try out our private beta!"
+      },
+      {
+        uid: "uid1",
+        time: "2010-10-12 10:05",
+        msg:
+          "Definitely! Sounds great!"
+      },
+      {
+        uid: "uid0",
+        time: "2010-10-12 08:05",
+        msg:
+          "sfs123r"
+      },
+      {
+        uid: "uid0",
+        time: "2010-10-12 08:00",
+        msg:
+          "ooooooooooo"
       }
     ]
   },

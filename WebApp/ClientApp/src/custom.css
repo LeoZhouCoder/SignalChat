@@ -47,92 +47,26 @@ p {
   justify-content: center;
 }
 
-.chatroom {
-  width: 100vw;
-  height: 100vh;
-  padding: 0;
-}
+
 
 .sidebarMene {
   width: 50vw;
 }
 
-.chatroom .chats {
-  box-sizing: border-box;
-  padding: 0 20px;
-  margin: 10px 0 0;
-  height: 510px;
-  overflow-y: scroll;
-}
-
-.chatroom .chats .chat {
-  background: rgba(255, 255, 255, 0.8);
-  position: relative;
-  padding: 5px 13px;
-  font-size: 14px;
-  border-radius: 10px;
-  list-style: none;
-  float: left;
-  clear: both;
-  margin: 10px 0;
-  max-width: 200px;
-}
-
-.chatroom .chats .chat img {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  position: absolute;
-  top: -10px;
-  left: 0px;
-}
-
-.chatroom .chats .chat.right {
-  float: right;
-  clear: both;
-}
-
-.chatroom .chats .chat a {
-  text-decoration: none;
-  color: #3498db;
-}
-
-.chatroom .input {
-  height: 40px;
-  width: 100%;
+.chatroom {
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-flow: column;
 }
 
-.chatroom .input input[type="text"] {
-  background: rgba(255, 255, 255, 0.5);
-  outline: 0;
-  padding: 5px;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-  margin-left: 10px;
-  height: 30px;
-  width: 270px;
+.chats {
   box-sizing: border-box;
-  font-size: 14px;
-}
-
-.chatroom .input input[type="submit"] {
-  background: transparent;
-  height: 30px;
-  width: 70px;
-  font-size: 14px;
-  box-sizing: border-box;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.chatroom .input input[type="submit"]:hover {
-  background: #1ee494;
-  color: #fff;
+  padding: 1em;
+  flex: 1;
+  overflow-y: scroll;
+  background-color: none;
 }
 
 /*font*/
@@ -150,12 +84,12 @@ p {
 
 /*Sidebar*/
 .sidebarListContainer {
-  overflow: hidden;
+  overflow-y: auto;
 }
 .sidebarList {
   display: flex;
   flex-flow: column;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .listItemContainer {
@@ -195,14 +129,38 @@ p {
   text-overflow: ellipsis;
 }
 
+.messageItemHead {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+}
+
+.messageTime{
+  padding-left: .5em;
+}
+
+.messageContent{
+  background-color: white;
+  width: 100%;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
 /*avatar*/
 .imgBox {
   display: inline-block;
-  width: 4em;
   position: relative;
   border-radius: 5%;
   background: rgba(0, 0, 0, 0.1);
   margin: 0;
+}
+
+.imgBoxNormal {
+  width: 4em;
+}
+
+.imgBoxSmall {
+  width: 3em;
 }
 
 .imgBoxContent {

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Icon, Menu, Input, Sidebar } from "semantic-ui-react";
+import { Icon, Menu, Segment, Sidebar } from "semantic-ui-react";
 
 import { SidebarList } from "../components/SidebarList";
 import ChatHistory from "../components/ChatHistory";
@@ -20,6 +20,7 @@ export default class ChatRoom extends Component {
           vertical="true"
           visible={true}
           width="wide"
+          style={{overflow:"hidden"}}
           className="sidebarListContainer"
         >
           <Menu
@@ -47,7 +48,6 @@ export default class ChatRoom extends Component {
               Contacts
             </Menu.Item>
           </Menu>
-          <Input className="icon" icon="search" placeholder="Search..." />
           <SidebarList list={getChatList()} isChat={true} />
         </Sidebar>
         <Sidebar.Pusher>
