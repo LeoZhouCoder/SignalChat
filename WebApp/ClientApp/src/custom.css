@@ -4,7 +4,7 @@ a {
 }
 
 code {
-  color: #E01A76;
+  color: #e01a76;
 }
 
 .btn-primary {
@@ -21,12 +21,12 @@ code {
   display: inline;
   margin: 0;
   padding: 0;
-  color: #008080
+  color: #008080;
 }
 
 .link-button:hover,
 .link-button:focus {
-outline: none;
+  outline: none;
 }
 
 body {
@@ -39,7 +39,7 @@ p {
 }
 
 .App {
-  background-color: #1EE494;
+  background-color: #1ee494;
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -48,24 +48,13 @@ p {
 }
 
 .chatroom {
-  width: 360px;
-  height: 600px;
-  background-color: rgba(0,0,0, .7);
-  border-radius: 5px;
-  overflow: hidden;
-  box-shadow: 0 0 8px 0 rgba(0,0,0, 0.3);
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
 }
 
-.chatroom h3 {
-  font-family: 'Pacifico', cursive;
-  background-color: rgba(30, 228, 148, 0.7);
-  color: #FFF;
-  margin: 0;
-  height: 40px;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.sidebarMene {
+  width: 50vw;
 }
 
 .chatroom .chats {
@@ -105,13 +94,12 @@ p {
 
 .chatroom .chats .chat a {
   text-decoration: none;
-  color:#3498DB;
+  color: #3498db;
 }
 
 .chatroom .input {
   height: 40px;
   width: 100%;
-  background: rgba(30, 228, 148, 0.7);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -120,8 +108,7 @@ p {
 .chatroom .input input[type="text"] {
   background: rgba(255, 255, 255, 0.5);
   outline: 0;
-  border: 2px solid #1EE494;
-  padding: 0 5px;
+  padding: 5px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   margin-left: 10px;
@@ -133,7 +120,6 @@ p {
 
 .chatroom .input input[type="submit"] {
   background: transparent;
-  border: 1px solid #1EE494;
   height: 30px;
   width: 70px;
   font-size: 14px;
@@ -145,6 +131,87 @@ p {
 }
 
 .chatroom .input input[type="submit"]:hover {
-  background: #1EE494;
-  color: #FFF;
+  background: #1ee494;
+  color: #fff;
+}
+
+/*font*/
+.title {
+  font-size: 110%;
+  font-weight: bold;
+}
+
+.secondary {
+  color: gray;
+}
+
+/*Sidebar*/
+.sidebarList {
+  display: flex;
+  flex-flow: column;
+}
+
+.listItemContainer {
+  width: 100%;
+  padding: 1em;
+  display: flex;
+}
+
+.listItemHead {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+}
+
+.listChatContent {
+  padding-left: 1em;
+  flex: 1;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contactTitle {
+  align-self: center;
+}
+
+.chatTime {
+  float: right;
+}
+
+.chatRecord {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/*avatar*/
+.imgBox {
+  display: inline-block;
+  width: 4em;
+  position: relative;
+  border-radius: 5%;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 0;
+}
+
+.imgBoxContent {
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+}
+
+.imgBox img {
+  border-radius: 5%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }

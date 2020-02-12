@@ -1,55 +1,58 @@
 import React, { Component } from "react";
-import {
-  Button,
-  Form,
-  Grid,
-  Header,
-  Icon,
-  Message,
-  Segment,
-  Container,
-  Divider,
-  Dropdown,
-  Image,
-  List,
-  Menu,
-  Checkbox,
-  Sidebar
-} from "semantic-ui-react";
+import { Icon, Menu, Input, Sidebar } from "semantic-ui-react";
 
-
+import { SidebarList } from "../components/SidebarList";
 import ChatHistory from "../components/ChatHistory";
+import { Avatar } from "../components/Avatar";
+
+import { getChatList } from "../mockData/chats";
+
 export default class ChatRoom extends Component {
+  state = { activeItem: "Chats" };
+  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
   render() {
+    const { activeItem } = this.state;
     return (
-      <Sidebar.Pushable as={Segment}>
+      <Sidebar.Pushable className="chatroom">
         <Sidebar
-          as={Menu}
           animation="push"
           direction="left"
           icon="labeled"
-          vertical
-          visible="true"
-          width="thin"
+          vertical="true"
+          visible={true}
+          width="wide"
+          style={{overflow: "hidden"}}
         >
-          <Menu.Item as="a">
-            <Icon name="home" />
-            Home
-          </Menu.Item>
-          <Menu.Item as="a">
-            <Icon name="gamepad" />
-            Games
-          </Menu.Item>
-          <Menu.Item as="a">
-            <Icon name="camera" />
-            Channels
-          </Menu.Item>
+          <Menu
+            attached="top"
+            pointing
+            secondary
+            widths={2}
+            icon="labeled"
+            color="teal"
+          >
+            <Menu.Item
+              name="Chats"
+              active={activeItem === "Chats"}
+              onClick={this.handleItemClick}
+            >
+              <Icon name="chat" />
+              Chats
+            </Menu.Item>
+            <Menu.Item
+              name="Contacts"
+              active={activeItem === "Contacts"}
+              onClick={this.handleItemClick}
+            >
+              <Icon name="address book outline" />
+              Contacts
+            </Menu.Item>
+          </Menu>
+          <Input className="icon" icon="search" placeholder="Search..." />
+          <SidebarList chatList={getChatList()} />
         </Sidebar>
         <Sidebar.Pusher>
-          <Segment basic>
-            <Header as="h3">Application Content</Header>
-            <Image src="https://react.semantic-ui.com/images/wireframe/paragraph.png" />
-          </Segment>
+          <ChatHistory/>
         </Sidebar.Pusher>
       </Sidebar.Pushable>
     );
