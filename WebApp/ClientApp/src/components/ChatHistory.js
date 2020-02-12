@@ -51,15 +51,17 @@ class ChatHistory extends React.Component {
     return (
       <div className="chatroom">
         <Menu attached="top">
-          <h3>{name}</h3>
+          <Menu.Item>
+            <h3>{name}</h3>
+          </Menu.Item>
         </Menu>
-        <ul className="chats" ref="chats">
+        <div className="chats" ref="chats">
           {chats.map((chat, i) => (
             <Message key={i} chat={chat} />
           ))}
-        </ul>
+        </div>
 
-        <Menu attached="top">
+        <Menu attached="top" style={{ marginTop: "0em" }}>
           <Menu.Item name="smile outline" onClick={this.handleItemClick}>
             <Icon name="smile outline" />
           </Menu.Item>

@@ -54,9 +54,7 @@ p {
 }
 
 .chatroom {
-  width: 100vw;
-  height: 100vh;
-  padding: 0;
+  padding: 2em;
   display: flex;
   flex-flow: column;
 }
@@ -64,6 +62,7 @@ p {
 .chats {
   box-sizing: border-box;
   padding: 1em;
+  padding-bottom: 0;
   flex: 1;
   overflow-y: scroll;
   background-color: none;
