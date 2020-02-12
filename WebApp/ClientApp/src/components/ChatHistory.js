@@ -110,8 +110,8 @@ class ChatHistory extends React.Component {
           <h3>Chats</h3>
         </Menu>
         <ul className="chats" ref="chats">
-          {chats.map(chat => (
-            <Message chat={chat} user={username} />
+          {chats.map((chat, i) => (
+            <Message key={i} chat={chat} user={username} />
           ))}
         </ul>
 

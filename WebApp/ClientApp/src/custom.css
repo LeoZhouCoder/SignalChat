@@ -137,8 +137,11 @@ p {
 
 /*font*/
 .title {
-  font-size: 110%;
+  font-size: 120%;
   font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .secondary {
@@ -146,9 +149,13 @@ p {
 }
 
 /*Sidebar*/
+.sidebarListContainer {
+  overflow: hidden;
+}
 .sidebarList {
   display: flex;
   flex-flow: column;
+  overflow-y: scroll;
 }
 
 .listItemContainer {
@@ -160,24 +167,25 @@ p {
 .listItemHead {
   display: flex;
   flex-flow: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-around;
 }
 
 .listChatContent {
-  padding-left: 1em;
   flex: 1;
+  padding-left: 1em;
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
   align-items: center;
+  overflow: hidden;
 }
 
 .contactTitle {
   align-self: center;
 }
 
-.chatTime {
-  float: right;
+.chatTitle {
+  flex: 1;
 }
 
 .chatRecord {

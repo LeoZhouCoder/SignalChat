@@ -3,30 +3,34 @@ import { Avatar } from "./Avatar";
 
 export class SidebarList extends Component {
   render() {
-    const { chatList } = this.props;
+    const { list, isChat } = this.props;
     return (
-      <div className="sidebarList">
-        {chatList.map((data, i) => {
-          return <SidebarListItem key={i} data={data} />;
-        })}
+      <div className="sidebarListContainer">
+        <div className="sidebarList">
+          {list.map((data, i) => {
+            return <SidebarListItem key={i} data={data} isChat={isChat} />;
+          })}
+        </div>
       </div>
     );
   }
 }
 
-function SidebarListItem({ data }) {
-  const { img, name, time, msg } = data;
+function SidebarListItem({ data, isChat }) {
+  const { img } = data;
   return (
     <div className="listItemContainer">
       <div className="listItemHead">
         <Avatar src={img} />
       </div>
-      <ChatContent name={name} time={time} record={msg} />
+
+      {isChat ? <ChatContent data={data} /> : <ContactContent data={data} />}
     </div>
   );
 }
 
-function ContactContent({ name }) {
+function ContactContent({ data }) {
+  const { name } = data;
   return (
     <div className="listChatContent">
       <div className="title contactTitle">{name}</div>
@@ -34,15 +38,13 @@ function ContactContent({ name }) {
   );
 }
 
-function ChatContent({ name, time, record }) {
+function ChatContent({ data }) {
+  const { name, time, msg } = data;
   return (
     <div className="listChatContent">
-      <div>
-        <div className="title">{name}</div>
-        <div className="secondary chatTime">{time}</div>
-      </div>
-
-      <div className="secondary chatRecord">{record}</div>
+      <div className="title chatTitle">{name}</div>
+      <div className="secondary">{time}</div>
+      <div className="secondary chatRecord">{msg}</div>
     </div>
   );
 }

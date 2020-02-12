@@ -3,7 +3,6 @@ import { Icon, Menu, Input, Sidebar } from "semantic-ui-react";
 
 import { SidebarList } from "../components/SidebarList";
 import ChatHistory from "../components/ChatHistory";
-import { Avatar } from "../components/Avatar";
 
 import { getChatList } from "../mockData/chats";
 
@@ -21,7 +20,7 @@ export default class ChatRoom extends Component {
           vertical="true"
           visible={true}
           width="wide"
-          style={{overflow: "hidden"}}
+          className="sidebarListContainer"
         >
           <Menu
             attached="top"
@@ -49,10 +48,10 @@ export default class ChatRoom extends Component {
             </Menu.Item>
           </Menu>
           <Input className="icon" icon="search" placeholder="Search..." />
-          <SidebarList chatList={getChatList()} />
+          <SidebarList list={getChatList()} isChat={true} />
         </Sidebar>
         <Sidebar.Pusher>
-          <ChatHistory/>
+          <ChatHistory />
         </Sidebar.Pusher>
       </Sidebar.Pushable>
     );

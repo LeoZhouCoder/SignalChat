@@ -15,7 +15,6 @@ export function getChatList() {
     }
     list.push(group);
   });
-  console.log(list);
   return list;
 }
 
@@ -109,6 +108,66 @@ export const records = [
   },
   {
     id: "r5",
+    name: "",
+    users: ["uid0", "uid6"],
+    chats: [
+      {
+        uid: "uid6",
+        time: "2010-10-10 14:45",
+        msg: "Hi everyone from the 10 Feb intake. Welcome onboard!"
+      }
+    ]
+  },
+  {
+    id: "r6",
+    name: "",
+    users: ["uid0", "uid6"],
+    chats: [
+      {
+        uid: "uid6",
+        time: "2010-10-10 14:45",
+        msg: "Hi everyone from the 10 Feb intake. Welcome onboard!"
+      }
+    ]
+  },
+  {
+    id: "r7",
+    name: "",
+    users: ["uid0", "uid6"],
+    chats: [
+      {
+        uid: "uid6",
+        time: "2010-10-10 14:45",
+        msg: "Hi everyone from the 10 Feb intake. Welcome onboard!"
+      }
+    ]
+  },
+  {
+    id: "r8",
+    name: "",
+    users: ["uid0", "uid6"],
+    chats: [
+      {
+        uid: "uid6",
+        time: "2010-10-10 14:45",
+        msg: "Hi everyone from the 10 Feb intake. Welcome onboard!"
+      }
+    ]
+  },
+  {
+    id: "r9",
+    name: "",
+    users: ["uid0", "uid6"],
+    chats: [
+      {
+        uid: "uid6",
+        time: "2010-10-10 14:45",
+        msg: "Hi everyone from the 10 Feb intake. Welcome onboard!"
+      }
+    ]
+  },
+  {
+    id: "r10",
     name: "",
     users: ["uid0", "uid6"],
     chats: [
