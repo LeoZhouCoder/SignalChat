@@ -12,23 +12,13 @@ export default class ChatRoom extends Component {
   render() {
     const { activeItem } = this.state;
     return (
-      <Sidebar.Pushable className="chatroom">
-        <Sidebar
-          animation="push"
-          direction="left"
-          icon="labeled"
-          vertical="true"
-          visible={true}
-          width="wide"
-          style={{overflow:"hidden"}}
-          className="sidebarListContainer"
-        >
+      <div className="chatroomContainer">
+        <div className="chatroomSidebar">
           <Menu
             attached="top"
             pointing
             secondary
             widths={2}
-            icon="labeled"
             color="teal"
           >
             <Menu.Item
@@ -36,7 +26,6 @@ export default class ChatRoom extends Component {
               active={activeItem === "Chats"}
               onClick={this.handleItemClick}
             >
-              <Icon name="chat" />
               Chats
             </Menu.Item>
             <Menu.Item
@@ -44,16 +33,15 @@ export default class ChatRoom extends Component {
               active={activeItem === "Contacts"}
               onClick={this.handleItemClick}
             >
-              <Icon name="address book outline" />
               Contacts
             </Menu.Item>
           </Menu>
           <SidebarList list={getChatList()} isChat={true} />
-        </Sidebar>
-        <Sidebar.Pusher>
+        </div>
+        <div className="chatroom">
           <ChatHistory />
-        </Sidebar.Pusher>
-      </Sidebar.Pushable>
+        </div>
+      </div>
     );
   }
 }

@@ -85,8 +85,7 @@ export const records = [
       {
         uid: "uid1",
         time: "2010-10-12 13:45",
-        msg:
-          `Lorem ipsum dolor sit amet, nibh ipsum. Cum class sem inceptos
+        msg: `Lorem ipsum dolor sit amet, nibh ipsum. Cum class sem inceptos
           incidunt sed sed. Tempus wisi enim id, arcu sed lectus aliquam,
           nulla vitae est bibendum molestie elit risus.Lorem ipsum dolor sit amet, nibh ipsum. Cum class sem inceptos
           incidunt sed sed. Tempus wisi enim id, arcu sed lectus aliquam,
@@ -103,26 +102,22 @@ export const records = [
       {
         uid: "uid0",
         time: "2010-10-12 10:59",
-        msg:
-          "You can sign-up now to try out our private beta!"
+        msg: "You can sign-up now to try out our private beta!"
       },
       {
         uid: "uid1",
         time: "2010-10-12 10:05",
-        msg:
-          "Definitely! Sounds great!"
+        msg: "Definitely! Sounds great!"
       },
       {
         uid: "uid0",
         time: "2010-10-12 08:05",
-        msg:
-          "sfs123r"
+        msg: "sfs123r"
       },
       {
         uid: "uid0",
         time: "2010-10-12 08:00",
-        msg:
-          "ooooooooooo"
+        msg: "ooooooooooo"
       }
     ]
   },
@@ -178,66 +173,6 @@ export const records = [
   },
   {
     id: "r5",
-    name: "",
-    users: ["uid0", "uid6"],
-    chats: [
-      {
-        uid: "uid6",
-        time: "2010-10-10 14:45",
-        msg: "Hi everyone from the 10 Feb intake. Welcome onboard!"
-      }
-    ]
-  },
-  {
-    id: "r6",
-    name: "",
-    users: ["uid0", "uid6"],
-    chats: [
-      {
-        uid: "uid6",
-        time: "2010-10-10 14:45",
-        msg: "Hi everyone from the 10 Feb intake. Welcome onboard!"
-      }
-    ]
-  },
-  {
-    id: "r7",
-    name: "",
-    users: ["uid0", "uid6"],
-    chats: [
-      {
-        uid: "uid6",
-        time: "2010-10-10 14:45",
-        msg: "Hi everyone from the 10 Feb intake. Welcome onboard!"
-      }
-    ]
-  },
-  {
-    id: "r8",
-    name: "",
-    users: ["uid0", "uid6"],
-    chats: [
-      {
-        uid: "uid6",
-        time: "2010-10-10 14:45",
-        msg: "Hi everyone from the 10 Feb intake. Welcome onboard!"
-      }
-    ]
-  },
-  {
-    id: "r9",
-    name: "",
-    users: ["uid0", "uid6"],
-    chats: [
-      {
-        uid: "uid6",
-        time: "2010-10-10 14:45",
-        msg: "Hi everyone from the 10 Feb intake. Welcome onboard!"
-      }
-    ]
-  },
-  {
-    id: "r10",
     name: "",
     users: ["uid0", "uid6"],
     chats: [

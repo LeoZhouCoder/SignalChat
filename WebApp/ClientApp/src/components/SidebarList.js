@@ -5,12 +5,10 @@ export class SidebarList extends Component {
   render() {
     const { list, isChat } = this.props;
     return (
-      <div className="sidebarListContainer">
-        <div className="sidebarList">
-          {list.map((data, i) => {
-            return <SidebarListItem key={i} data={data} isChat={isChat} />;
-          })}
-        </div>
+      <div className="sidebarList">
+        {list.map((data, i) => {
+          return <SidebarListItem key={i} data={data} isChat={isChat} />;
+        })}
       </div>
     );
   }

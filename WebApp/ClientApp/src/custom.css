@@ -47,16 +47,38 @@ p {
   justify-content: center;
 }
 
-
-
 .sidebarMene {
   width: 50vw;
 }
 
-.chatroom {
-  padding: 2em;
+.chatroomContainer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/*Sidebar*/
+.chatroomSidebar {
+  width: 20em;
   display: flex;
   flex-flow: column;
+  overflow: hidden;
+  border: 1px solid #d4d4d5;
+}
+
+.sidebarList {
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
+  overflow-y: scroll;
+}
+
+.chatroom {
+  flex: 1;
+  display: flex;
+  flex-flow: column;
+  overflow: hidden;
 }
 
 .chats {
@@ -79,16 +101,6 @@ p {
 
 .secondary {
   color: gray;
-}
-
-/*Sidebar*/
-.sidebarListContainer {
-  overflow-y: auto;
-}
-.sidebarList {
-  display: flex;
-  flex-flow: column;
-  overflow-y: auto;
 }
 
 .listItemContainer {
@@ -134,11 +146,11 @@ p {
   align-items: flex-start;
 }
 
-.messageTime{
-  padding-left: .5em;
+.messageTime {
+  padding-left: 0.5em;
 }
 
-.messageContent{
+.messageContent {
   background-color: white;
   width: 100%;
   vertical-align: middle;
