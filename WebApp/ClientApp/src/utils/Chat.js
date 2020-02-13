@@ -12,8 +12,8 @@ const sendMessage = (user, message) => {
         transport: HttpTransportType.WebSockets
       })
       .build();
-    hubConnection.on("ReceiveMessage", (nick, receivedMessage) => {
-      const text = `${nick}: ${receivedMessage}`;
+    hubConnection.on("ReceiveMessage", (nick, receivedMessage,time) => {
+      const text = `${nick}: ${receivedMessage} - ${time}`;
       console.log("ReceiveMessage: ", text);
     });
   }

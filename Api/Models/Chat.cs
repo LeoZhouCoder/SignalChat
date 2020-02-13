@@ -19,5 +19,5 @@ namespace Api.Models
         public bool IsDeleted { get; set; }
     }
 
-    public enum ChatType { Message = 1, Image }
+    public enum ChatType { System = 0, Message, Image }
 }
