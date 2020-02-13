@@ -5,7 +5,7 @@ export class SidebarList extends Component {
   render() {
     const { list, isChat } = this.props;
     return (
-      <div className="sidebarList">
+      <div className="list column">
         {list.map((data, i) => {
           return <SidebarListItem key={i} data={data} isChat={isChat} />;
         })}
@@ -17,8 +17,8 @@ export class SidebarList extends Component {
 function SidebarListItem({ data, isChat }) {
   const { img } = data;
   return (
-    <div className="listItemContainer">
-      <div className="listItemHead">
+    <div className="container">
+      <div className="column center">
         <Avatar src={img} />
       </div>
 
@@ -31,7 +31,7 @@ function ContactContent({ data }) {
   const { name } = data;
   return (
     <div className="listChatContent">
-      <div className="title contactTitle">{name}</div>
+      <div className="title single text_center">{name}</div>
     </div>
   );
 }
@@ -40,9 +40,9 @@ function ChatContent({ data }) {
   const { name, time, msg } = data;
   return (
     <div className="listChatContent">
-      <div className="title chatTitle">{name}</div>
+      <div className="title single text_flex">{name}</div>
       <div className="secondary">{time}</div>
-      <div className="secondary chatRecord">{msg}</div>
+      <div className="single text_max secondary">{msg}</div>
     </div>
   );
 }

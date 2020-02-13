@@ -1,9 +1,9 @@
 import React from "react";
 
-export function Avatar({ src, small }) {
+export function Avatar({ src, size="normal" }) {
   return (
-    <div className={"imgBox " + (small ? "imgBoxSmall" : "imgBoxNormal")}>
-      <div className="imgBoxContent">
+    <div className={"avatar " + size}>
+      <div className="square">
         <img alt="" src={src} />
       </div>
     </div>

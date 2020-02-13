@@ -11,7 +11,7 @@ import ChatRoom from "./pages/ChatRoom";
 export function Routes(props) {
   return (
     <BrowserRouter>
-      <div>
+      <div style={{overflow: "hidden"}}>
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <PrivateRoute

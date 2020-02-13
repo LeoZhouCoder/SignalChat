@@ -13,7 +13,7 @@ export default class ChatRoom extends Component {
     const { activeItem } = this.state;
     return (
       <div className="chatroomContainer">
-        <div className="chatroomSidebar">
+        <div className="sidebar column">
           <Menu
             attached="top"
             pointing
