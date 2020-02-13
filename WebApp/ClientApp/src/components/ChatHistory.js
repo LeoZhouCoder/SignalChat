@@ -46,6 +46,14 @@ class ChatHistory extends React.Component {
     );
   }
 
+  onkeypress = e => {
+    console.log(e.key);
+  };
+  onChange = e =>
+  {
+    
+  }
+
   render() {
     const { chats, name } = this.state;
     return (
@@ -72,7 +80,7 @@ class ChatHistory extends React.Component {
         </Menu>
         <Segment attached>
           <Form>
-            <TextArea placeholder="Message" />
+            <TextArea placeholder="Message" onKeyDown={this.onkeypress}/>
           </Form>
         </Segment>
       </div>

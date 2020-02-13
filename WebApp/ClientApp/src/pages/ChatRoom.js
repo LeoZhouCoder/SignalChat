@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Icon, Menu, Segment, Sidebar } from "semantic-ui-react";
+import { Menu } from "semantic-ui-react";
 
 import { SidebarList } from "../components/SidebarList";
 import ChatHistory from "../components/ChatHistory";

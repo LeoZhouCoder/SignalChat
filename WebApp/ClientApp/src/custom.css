@@ -74,6 +74,10 @@ p {
   overflow-y: scroll;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 .chatroom {
   flex: 1;
   display: flex;
