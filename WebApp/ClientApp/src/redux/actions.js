@@ -55,3 +55,25 @@ export const register = request => {
       .catch(error => console.log("register fetch error: ", error));
   };
 };
+
+export const getProfile = users => {};
+
+export const getRecentGroupChat = uid => {};
+
+export const getGroupChats = (gid, position, limit) => {};
+
+export const createGroup = (name, users) => {};
+
+export const changeGroupName = (gid, name) => {};
+
+export const addUserToGroup = (gid, user) => {};
+
+export const removeUserFromGroup = (gid, user) => {};
+
+export const deleteGroup = gid => {};
+
+export const sendMessage = (gid, message) => {};
+
+export const changePhoto = () => {};
+
+export const changeName = (firstName, lastName) => {};
