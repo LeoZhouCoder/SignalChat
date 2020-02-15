@@ -1,28 +1,45 @@
-import React from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import { BrowserRouter, Route } from "react-router-dom";
+
+import { updateDimensions } from "./redux/actions";
 
 import PrivateRoute from "./components/PrivateRoute";
 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ChatRoom from "./pages/ChatRoom";
+import Container from "./components/Container";
 
-export function Routes(props) {
-  return (
-    <BrowserRouter>
-      <div style={{overflow: "hidden"}}>
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-        <PrivateRoute
-          exact
-          path="/"
-          component={ChatRoom}
-          user={props.user}
-        />
-      </div>
-    </BrowserRouter>
-  );
+export class Routes extends Component {
+  componentDidMount() {
+    this.props.updateDimensions();
+    window.addEventListener("resize", this.props.updateDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.props.updateDimensions);
+  }
+
+  render() {
+    return (
+      <BrowserRouter>
+        <div style={{ overflow: "hidden" }}>
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
+          <PrivateRoute
+            exact
+            path="/"
+            component={ChatRoom}
+            user={this.props.user}
+          />
+        </div>
+      </BrowserRouter>
+    );
+  }
 }
 const mapStateToProps = state => ({ user: state.authReducer.user });
-export default connect(mapStateToProps)(Routes);
+const mapDispatchToProps = dispatch => ({
+  updateDimensions: () => dispatch(updateDimensions())
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Routes);

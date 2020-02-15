@@ -1,3 +1,5 @@
+export const WINDOW_RESIZE = "WINDOW_RESIZE";
+
 export const USER_LOGIN = "USER_LOGIN";
 export const USER_LOGOUT = "USER_LOGOUT";
 

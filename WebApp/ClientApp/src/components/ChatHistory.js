@@ -5,6 +5,7 @@ import { Menu, Icon, TextArea, Form, Segment } from "semantic-ui-react";
 import Message from "./Message.js";
 
 import { getChatRecord } from "../mockData/chats";
+import { TopBar } from "./TopBar";
 
 class ChatHistory extends React.Component {
   constructor(props) {
@@ -49,20 +50,16 @@ class ChatHistory extends React.Component {
   onkeypress = e => {
     console.log(e.key);
   };
-  onChange = e =>
-  {
-    
-  }
+  onChange = e => {};
+  actionHandler = () => {
+    console.log("Click btn");
+  };
 
   render() {
     const { chats, name } = this.state;
     return (
       <div className="chatroom">
-        <Menu attached="top">
-          <Menu.Item>
-            <h3>{name}</h3>
-          </Menu.Item>
-        </Menu>
+        <TopBar name={name} icon="user" actionHandler={this.actionHandler} />
         <div className="chats" ref="chats">
           {chats.map((chat, i) => (
             <Message key={i} chat={chat} />
@@ -80,7 +77,7 @@ class ChatHistory extends React.Component {
         </Menu>
         <Segment attached>
           <Form>
-            <TextArea placeholder="Message" onKeyDown={this.onkeypress}/>
+            <TextArea placeholder="Message" onKeyDown={this.onkeypress} />
           </Form>
         </Segment>
       </div>

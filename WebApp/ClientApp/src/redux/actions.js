@@ -1,8 +1,14 @@
-import { USER_LOGIN } from "./actionTypes";
+import { WINDOW_RESIZE, USER_LOGIN } from "./actionTypes";
+import { getScreenType } from "../utils/Dimensions";
 
 const loginUser = loginResult => ({
   type: USER_LOGIN,
   payload: loginResult
+});
+
+const windowResize = size => ({
+  type: WINDOW_RESIZE,
+  payload: size
 });
 
 export const login = user => {
@@ -77,3 +83,26 @@ export const sendMessage = (gid, message) => {};
 export const changePhoto = () => {};
 
 export const changeName = (firstName, lastName) => {};
+
+export const updateDimensions = () => {
+  return windowResize(getDimensions());
+};
+
+export const getDimensions = () => {
+  let width, height;
+  if (typeof window !== "undefined") {
+    width = window.innerWidth;
+    height = window.innerHeight;
+  } else {
+    width =
+      document.documentElement.clientWidth || document.body.clientWidth || 0;
+    height =
+      document.documentElement.clientHeight || document.body.clientHeight || 0;
+  }
+  let size = {
+    width: width,
+    height: height,
+    type: getScreenType(width, height)
+  };
+  return size;
+};

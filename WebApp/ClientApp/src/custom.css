@@ -159,6 +159,15 @@ p {
   display: flex;
 }
 
+.topBar{
+  width: 100%;
+  padding: 1em;
+  display: flex;
+  border:1px solid #d4d4d5;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .listChatContent {
   flex: 1;
   padding-left: 1em;
