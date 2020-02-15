@@ -215,6 +215,14 @@ export const records = [
   }
 ];
 
+export const getUserProfile = uid => {
+  let targetUser;
+  chatUsers.forEach(user => {
+    if (user.uid === uid) targetUser = user;
+  });
+  return targetUser;
+};
+
 export const getChatsByGroupId = (gid, position = 0, limit = 5) => {
   let groupChats = [];
   chats.forEach(chat => {

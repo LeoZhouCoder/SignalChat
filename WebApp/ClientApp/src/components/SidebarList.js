@@ -14,6 +14,16 @@ export class SidebarList extends Component {
   }
 }
 
+function List({ component: Component, list }) {
+  return (
+    <div className="list column">
+      {list.map((data, i) => {
+        return <Component key={i} data={data} />;
+      })}
+    </div>
+  );
+}
+
 function SidebarListItem({ data, isChat }) {
   const { img } = data;
   return (
