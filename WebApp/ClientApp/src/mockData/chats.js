@@ -33,6 +33,7 @@ export function getChatRecord(groupId) {
     let chatModel = {};
     let user = getUser(chat.uid);
     chatModel.img = user.img;
+    chatModel.uid = chat.uid;
     chatModel.name = user.name;
     chatModel.time = chat.time;
     chatModel.msg = chat.msg;

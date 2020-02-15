@@ -9,7 +9,6 @@ import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ChatRoom from "./pages/ChatRoom";
-import Container from "./components/Container";
 
 export class Routes extends Component {
   componentDidMount() {

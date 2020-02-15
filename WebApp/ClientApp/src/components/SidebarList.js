@@ -17,8 +17,8 @@ export class SidebarList extends Component {
 function SidebarListItem({ data, isChat }) {
   const { img } = data;
   return (
-    <div className="container divider">
-      <div className="column center">
+    <div className="flexBox maxWidth padding divider">
+      <div className="column center-v">
         <Avatar src={img} />
       </div>
       {isChat ? <ChatContent data={data} /> : <ContactContent data={data} />}
@@ -29,8 +29,8 @@ function SidebarListItem({ data, isChat }) {
 function ContactContent({ data }) {
   const { name } = data;
   return (
-    <div className="listChatContent">
-      <div className="title single text_center unselect">{name}</div>
+    <div className="flexBox row extendable center space">
+      <div className="subtitle single text_center unselect">{name}</div>
     </div>
   );
 }
@@ -38,10 +38,10 @@ function ContactContent({ data }) {
 function ChatContent({ data }) {
   const { name, time, msg } = data;
   return (
-    <div className="listChatContent">
-      <div className="title single text_flex unselect">{name}</div>
-      <div className="tertiary unselect">{time}</div>
-      <div className="single text_max secondary unselect">{msg}</div>
+    <div className="flexBox row extendable center space">
+      <div className="subtitle single extendable unselect">{name}</div>
+      <div className="secondary unselect">{time}</div>
+      <div className="single maxWidth secondary unselect">{msg}</div>
     </div>
   );
 }

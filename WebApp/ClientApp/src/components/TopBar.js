@@ -1,11 +1,24 @@
 import React from "react";
 import { Icon } from "semantic-ui-react";
 
-export const TopBar = ({ name, icon, actionHandler }) => {
+export const TopBar = ({ name, icon, onClickBtn, isBack = false }) => {
   return (
-    <div className="topBar">
+    <div className="flexBox maxWidth padding border">
+      {isBack && (
+        <Icon
+          name="angle left"
+          size="large"
+          onClick={() => onClickBtn("back")}
+        />
+      )}
       <div className="title single">{name}</div>
-      <Icon name={icon} color="grey" size="large" onClick={() => actionHandler()} />
+      <Icon
+        style={{ marginLeft: "auto" }}
+        name={icon}
+        color="grey"
+        size="large"
+        onClick={() => onClickBtn("action")}
+      />
     </div>
   );
 };

@@ -1,46 +1,38 @@
-import React from "react";
+import React, { Component } from "react";
 
-const Sidebar = ({ menuItems, styles }) => {
-  const sidebarStyle = {
-    height: "100vh",
-    width: styles.sidebarWidth,
-    position: "fixed",
-    backgroundColor: styles.black(0.8),
-    paddingTop: 40
-  };
+import { Menu } from "semantic-ui-react";
 
-  const menuItemStyle = {
-    display: "flex",
-    justifyContent: styles.sidebarCollapsed ? "center" : "flex-start",
-    alignItems: "center",
-    padding: `4px ${styles.sidebarCollapsed ? 0 : 10}px`,
-    color: styles.white(0.9)
-  };
+import { SidebarList } from "../components/SidebarList";
 
-  const iconStyle = {
-    fontSize: 26,
-    marginRight: styles.sidebarCollapsed ? 0 : 10
-  };
+import { getChatList } from "../mockData/chats";
 
-  const logoStyle = {
-    textAlign: "center",
-    color: styles.white(),
-    fontSize: 34,
-    marginBottom: 60,
-    fontWeight: "bold"
-  };
-
-  return (
-    <div style={sidebarStyle}>
-      <div style={logoStyle}>{styles.sidebarCollapsed ? "A" : "App"}</div>
-      {menuItems.map(item => (
-        <div style={menuItemStyle}>
-          <span style={iconStyle}>{item.icon}</span>
-          {!styles.sidebarCollapsed && item.text}
-        </div>
-      ))}
-    </div>
-  );
-};
+class Sidebar extends Component {
+  state = { activeItem: "Chats" };
+  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+  render() {
+    const { activeItem } = this.state;
+    return (
+      <div className="flexBox column border sidebar">
+        <Menu attached="top" pointing secondary widths={2} color="teal">
+          <Menu.Item
+            name="Chats"
+            active={activeItem === "Chats"}
+            onClick={this.handleItemClick}
+          >
+            Chats
+          </Menu.Item>
+          <Menu.Item
+            name="Contacts"
+            active={activeItem === "Contacts"}
+            onClick={this.handleItemClick}
+          >
+            Contacts
+          </Menu.Item>
+        </Menu>
+        <SidebarList list={getChatList()} isChat={true} />
+      </div>
+    );
+  }
+}
 
 export default Sidebar;
