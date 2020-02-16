@@ -13,7 +13,6 @@ namespace Api.Security
         IEnumerable<Claim> Claims { get; }
         bool IsAuthenticated { get; }
         string CurrentUserId { get; }
-        string CurrentRole { get; }
     }
 
     public class UserAppContext : IUserAppContext
@@ -72,39 +71,6 @@ namespace Api.Security
                 }
                 throw new Exception("User Id can not find");
             }
-        }
-
-        public string CurrentRole
-        {
-            get
-            {
-                var userRoleClaim = Claims.FirstOrDefault(c => c.Type == "userrole");
-                if (userRoleClaim == null)
-                {
-                    throw new Exception("The _httpContext.Session is null.");
-                }
-
-                if (Convert.ToString(userRoleClaim.Value) != null)
-                {
-                    return userRoleClaim.Value;
-                }
-                throw new Exception("User Id can not find");
-            }
-        }
-
-        public void ChangeCulture(string culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ChangeLanguage(string language)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SessionAbandon()
-        {
-            throw new NotImplementedException();
         }
 
     }

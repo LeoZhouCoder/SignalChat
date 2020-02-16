@@ -12,6 +12,7 @@ using Api.Mongo;
 using Api.Contracts;
 using Api.Services;
 using Api.Auth;
+using Api.Security;
 using SignalRChat.Hubs;
 namespace Api
 {
@@ -43,6 +44,8 @@ namespace Api
             services.AddMongoDB(Configuration);
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IUserAppContext, UserAppContext>();
+            services.AddScoped<IChatService, ChatService>();
             services.AddSignalR();
         }
 
