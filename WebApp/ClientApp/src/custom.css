@@ -55,16 +55,16 @@ p {
 :root {
   --color-primary: rgba(176, 228, 110, 1);
   --color-bg: white;
-  --color-bg-selected: rgba(0, 0, 0, 0.3);
+  --color-bg-selected: rgba(0, 0, 0, 0.1);
   --color-bg-none: rgba(243, 243, 243, 1);
   --color-border: #d4d4d5;
 }
 
 /*font*/
 .title {
-  font-size: 140%;
-  font-weight: bold;
-  color: black;
+  font-size: 140% !important;
+  font-weight: bold !important;
+  color: black !important;
 }
 
 .subtitle {
@@ -139,6 +139,10 @@ p {
 }
 
 /*common*/
+.pointer {
+  cursor: pointer;
+}
+
 .maxWidth {
   width: 100%;
 }
@@ -172,6 +176,10 @@ p {
   border-bottom: 1px solid var(--color-border);
 }
 
+.selected {
+  background-color: var(--color-bg-selected);
+}
+
 /*component*/
 .sidebarMene {
   width: 50vw;
@@ -180,10 +188,18 @@ p {
 .sidebar {
   width: 20em;
 }
+.collapsedSidebar {
+  width: 7em;
+}
 
 .chats {
   padding: 0 1em 0 1em;
   background-color: var(--color-bg-none);
+}
+
+.profile {
+  min-height: 7em;
+  max-height: 7em;
 }
 
 /*message*/
@@ -211,6 +227,7 @@ p {
 
 /*avatar*/
 .avatar {
+  display: inline-block;
   border-radius: 5%;
   background: rgba(0, 0, 0, 0.1);
   margin: 0;

@@ -3,7 +3,7 @@ import { Icon } from "semantic-ui-react";
 
 export const TopBar = ({ name, icon, onClickBtn, isBack = false }) => {
   return (
-    <div className="flexBox maxWidth padding border">
+    <div className="flexBox maxWidth padding divider">
       {isBack && (
         <Icon
           name="angle left"

@@ -1,42 +1,131 @@
 import React, { Component } from "react";
-import { Menu } from "semantic-ui-react";
+import { Menu, Icon, Input, Dropdown } from "semantic-ui-react";
 
-import { SidebarList } from "./SidebarList";
+import { List, ContactContent, ChatContent } from "./List";
 import { Avatar } from "./Avatar";
+
+import { SCREEN_BIG } from "../utils/Dimensions";
+
 import { getUserProfile, getChatList } from "../mockData/chats";
 
+const options = [
+  { key: 1, text: "Chats", value: "Chats" },
+  { key: 2, text: "Contacts", value: "Contacts" }
+];
+
 class Sidebar extends Component {
-  state = { activeItem: "Chats" };
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+  state = {
+    activeMenu: "Chats",
+    selectedItem: null
+  };
+
+  handleMenuClick = name => this.setState({ activeMenu: name });
+
+  handleItemClick = data => this.setState({ selectedItem: data });
+
   render() {
-    const { activeItem } = this.state;
-    const user = getUserProfile("u0");
+    const { activeMenu, selectedItem } = this.state;
+    const bigScreen = this.props.screenType === SCREEN_BIG;
+    let itemComponent = activeMenu === "Chats" ? ChatContent : ContactContent;
     return (
-      <div className="flexBox column border sidebar">
-        <div className="flexBox maxWidth padding">
-          <Avatar src={user.img} size="big" />
-          <div className="title text_center space">{user.name}</div>
-        </div>
-        <Menu pointing secondary widths={2} color="teal">
-          <Menu.Item
-            name="Chats"
-            active={activeItem === "Chats"}
-            onClick={this.handleItemClick}
-          >
-            Chats
-          </Menu.Item>
-          <Menu.Item
-            name="Contacts"
-            active={activeItem === "Contacts"}
-            onClick={this.handleItemClick}
-          >
-            Contacts
-          </Menu.Item>
-        </Menu>
-        <SidebarList list={getChatList()} isChat={true} />
+      <div
+        className={`flexBox column border ${
+          bigScreen ? "sidebar" : "collapsedSidebar"
+        }`}
+      >
+        <Profile bigScreen={bigScreen} />
+        <SidebarMenu
+          bigScreen={bigScreen}
+          activeMenu={activeMenu}
+          handleMenuClick={this.handleMenuClick}
+        />
+        <List
+          list={getChatList()}
+          component={itemComponent}
+          selectedItem={selectedItem}
+          collapsed={!bigScreen}
+          onClickItem={this.handleItemClick}
+        />
       </div>
     );
   }
 }
-
 export default Sidebar;
+
+function SidebarMenu({ bigScreen, activeMenu, handleMenuClick }) {
+  if (bigScreen) {
+    return (
+      <Menu attached pointing secondary widths={2} color="teal">
+        {options.map(item => {
+          return (
+            <Menu.Item
+              key={item.value}
+              active={activeMenu === item.value}
+              onClick={() => handleMenuClick(item.value)}
+            >
+              {item.value}
+            </Menu.Item>
+          );
+        })}
+      </Menu>
+    );
+  }
+  return (
+    <Menu compact>
+      <Dropdown
+        options={options}
+        simple
+        item
+        value={activeMenu}
+        onChange={(e, data) => handleMenuClick(data.value)}
+      />
+    </Menu>
+  );
+}
+
+class Profile extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      editing: false
+    };
+  }
+
+  getNameSection = () => {
+    if (!this.props.bigScreen) return null;
+    const user = getUserProfile("u0");
+    if (this.state.editing) {
+      return (
+        <Input
+          className="space title"
+          transparent
+          value={user.name}
+          focus
+          placeholder="Enter your name"
+        />
+      );
+    }
+
+    return (
+      <div className="title text_center space">
+        {user.name}
+        <Icon
+          name="pencil alternate"
+          size="small"
+          className="space"
+          onClick={() => this.setState({ editing: false })}
+        />
+      </div>
+    );
+  };
+
+  render() {
+    const user = getUserProfile("u0");
+    return (
+      <div className="flexBox maxWidth padding profile">
+        <Avatar src={user.img} size="big" />
+        {this.getNameSection()}
+      </div>
+    );
+  }
+}

@@ -4,6 +4,8 @@ import { Menu, Icon, TextArea, Form, Segment } from "semantic-ui-react";
 import { TopBar } from "./TopBar";
 import ChatHistory from "./ChatHistory";
 
+import { SCREEN_SMALL, SCREEN_MEDIUM } from "../utils/Dimensions";
+
 import { getChatRecord } from "../mockData/chats";
 
 class MainScreen extends React.Component {
@@ -22,13 +24,14 @@ class MainScreen extends React.Component {
 
   render() {
     const { name } = this.state;
+    const { screenType } = this.props;
     return (
       <div className="flexBox extendable column">
         <TopBar
           name={name}
           icon="user"
           onClickBtn={this.onClickTobBarBtn}
-          isBack={true}
+          isBack={screenType === SCREEN_SMALL || screenType === SCREEN_MEDIUM}
         />
 
         <ChatHistory />

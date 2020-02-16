@@ -27,7 +27,6 @@ class ChatHistory extends React.Component {
   render() {
     const { chats } = this.state;
     const user = "uid0";
-    console.log(chats);
     return (
       <div className="extendable list chats" ref="chats">
         {chats.map((chat, i) => (
