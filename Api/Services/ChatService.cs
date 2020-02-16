@@ -25,14 +25,30 @@ namespace Api.Services
             _groupUserRepository = groupUserRepository;
             _chatRepository = chatRepository;
         }
+
         /// <summary>
         /// Create Group
         /// </summary>
         /// <param name="name">"Group Name"</param>
-        public async Task<RequestResult> CreateGroup(string name)
+        /// <param name="users">"Group Users"</param>
+        public async Task<RequestResult> CreateGroup(string name, List<string> users)
         {
             try
             {
+                var existedGroup = await GetExistedGroup(users);
+                if (existedGroup != null && existedGroup.IsDeleted)
+                {
+                    if (existedGroup.IsDeleted)
+                    {
+                        existedGroup.IsDeleted = false;
+                        await _groupRepository.Update(existedGroup);
+                    }
+                    return new RequestResult
+                    {
+                        Success = true,
+                        Data = existedGroup,
+                    };
+                }
                 var group = new Group()
                 {
                     Id = ObjectId.GenerateNewId().ToString(),
@@ -41,6 +57,22 @@ namespace Api.Services
                     IsDeleted = false
                 };
                 await _groupRepository.Add(group);
+                
+                // Add Users to Group
+                foreach (string uid in users)
+                {
+                    var groupUser = new GroupUser()
+                    {
+                        Id = ObjectId.GenerateNewId().ToString(),
+                        UId = Guid.NewGuid(),
+                        Gid = group.Id,
+                        Uid = uid,
+                        ReadChats = 0,
+                        IsDeleted = false
+                    };
+                    await _groupUserRepository.Add(groupUser);
+                }
+
                 return new RequestResult
                 {
                     Success = true,
@@ -56,6 +88,30 @@ namespace Api.Services
                 };
             }
         }
+
+        private async Task<Group> GetExistedGroup(List<string> users)
+        {
+            if (users.Count() != 2) return null;
+            try
+            {
+                var queryUser0 = (await _groupUserRepository.Get(x => x.Uid == users[0]));
+                var queryUser1 = (await _groupUserRepository.Get(x => x.Uid == users[1]));
+                var query = from g0 in queryUser0
+                            join g1 in queryUser1 on g0.Gid equals g1.Gid
+                            select new { Gid = g1.Gid, u0 = g0.UId, u1 = g1.UId };
+
+                if (query.Count() == 0) return null;
+                var gid = query.ToList()[0].Gid;
+                var group = (await _groupRepository.Get(x => x.Id == gid)).FirstOrDefault();
+                if (group == null) return null;
+                return group;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         /// Delete Group
         /// </summary>
@@ -84,6 +140,7 @@ namespace Api.Services
                 };
             }
         }
+
         /// <summary>
         /// Update Group Name
         /// </summary>
@@ -119,6 +176,7 @@ namespace Api.Services
                 };
             }
         }
+
         /// <summary>
         /// Add User To Group
         /// </summary>
@@ -181,6 +239,7 @@ namespace Api.Services
                 };
             }
         }
+
         /// <summary>
         /// Update User Read Chats
         /// </summary>
@@ -216,6 +275,7 @@ namespace Api.Services
                 };
             }
         }
+
         /// <summary>
         /// Remove User From Group
         /// </summary>
@@ -302,6 +362,7 @@ namespace Api.Services
                 };
             }
         }
+
         /// <summary>
         /// Delete Chat
         /// </summary>
@@ -330,6 +391,7 @@ namespace Api.Services
                 };
             }
         }
+
         /// <summary>
         /// Get Chats
         /// </summary>
@@ -368,7 +430,7 @@ namespace Api.Services
                     var users = (await _groupUserRepository.Get(x => x.Gid == gid && !x.IsDeleted)).Select(x => x.Uid).ToList();
                     var view = new ChatGroupView
                     {
-                        Id=group.Id,
+                        Id = group.Id,
                         Name = group.Name,
                         Users = users,
                         LastChat = lastChat

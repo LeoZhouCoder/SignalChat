@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
-using Api.Commands;
+using System.Collections.Generic;
 using Api.Models;
 namespace Api.Services
 {
     public interface IChatService
     {
-        Task<RequestResult> CreateGroup(string name);
+        Task<RequestResult> CreateGroup(string name, List<string> users);
         Task<RequestResult> DeleteGroup(string gid);
         Task<RequestResult> UpdateGroup(string gid, string name);
         Task<RequestResult> AddUserToGroup(string gid, string uid);
