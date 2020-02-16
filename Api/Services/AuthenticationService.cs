@@ -47,22 +47,23 @@ namespace Api.Services
                 var userModel = new User()
                 {
                     Id = ObjectId.GenerateNewId().ToString(),
-                    UId = Guid.NewGuid(),
                     Email = user.Email,
                     PasswordHash = _encryptPassword.CreateHash(user.Password),
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
+                    Name = user.FirstName + " " + user.LastName,
+                    ProfilePhoto = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTJ-mXuETtV9PelHdVOYG7yMwKVZpW1NGNpFwND484eFIxU8IBe",
                     CreatedOn = DateTime.UtcNow,
+                    ActiveTime = DateTime.UtcNow,
                     IsDeleted = false
                 };
                 await _userRepository.Add(userModel);
                 var jsonWebToken = _jwtHandler.Create(userModel.Id);
 
-                var userProfile = new UserProfile
+                var userProfile = new UserView
                 {
-                    UserName = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName
+                    Id = userModel.Id,
+                    Email = userModel.Email,
+                    Name = userModel.Name,
+                    ProfilePhoto = userModel.ProfilePhoto
                 };
 
                 return new AuthenticationResult
@@ -110,19 +111,18 @@ namespace Api.Services
                     Message = "Password is incorrect",
                 };
             }
-            if (user.IsDeleted)
-            {
-                user.IsDeleted = false;
-                await _userRepository.Update(user);
-            }
+            user.IsDeleted = false;
+            user.ActiveTime = DateTime.UtcNow;
+            await _userRepository.Update(user);
 
             var jsonWebToken = _jwtHandler.Create(user.Id);
 
-            var userProfile = new UserProfile
+            var userProfile = new UserView
             {
-                UserName = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                ProfilePhoto = user.ProfilePhoto
             };
 
             return new AuthenticationResult

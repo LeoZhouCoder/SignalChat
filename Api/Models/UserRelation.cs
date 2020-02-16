@@ -5,19 +5,17 @@ using Api.Contracts;
 
 namespace Api.Models
 {
-    public class Chat : IMongoCommon
+    public class UserRelation : IMongoCommon
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-        public string Sender { get; set; }
-        public string Gid { get; set; }
-        public string Receiver { get; set; }
+        public string Owner { get; set; }
+        public string Target { get; set; }
         public int Type { get; set; }
-        public string Content { get; set; }
-        public DateTime CreatedOn { get; set; }
+        // The last read chat ID
+        public string ReadChatID { get; set; }
         public bool IsDeleted { get; set; }
     }
-
-    public enum ChatType { System = 0, Message, Image }
+    public enum UserRelationType { Friend = 0 }
 }

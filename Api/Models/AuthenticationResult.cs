@@ -6,7 +6,7 @@ namespace Api.Models
     {
         public bool Success { get; set; }
         public JsonWebToken Token { get; set; }
-        public UserProfile User { get; set; }
+        public UserView User { get; set; }
         public string Message { get; set; }
     }
 }

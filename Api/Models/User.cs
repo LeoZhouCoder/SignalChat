@@ -7,17 +7,15 @@ namespace Api.Models
 {
     public class User : IMongoCommon
     {
-        public Guid UId { get; set; }
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
-        public string UserType { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public bool TermsAccepted { get; set; }
+        public string Name { get; set; }
+        public string ProfilePhoto { get; set; }
         public DateTime CreatedOn { get; set; }
+        public DateTime ActiveTime { get; set; }
         public bool IsDeleted { get; set; }
     }
 }

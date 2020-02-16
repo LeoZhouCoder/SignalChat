@@ -7,7 +7,6 @@ namespace Api.Models
 {
     public class Group : IMongoCommon
     {
-        public Guid UId { get; set; }
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
