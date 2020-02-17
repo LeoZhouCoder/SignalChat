@@ -17,10 +17,10 @@ namespace Api.Services
         private IRepository<UserRelation> _userRelationRepository;
 
         public ChatService(IRepository<Group> groupRepository,
-                            Repository<User> userRepository,
-                            Repository<GroupUser> groupUserRepository,
-                            Repository<Chat> chatRepository,
-                            Repository<UserRelation> userRelationRepository)
+                            IRepository<User> userRepository,
+                            IRepository<GroupUser> groupUserRepository,
+                            IRepository<Chat> chatRepository,
+                            IRepository<UserRelation> userRelationRepository)
         {
             _groupRepository = groupRepository;
             _userRepository = userRepository;
@@ -121,7 +121,7 @@ namespace Api.Services
             try
             {
                 var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor)).FirstOrDefault();
-                if(groupUser==null || groupUser.IsDeleted)
+                if (groupUser == null || groupUser.IsDeleted)
                 {
                     return new RequestResult
                     {
@@ -163,7 +163,7 @@ namespace Api.Services
             try
             {
                 var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor)).FirstOrDefault();
-                if(groupUser==null || groupUser.IsDeleted)
+                if (groupUser == null || groupUser.IsDeleted)
                 {
                     return new RequestResult
                     {
@@ -211,7 +211,7 @@ namespace Api.Services
             try
             {
                 var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor)).FirstOrDefault();
-                if(groupUser==null || groupUser.IsDeleted)
+                if (groupUser == null || groupUser.IsDeleted)
                 {
                     return new RequestResult
                     {
@@ -357,7 +357,7 @@ namespace Api.Services
             try
             {
                 var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor)).FirstOrDefault();
-                if(groupUser==null || groupUser.IsDeleted)
+                if (groupUser == null || groupUser.IsDeleted)
                 {
                     return new RequestResult
                     {
@@ -365,7 +365,7 @@ namespace Api.Services
                         Message = "No authority.",
                     };
                 }
-                
+
                 groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
                 if (groupUser != null)
                 {
@@ -668,10 +668,10 @@ namespace Api.Services
                 }
 
                 // Get Recent Friends' Chat
-                var friends = (await _userRelationRepository.Get(x=>x.Owner==uid)).Select(x=>x.Target).ToList();
+                var friends = (await _userRelationRepository.Get(x => x.Owner == uid)).Select(x => x.Target).ToList();
                 foreach (var friend in friends)
                 {
-                    var chat = (await _chatRepository.Get(x => ((x.Sender == uid && x.Receiver == friend) || (x.Sender == friend && x.Receiver == uid))&& !x.IsDeleted)).FirstOrDefault();
+                    var chat = (await _chatRepository.Get(x => ((x.Sender == uid && x.Receiver == friend) || (x.Sender == friend && x.Receiver == uid)) && !x.IsDeleted)).FirstOrDefault();
                     chats.Add(chat);
                 }
 
@@ -682,7 +682,7 @@ namespace Api.Services
                     var user = (await _userRepository.Get(x => x.Id == id && !x.IsDeleted)).FirstOrDefault();
                     users.Add(user);
                 }
-                
+
                 var data = new
                 {
                     chats,
