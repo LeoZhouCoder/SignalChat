@@ -2,6 +2,6 @@
 {
     public interface IJwtHandler
     {
-        JsonWebToken Create(string userId);
+        string Create(string userId);
     }
 }

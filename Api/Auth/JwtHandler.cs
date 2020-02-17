@@ -19,7 +19,7 @@ namespace Api.Auth
             _credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         }
 
-        public JsonWebToken Create(string userId)
+        public string Create(string userId)
         {
              var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
@@ -34,13 +34,7 @@ namespace Api.Auth
                 expires: expires,
                 signingCredentials: _credentials
             );
-            var token = _jwtSecurityTokenHandler.WriteToken(jwt);
-
-            return new JsonWebToken
-            {
-                Token = token,
-                Expires = expires
-            };
+            return _jwtSecurityTokenHandler.WriteToken(jwt);
         }
     }
 }

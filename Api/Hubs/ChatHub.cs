@@ -1,11 +1,24 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System;
 
 namespace SignalRChat.Hubs
 {
+    [Authorize]
     public class ChatHub : Hub
     {
+        public override async Task OnConnectedAsync()
+        {
+            await Clients.All.SendAsync("ReceiveMessage", $"{Context.UserIdentifier} joined.", DateTime.UtcNow);
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            await Clients.All.SendAsync("ReceiveSystemMessage", $"{Context.UserIdentifier} left.");
+            await base.OnDisconnectedAsync(exception);
+        }
         public async Task SendMessage(string user, string message)
         {
             await Clients.All.SendAsync("ReceiveMessage", user, message, DateTime.UtcNow);

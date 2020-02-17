@@ -71,12 +71,11 @@ class Login extends Component {
   };
 
   render() {
-    if (this.props.user) {
-      const referer = this.props.location.state
-        ? this.props.location.state.referer || "/"
-        : "/";
-      return <Redirect to={referer} />;
+    if (this.props.token) {
+      const state = this.props.location.state;
+      return <Redirect to={state && state.referer ? state.referer : "/"} />;
     }
+
     return (
       <AuthForm
         link={<AuthLink msg="New to us?" buttonName="Sign Up" link="/signup" />}
@@ -117,7 +116,7 @@ class Login extends Component {
 }
 
 const mapStateToProps = state => ({
-  user: state.authReducer.user
+  token: state.authReducer.token
 });
 
 const mapDispatchToProps = dispatch => ({

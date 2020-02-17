@@ -1,4 +1,4 @@
-import { WINDOW_RESIZE, USER_LOGIN } from "./actionTypes";
+import { WINDOW_RESIZE, USER_LOGIN, USER_LOGOUT } from "./actionTypes";
 import { getScreenType } from "../utils/Dimensions";
 
 const loginUser = loginResult => ({

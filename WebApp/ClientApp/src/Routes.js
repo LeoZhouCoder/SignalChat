@@ -21,6 +21,7 @@ export class Routes extends Component {
   }
 
   render() {
+    console.log(this.props.token);
     return (
       <BrowserRouter>
         <div style={{ overflow: "hidden" }}>
@@ -30,14 +31,14 @@ export class Routes extends Component {
             exact
             path="/"
             component={ChatRoom}
-            user={this.props.user}
+            token={this.props.token}
           />
         </div>
       </BrowserRouter>
     );
   }
 }
-const mapStateToProps = state => ({ user: state.authReducer.user });
+const mapStateToProps = state => ({ token: state.authReducer.token });
 const mapDispatchToProps = dispatch => ({
   updateDimensions: () => dispatch(updateDimensions())
 });
