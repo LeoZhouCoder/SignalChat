@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +12,8 @@ using Api.Services;
 using Api.Auth;
 using Api.Security;
 using SignalRChat.Hubs;
+
+
 namespace Api
 {
     public class Startup
@@ -42,9 +42,19 @@ namespace Api
             services.AddJwt(Configuration);
             services.AddSingleton<IPasswordStorage, PasswordStorage>();
             services.AddMongoDB(Configuration);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-            //services.AddScoped<IUserAppContext, UserAppContext>();
+
+            Func<IServiceProvider, IPrincipal> getPrincipal =
+                     (sp) => sp.GetService<IHttpContextAccessor>().HttpContext.User;
+            services.AddScoped(typeof(Func<IPrincipal>), sp => {
+                Func<IPrincipal> func = () => {
+                    return getPrincipal(sp);
+                };
+                return func;
+            });
+            services.AddScoped<IUserAppContext, UserAppContext>();
             services.AddScoped<IChatService, ChatService>();
             services.AddSignalR();
         }

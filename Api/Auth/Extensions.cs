@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.Tasks;
+using System;
 
 namespace Api.Auth
 {
@@ -25,7 +26,9 @@ namespace Api.Auth
                     {
                         ValidateAudience = false,
                         ValidIssuer = options.Issuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SecretKey))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SecretKey)),
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
                     };
                     cfg.Events = new JwtBearerEvents
                     {

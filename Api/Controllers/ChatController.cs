@@ -10,7 +10,7 @@ using Api.Security;
 
 namespace Api.Controllers
 {
-    [Route("auth")]
+    [Route("chat")]
     public class ChatController : Controller
     {
         private readonly IChatService _chatService;
@@ -27,12 +27,7 @@ namespace Api.Controllers
         /// <remarks>
         /// Get Recent Chats
         /// </remarks>
-        /// <param name="command">CreateUser Model</param>
-        /// <response code="201">Successful. Redirects to home page with successful message</response>
-        /// <response code="400">BadRequest. User input model is invalid or Email is already registered</response>   
-        [ProducesResponseType((int)HttpStatusCode.Created)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPost("getRecentChats")]
+        [HttpGet("getRecentChats")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetRecentChats()
         {
@@ -46,9 +41,9 @@ namespace Api.Controllers
             {
                 return BadRequest(new { e.Message });
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest(new { Message = "Please contact the IT Department for futher information" });
+                return BadRequest(new { Message = "Please contact the IT Department for futher information."+e.Message });
             }
         }
     }

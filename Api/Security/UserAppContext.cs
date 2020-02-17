@@ -21,7 +21,6 @@ namespace Api.Security
         private readonly Func<IPrincipal> _principalFactory;
         private readonly IRepository<User> _userRepository;
         private string _userId;
-        private string _userRole;
 
         #endregion
         public UserAppContext(Func<IPrincipal> principalFactory,
