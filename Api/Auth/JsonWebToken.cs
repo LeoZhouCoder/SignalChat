@@ -1,8 +1,9 @@
-﻿namespace Api.Auth
+﻿using System;
+namespace Api.Auth
 {
     public class JsonWebToken
     {
         public string Token { get; set; }
-        public long Expires { get; set; }
+        public DateTime Expires { get; set; }
     }
 }

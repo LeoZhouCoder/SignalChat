@@ -28,7 +28,7 @@ namespace Api.Controllers
         /// Get Recent Chats
         /// </remarks>
         [HttpGet("getRecentChats")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> GetRecentChats()
         {
             try

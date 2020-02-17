@@ -17,31 +17,32 @@ namespace Api.Auth
             section.Bind(options);
             services.Configure<JwtOptions>(configuration.GetSection("jwt"));
             services.AddSingleton<IJwtHandler, JwtHandler>();
-            services.AddAuthentication()
-                .AddJwtBearer(cfg =>
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(cfg =>
+            {
+                cfg.RequireHttpsMetadata = false;
+                cfg.SaveToken = true;
+                cfg.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    cfg.RequireHttpsMetadata = false;
-                    cfg.SaveToken = true;
-                    cfg.TokenValidationParameters = new TokenValidationParameters()
+                    ValidateAudience = false,
+                    ValidIssuer = options.Issuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SecretKey)),
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+                cfg.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
                     {
-                        ValidateAudience = false,
-                        ValidIssuer = options.Issuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SecretKey)),
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
-                    };
-                    cfg.Events = new JwtBearerEvents
-                    {
-                        OnAuthenticationFailed = context =>
+                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                         {
-                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                            {
-                                context.Response.Headers.Add("Token-Expired", "true");
-                            }
-                            return Task.CompletedTask;
+                            context.Response.Headers.Add("Token-Expired", "true");
                         }
-                    };
-                });
+                        return Task.CompletedTask;
+                    }
+                };
+            });
         }
     }
 }

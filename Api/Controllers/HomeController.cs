@@ -12,7 +12,7 @@ namespace Api.Controllers
             return Content("Hello from SignalChat Api");
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public IActionResult AuthorizeGet()
         {
             return Content("Hello from SignalChat Authorize Api");

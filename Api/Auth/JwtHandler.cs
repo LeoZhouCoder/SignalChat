@@ -11,42 +11,35 @@ namespace Api.Auth
     {
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
         private readonly JwtOptions _options;
-        private readonly JwtHeader _jwtHeader;
+        private readonly SigningCredentials _credentials;
         public JwtHandler(IOptions<JwtOptions> options)
         {
             _options = options.Value;
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            _jwtHeader = new JwtHeader(credentials);
+            _credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         }
 
         public JsonWebToken Create(string userId)
         {
-            var nowUtc = DateTime.UtcNow;
-            var expires = nowUtc.AddMinutes(_options.ExpiryMinutes);
-            var centuryBegin = new DateTime(1970, 1, 1).ToUniversalTime();
-            var exp = (long)(new TimeSpan(expires.Ticks - centuryBegin.Ticks).TotalSeconds);
-            var iat = (long)(new TimeSpan(nowUtc.Ticks - centuryBegin.Ticks).TotalSeconds);
-
-            var claims = new[] {
+             var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
+                new Claim("userId", userId.ToString()),
             };
-            var payload = new JwtPayload
-            {
-                { "userId", userId },
-                { "iss",_options.Issuer },
-                { "iat",iat },
-                { "exp",exp },
-                { "unique_name",userId },
-            };
-            payload.AddClaims(claims);
-            var jwt = new JwtSecurityToken(_jwtHeader, payload);
+            var now = DateTime.Now;
+            var expires = now.AddMinutes(_options.ExpiryMinutes);
+            var jwt = new JwtSecurityToken(
+                issuer: _options.Issuer,
+                claims: claims,
+                notBefore: now,
+                expires: expires,
+                signingCredentials: _credentials
+            );
             var token = _jwtSecurityTokenHandler.WriteToken(jwt);
 
             return new JsonWebToken
             {
                 Token = token,
-                Expires = exp
+                Expires = expires
             };
         }
     }
