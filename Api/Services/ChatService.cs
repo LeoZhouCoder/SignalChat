@@ -197,7 +197,7 @@ namespace Api.Services
                     return new RequestResult
                     {
                         Success = false,
-                        Message = "Can't find user: " + errorUsers + " when create group.",
+                        Message = "Can't find user: " + errorUsers.ToString() + " when create group.",
                     };
                 }
 
@@ -221,11 +221,16 @@ namespace Api.Services
                     };
                     await _groupUserRepository.Add(groupUser);
                 }
-                await UpdateUserActiveTime(users[0]);
+                var groupView = new GroupView
+                {
+                    Id = group.Id,
+                    Name = group.Name,
+                    Users = users
+                };
                 return new RequestResult
                 {
                     Success = true,
-                    Data = group,
+                    Data = groupView,
                 };
             }
             catch (Exception ex)
@@ -247,7 +252,7 @@ namespace Api.Services
         {
             try
             {
-                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor)).FirstOrDefault();
+                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
                 if (groupUser == null || groupUser.IsDeleted)
                 {
                     return new RequestResult
@@ -257,13 +262,22 @@ namespace Api.Services
                     };
                 }
 
+                // delete group users
+                var groupUsers = (await _groupUserRepository.Get(x => x.Gid == gid && !x.IsDeleted));
+                foreach (var gUser in groupUsers)
+                {
+                    gUser.IsDeleted = true;
+                    await _groupUserRepository.Update(gUser);
+                }
+
+                // delete group
                 var group = (await _groupRepository.Get(x => x.Id == gid)).FirstOrDefault();
                 if (group != null && !group.IsDeleted)
                 {
                     group.IsDeleted = false;
                     await _groupRepository.Update(group);
                 }
-                await UpdateUserActiveTime(editor);
+
                 return new RequestResult
                 {
                     Success = true,
@@ -279,17 +293,22 @@ namespace Api.Services
             }
         }
 
+        private async Task<List<string>> GetGroupUsers(string gid)
+        {
+            return (await _groupUserRepository.Get(x => x.Gid == gid && !x.IsDeleted)).Select(x => x.Uid).ToList();
+        }
+
         /// <summary>
         /// Update Group Name
         /// </summary>
         /// <param name="editor">"Editor ID"</param>
         /// <param name="gid">"Group ID"</param>
         /// <param name="name">"Group Name"</param>
-        public async Task<RequestResult> UpdateGroup(string editor, string gid, string name)
+        public async Task<RequestResult> ChangeGroupName(string editor, string gid, string name)
         {
             try
             {
-                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor)).FirstOrDefault();
+                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
                 if (groupUser == null || groupUser.IsDeleted)
                 {
                     return new RequestResult
@@ -304,8 +323,15 @@ namespace Api.Services
                 {
                     group.Name = name;
                     await _groupRepository.Update(group);
-                    await UpdateUserActiveTime(editor);
-                    return new RequestResult { Success = true };
+
+                    var groupView = new GroupView
+                    {
+                        Id = group.Id,
+                        Name = group.Name,
+                        Users = (await GetGroupUsers(group.Id))
+                    };
+
+                    return new RequestResult { Success = true, Data = groupView };
                 }
                 else
                 {
@@ -322,7 +348,7 @@ namespace Api.Services
                 return new RequestResult
                 {
                     Success = false,
-                    Message = "UpdateGroup error - " + ex.Message,
+                    Message = "ChangeGroupName error - " + ex.Message,
                 };
             }
         }
@@ -337,7 +363,7 @@ namespace Api.Services
         {
             try
             {
-                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor)).FirstOrDefault();
+                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
                 if (groupUser == null || groupUser.IsDeleted)
                 {
                     return new RequestResult
@@ -386,8 +412,15 @@ namespace Api.Services
                     };
                     await _groupUserRepository.Add(groupUser);
                 }
-                await UpdateUserActiveTime(editor);
-                return new RequestResult { Success = true };
+
+                var groupView = new GroupView
+                {
+                    Id = group.Id,
+                    Name = group.Name,
+                    Users = (await GetGroupUsers(group.Id))
+                };
+
+                return new RequestResult { Success = true, Data = groupView };
             }
             catch (Exception ex)
             {
@@ -395,80 +428,6 @@ namespace Api.Services
                 {
                     Success = false,
                     Message = "AddUserToGroup error - " + ex.Message,
-                };
-            }
-        }
-
-        /// <summary>
-        /// Update User Read Chats
-        /// </summary>
-        /// <param name="gid">"Group ID"</param>
-        /// <param name="uid">"User ID"</param>
-        /// <param name="cid">"Chat ID"</param>
-        public async Task<RequestResult> UpdateUserGroupReadChats(string gid, string uid, string cid)
-        {
-            try
-            {
-                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
-                if (groupUser != null)
-                {
-                    groupUser.ReadChatID = cid;
-                    await _groupUserRepository.Update(groupUser);
-                    await UpdateUserActiveTime(uid);
-                    return new RequestResult { Success = true };
-                }
-                else
-                {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "Can't find record."
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "UpdateUserGroupReadChats error - " + ex.Message,
-                };
-            }
-        }
-
-        /// <summary>
-        /// Update User Read Chats
-        /// </summary>
-        /// <param name="sender">"Sender ID"</param>
-        /// <param name="receiver">"Receiver ID"</param>
-        /// <param name="cid">"Chat ID"</param>
-        public async Task<RequestResult> UpdateUserReadChats(string sender, string receiver, string cid)
-        {
-            try
-            {
-                var friend = (await _userRelationRepository.Get(x => x.Owner == sender && x.Target == receiver)).FirstOrDefault();
-                if (friend != null)
-                {
-                    friend.ReadChatID = cid;
-                    await _userRelationRepository.Update(friend);
-                    await UpdateUserActiveTime(sender);
-                    return new RequestResult { Success = true };
-                }
-                else
-                {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "Can't find record."
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "UpdateUserReadChats error - " + ex.Message,
                 };
             }
         }
@@ -483,13 +442,23 @@ namespace Api.Services
         {
             try
             {
-                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor)).FirstOrDefault();
+                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
                 if (groupUser == null || groupUser.IsDeleted)
                 {
                     return new RequestResult
                     {
                         Success = false,
                         Message = "No authority.",
+                    };
+                }
+
+                var group = (await _groupRepository.Get(x => x.Id == gid)).FirstOrDefault();
+                if (group == null || group.IsDeleted)
+                {
+                    return new RequestResult
+                    {
+                        Success = false,
+                        Message = "Group is not existing."
                     };
                 }
 
@@ -502,8 +471,15 @@ namespace Api.Services
                         await _groupUserRepository.Update(groupUser);
                     }
                 }
-                await UpdateUserActiveTime(editor);
-                return new RequestResult { Success = true };
+
+                var groupView = new GroupView
+                {
+                    Id = group.Id,
+                    Name = group.Name,
+                    Users = (await GetGroupUsers(group.Id))
+                };
+
+                return new RequestResult { Success = true, Data = groupView };
             }
             catch (Exception ex)
             {
@@ -594,7 +570,6 @@ namespace Api.Services
                     IsDeleted = false
                 };
                 await _chatRepository.Add(chat);
-                await UpdateUserActiveTime(sender);
                 return new RequestResult
                 {
                     Success = true,
@@ -615,7 +590,7 @@ namespace Api.Services
         /// Delete Chat
         /// </summary>
         /// <param name="cid">"Chat ID"</param>
-        public async Task<RequestResult> DeleteChat(string cid)
+        public async Task<RequestResult> DeleteChat(string editor, string cid)
         {
             try
             {
@@ -624,6 +599,14 @@ namespace Api.Services
                 {
                     if (!chat.IsDeleted)
                     {
+                        if (chat.Sender != editor)
+                        {
+                            return new RequestResult
+                            {
+                                Success = false,
+                                Message = "No authority.",
+                            };
+                        }
                         chat.IsDeleted = true;
                         await _chatRepository.Update(chat);
                     }
@@ -640,13 +623,7 @@ namespace Api.Services
             }
         }
 
-        /// <summary>
-        /// Add Relation
-        /// </summary>
-        /// <param name="owner">Owner User ID</param>
-        /// <param name="target">Target User ID</param>
-        /// <param name="type">Relation Type</param>
-        public async Task<RequestResult> AddRelation(string owner, string target, int type = 0)
+        private async Task<RequestResult> AddRelation(string owner, string target, UserRelationType type = 0)
         {
             try
             {
@@ -669,20 +646,32 @@ namespace Api.Services
                     relation.Type = type;
                     await _userRelationRepository.Update(relation);
                 }
-                await UpdateUserActiveTime(owner);
-                return new RequestResult { Success = true, Data = relation };
+                return new RequestResult { Success = true };
             }
             catch (Exception ex)
             {
                 return new RequestResult { Success = false, Message = "AddRelation error - " + ex.Message };
             }
         }
+
+        /// <summary>
+        /// Add Friend
+        /// </summary>
+        /// <param name="owner">Owner User ID</param>
+        /// <param name="target">Target User ID</param>
+        public async Task<RequestResult> AddFriend(string owner, string target)
+        {
+            var result = await AddRelation(owner, target, UserRelationType.Friend);
+            if (!result.Success) return result;
+            return await AddRelation(target, owner, UserRelationType.Friend);
+        }
+
         /// <summary>
         /// Delete Relation
         /// </summary>
         /// <param name="owner">Owner User ID</param>
         /// <param name="target">Target User ID</param>
-        public async Task<RequestResult> DeleteRelation(string owner, string target)
+        private async Task<RequestResult> DeleteRelation(string owner, string target)
         {
             try
             {
@@ -692,13 +681,24 @@ namespace Api.Services
                     relation.IsDeleted = true;
                     await _userRelationRepository.Update(relation);
                 }
-                await UpdateUserActiveTime(owner);
                 return new RequestResult { Success = true };
             }
             catch (Exception ex)
             {
                 return new RequestResult { Success = false, Message = "DeleteRelation error - " + ex.Message };
             }
+        }
+
+        /// <summary>
+        /// Delete Friend
+        /// </summary>
+        /// <param name="owner">Owner User ID</param>
+        /// <param name="target">Target User ID</param>
+        public async Task<RequestResult> DeleteFriend(string owner, string target)
+        {
+            var result = await DeleteRelation(owner, target);
+            if (!result.Success) return result;
+            return await DeleteRelation(target, owner);
         }
 
         /// <summary>
@@ -722,26 +722,6 @@ namespace Api.Services
         }
 
         /// <summary>
-        /// Get Active Users
-        /// </summary>
-        /// <param name="uid">User ID</param>
-        /// <param name="limit">User Number</param>
-        public async Task<RequestResult> GetActiveUsers(string uid, int limit)
-        {
-            try
-            {
-                var users = await _userRepository.Get(x => !x.IsDeleted);
-                var returnUsers = users.OrderByDescending(x => x.CreatedOn).Take(limit);
-                await UpdateUserActiveTime(uid);
-                return new RequestResult { Success = true, Data = returnUsers };
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult { Success = false, Message = "GetActiveUsers error - " + ex.Message };
-            }
-        }
-
-        /// <summary>
         /// Get Chats
         /// </summary>
         /// <param name="uid0">User A</param>
@@ -754,7 +734,6 @@ namespace Api.Services
             {
                 var chats = await _chatRepository.Get(x => ((x.Sender == uid0 && x.Receiver == uid1) || (x.Sender == uid1 && x.Receiver == uid0)) && !x.IsDeleted);
                 var returnChats = chats.OrderByDescending(x => x.CreatedOn).Skip(position).Take(limit);
-                await UpdateUserActiveTime(uid0);
                 return new RequestResult { Success = true, Data = returnChats };
             }
             catch (Exception ex)
@@ -816,7 +795,6 @@ namespace Api.Services
                     groups,
                     users
                 };
-                await UpdateUserActiveTime(uid);
                 return new RequestResult { Success = true, Data = data };
             }
             catch (Exception ex)
@@ -847,19 +825,75 @@ namespace Api.Services
             }
         }
 
-        private async Task<Boolean> UpdateUserActiveTime(string uid)
+        /// <summary>
+        /// Update User Read Chats
+        /// </summary>
+        /// <param name="gid">"Group ID"</param>
+        /// <param name="uid">"User ID"</param>
+        /// <param name="cid">"Chat ID"</param>
+        public async Task<RequestResult> UpdateUserGroupReadChats(string gid, string uid, string cid)
         {
             try
             {
-                var user = (await _userRepository.Get(x => x.Id == uid)).FirstOrDefault();
-                if (user == null || user.IsDeleted) return false;
-                user.ActiveTime = DateTime.UtcNow;
-                await _userRepository.Update(user);
-                return true;
+                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
+                if (groupUser != null)
+                {
+                    groupUser.ReadChatID = cid;
+                    await _groupUserRepository.Update(groupUser);
+                    return new RequestResult { Success = true };
+                }
+                else
+                {
+                    return new RequestResult
+                    {
+                        Success = false,
+                        Message = "Can't find record."
+                    };
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "UpdateUserGroupReadChats error - " + ex.Message,
+                };
+            }
+        }
+
+        /// <summary>
+        /// Update User Read Chats
+        /// </summary>
+        /// <param name="sender">"Sender ID"</param>
+        /// <param name="receiver">"Receiver ID"</param>
+        /// <param name="cid">"Chat ID"</param>
+        public async Task<RequestResult> UpdateUserReadChats(string sender, string receiver, string cid)
+        {
+            try
+            {
+                var friend = (await _userRelationRepository.Get(x => x.Owner == sender && x.Target == receiver)).FirstOrDefault();
+                if (friend != null)
+                {
+                    friend.ReadChatID = cid;
+                    await _userRelationRepository.Update(friend);
+                    return new RequestResult { Success = true };
+                }
+                else
+                {
+                    return new RequestResult
+                    {
+                        Success = false,
+                        Message = "Can't find record."
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "UpdateUserReadChats error - " + ex.Message,
+                };
             }
         }
     }

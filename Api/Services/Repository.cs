@@ -86,7 +86,7 @@ namespace Api.Services
                 {
                     throw new ArgumentNullException("entity");
                 }
-                await _collection.ReplaceOneAsync(w => w.Id.Equals(entity.Id), entity, new UpdateOptions { IsUpsert = true });
+                await _collection.ReplaceOneAsync(w => w.Id.Equals(entity.Id), entity, new ReplaceOptions { IsUpsert = true });
             }
             catch (Exception dbEx)
             {

@@ -50,7 +50,6 @@ namespace Api.Services
                     Name = user.FirstName + " " + user.LastName,
                     ProfilePhoto = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTJ-mXuETtV9PelHdVOYG7yMwKVZpW1NGNpFwND484eFIxU8IBe",
                     CreatedOn = DateTime.UtcNow,
-                    ActiveTime = DateTime.UtcNow,
                     IsDeleted = false
                 };
                 await _userRepository.Add(userModel);
@@ -110,7 +109,6 @@ namespace Api.Services
                 };
             }
             user.IsDeleted = false;
-            user.ActiveTime = DateTime.UtcNow;
             await _userRepository.Update(user);
 
             var jsonWebToken = _jwtHandler.Create(user.Id);

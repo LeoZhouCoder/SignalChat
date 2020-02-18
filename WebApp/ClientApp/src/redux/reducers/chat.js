@@ -4,8 +4,8 @@ export const TOKEN = "token";
 export const USER = "user";
 
 const initialState = {
-  groups: [],
   chats: [],
+  groups: [],
   users: []
 };
 

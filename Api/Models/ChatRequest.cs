@@ -9,10 +9,15 @@ namespace Api.Models
     public enum ChatRequestType 
     { 
         Message = 0, 
+        GetGroupChats,
+        GetUserChats,
         CreateGroup, 
         ChangeGroupName, 
         AddUserToGroup, 
         RemoveUserFromGroup,
+        DeleteGroup,
+        AddFriend,
+        DeleteFriend,
         GetUserProfile
     }
 }

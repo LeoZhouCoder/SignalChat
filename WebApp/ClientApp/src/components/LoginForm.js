@@ -9,6 +9,8 @@ import {
   Segment
 } from "semantic-ui-react";
 
+import { serverUrl } from "../env/Env";
+
 export default class LoginForm extends Component {
   constructor(props) {
     super(props);
@@ -176,7 +178,7 @@ export default class LoginForm extends Component {
   };
 
   handleClickButton = (e, data) => {
-    var result = this.postData("http://localhost:60601/auth/signIn", {
+    var result = this.postData(serverUrl + "auth/signIn", {
       email: this.state.formData.email,
       password: this.state.formData.password
     }).then(result=>{

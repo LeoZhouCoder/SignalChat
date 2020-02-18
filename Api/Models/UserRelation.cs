@@ -12,7 +12,7 @@ namespace Api.Models
         public string Id { get; set; }
         public string Owner { get; set; }
         public string Target { get; set; }
-        public int Type { get; set; }
+        public UserRelationType Type { get; set; }
         // The last read chat ID
         public string ReadChatID { get; set; }
         public bool IsDeleted { get; set; }

@@ -1,5 +1,6 @@
-import { WINDOW_RESIZE, USER_LOGIN, USER_LOGOUT } from "./actionTypes";
+import { WINDOW_RESIZE, USER_LOGIN } from "./actionTypes";
 import { getScreenType } from "../utils/Dimensions";
+import { serverUrl } from "../env/Env";
 
 const loginUser = loginResult => ({
   type: USER_LOGIN,
@@ -14,7 +15,7 @@ const windowResize = size => ({
 export const login = user => {
   console.log("login start:", user);
   return dispatch => {
-    return fetch("http://localhost:60601/auth/signIn", {
+    return fetch(serverUrl + "auth/signIn", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -25,7 +26,6 @@ export const login = user => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          // TODO: validation token user
           dispatch(loginUser(data));
           console.log("login success: ", data);
         } else {
@@ -39,7 +39,7 @@ export const login = user => {
 export const register = request => {
   console.log("register start:", request);
   return dispatch => {
-    return fetch("http://localhost:60601/auth/signUp", {
+    return fetch(serverUrl + "auth/signUp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
