@@ -13,7 +13,7 @@ namespace Api.Models
         public string Sender { get; set; }
         public string Gid { get; set; }
         public string Receiver { get; set; }
-        public int Type { get; set; }
+        public ChatType Type { get; set; }
         public string Content { get; set; }
         public DateTime CreatedOn { get; set; }
         public bool IsDeleted { get; set; }

@@ -25,7 +25,7 @@ namespace Api.Auth
                 new Claim(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
                 new Claim("userId", userId.ToString()),
             };
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             var expires = now.AddMinutes(_options.ExpiryMinutes);
             var jwt = new JwtSecurityToken(
                 issuer: _options.Issuer,

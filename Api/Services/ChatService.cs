@@ -12,18 +12,21 @@ namespace Api.Services
     {
         private IRepository<Group> _groupRepository;
         private IRepository<User> _userRepository;
+        private IRepository<OnlineUser> _onlineUserRepository;
         private IRepository<GroupUser> _groupUserRepository;
         private IRepository<Chat> _chatRepository;
         private IRepository<UserRelation> _userRelationRepository;
 
         public ChatService(IRepository<Group> groupRepository,
                             IRepository<User> userRepository,
+                            IRepository<OnlineUser> onlineUserRepository,
                             IRepository<GroupUser> groupUserRepository,
                             IRepository<Chat> chatRepository,
                             IRepository<UserRelation> userRelationRepository)
         {
             _groupRepository = groupRepository;
             _userRepository = userRepository;
+            _onlineUserRepository = onlineUserRepository;
             _groupUserRepository = groupUserRepository;
             _chatRepository = chatRepository;
             _userRelationRepository = userRelationRepository;
@@ -39,6 +42,130 @@ namespace Api.Services
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Add User To Online List
+        /// </summary>
+        /// <param name="uid">"User Id"</param>
+        /// <param name="connectionId">"connectionId"</param>
+        public async Task<RequestResult> AddUserToOnlineList(string uid, string connectionId)
+        {
+            try
+            {
+                var user = (await _userRepository.Get(x => x.Id == uid)).FirstOrDefault();
+                if (user == null)
+                {
+                    return new RequestResult
+                    {
+                        Success = false,
+                        Message = "Can't find user.",
+                    };
+                }
+
+                var onlineUser = (await _onlineUserRepository.Get(x => x.Uid == uid && x.ConnectionId == connectionId)).FirstOrDefault();
+                if (onlineUser != null)
+                {
+                    onlineUser.IsDeleted = false;
+                    onlineUser.ActiveTime = DateTime.UtcNow;
+                    await _onlineUserRepository.Update(onlineUser);
+                }
+                else
+                {
+                    onlineUser = (await _onlineUserRepository.Get(x => x.Uid == uid && x.IsDeleted)).FirstOrDefault();
+                    if (onlineUser != null)
+                    {
+                        onlineUser.IsDeleted = false;
+                        onlineUser.ConnectionId = connectionId;
+                        onlineUser.ActiveTime = DateTime.UtcNow;
+                        await _onlineUserRepository.Update(onlineUser);
+                    }
+                    else
+                    {
+                        onlineUser = new OnlineUser()
+                        {
+                            Id = ObjectId.GenerateNewId().ToString(),
+                            Uid = uid,
+                            ConnectionId = connectionId,
+                            ActiveTime = DateTime.UtcNow,
+                            IsDeleted = false
+                        };
+                        await _onlineUserRepository.Add(onlineUser);
+                    }
+                }
+                return new RequestResult
+                {
+                    Success = true,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "AddUserToOnlineList error - " + ex.Message,
+                };
+            }
+        }
+
+        /// <summary>
+        /// Remove User From OnlineList
+        /// </summary>
+        /// <param name="uid">"User Id"</param>
+        /// <param name="connectionId">"connectionId"</param>
+        public async Task<RequestResult> RemoveUserFromOnlineList(string uid, string connectionId)
+        {
+            try
+            {
+                var onlineUser = (await _onlineUserRepository.Get(x => x.Uid == uid && x.ConnectionId == connectionId)).FirstOrDefault();
+                if (onlineUser != null)
+                {
+                    if (!onlineUser.IsDeleted)
+                    {
+                        onlineUser.IsDeleted = true;
+                        await _onlineUserRepository.Update(onlineUser);
+                    }
+                }
+                return new RequestResult
+                {
+                    Success = true,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "RemoveUserFromOnlineList error - " + ex.Message,
+                };
+            }
+        }
+
+        /// <summary>
+        /// Get OnlineUsers
+        /// </summary>
+        public async Task<RequestResult> GetOnlineUsers()
+        {
+            try
+            {
+                var onlineUsers = (await _onlineUserRepository.Get(x => !x.IsDeleted))
+                .OrderByDescending(x => x.ActiveTime)
+                .Select(x => x.Uid).Distinct().ToList();
+
+                return new RequestResult
+                {
+                    Success = true,
+                    Data = onlineUsers,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "GetOnlineUsers error - " + ex.Message,
+                };
             }
         }
 
@@ -396,7 +523,7 @@ namespace Api.Services
         /// <param name="content">Chat Content</param>
         /// <param name="gid">Group ID</param>
         /// <param name="Receiver">Receiver User ID</param>
-        public async Task<RequestResult> AddChat(string sender, int type, string content, string gid = null, string receiver = null)
+        public async Task<RequestResult> AddChat(string sender, ChatType type, string content, string gid = null, string receiver = null)
         {
             try
             {
@@ -654,7 +781,7 @@ namespace Api.Services
                 {
                     var group = (await _groupRepository.Get(x => x.Id == gid && !x.IsDeleted)).FirstOrDefault();
                     var chat = (await _chatRepository.Get(x => x.Gid == gid && !x.IsDeleted)).FirstOrDefault();
-                    chats.Add(chat);
+                    if (chat != null) chats.Add(chat);
                     var userIds = (await _groupUserRepository.Get(x => x.Gid == gid && !x.IsDeleted)).Select(x => x.Uid).ToList();
                     var groupView = new GroupView
                     {
@@ -672,7 +799,7 @@ namespace Api.Services
                 foreach (var friend in friends)
                 {
                     var chat = (await _chatRepository.Get(x => ((x.Sender == uid && x.Receiver == friend) || (x.Sender == friend && x.Receiver == uid)) && !x.IsDeleted)).FirstOrDefault();
-                    chats.Add(chat);
+                    if (chat != null) chats.Add(chat);
                 }
 
                 List<User> users = new List<User>();
@@ -680,7 +807,7 @@ namespace Api.Services
                 foreach (var id in allUserIds)
                 {
                     var user = (await _userRepository.Get(x => x.Id == id && !x.IsDeleted)).FirstOrDefault();
-                    users.Add(user);
+                    if (user != null) users.Add(user);
                 }
 
                 var data = new
@@ -691,6 +818,28 @@ namespace Api.Services
                 };
                 await UpdateUserActiveTime(uid);
                 return new RequestResult { Success = true, Data = data };
+            }
+            catch (Exception ex)
+            {
+                return new RequestResult { Success = false, Message = "GetRecentGroupChatByUser error - " + ex.Message };
+            }
+        }
+
+        /// <summary>
+        /// Get UserProfile
+        /// </summary>
+        /// <param name="userIds">User ID</param>
+        public async Task<RequestResult> GetUserProfile(List<string> userIds)
+        {
+            try
+            {
+                List<User> users = new List<User>();
+                foreach (var uid in userIds)
+                {
+                    var user = (await _userRepository.Get(x => x.Id == uid && !x.IsDeleted)).FirstOrDefault();
+                    if (user != null) users.Add(user);
+                }
+                return new RequestResult { Success = true, Data = users };
             }
             catch (Exception ex)
             {

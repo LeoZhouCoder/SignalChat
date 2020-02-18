@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
-using System.IdentityModel.Tokens.Jwt;
 using Api.Contracts;
 using Api.Models;
 
