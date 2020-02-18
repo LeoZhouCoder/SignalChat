@@ -50,10 +50,8 @@ export const register = request => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          let { user, token } = data;
-          dispatch(loginUser(user));
-          localStorage.setItem("token", token.token);
-          console.log("register success: ", user);
+          console.log("register success: ", data)
+          dispatch(loginUser(data));
         } else {
           console.log("register error: ", data.message);
         }

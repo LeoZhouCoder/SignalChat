@@ -793,6 +793,7 @@ namespace Api.Services
                 {
                     chats,
                     groups,
+                    friends,
                     users
                 };
                 return new RequestResult { Success = true, Data = data };
