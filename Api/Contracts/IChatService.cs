@@ -21,6 +21,7 @@ namespace Api.Services
         Task<RequestResult> GetChatsByGroupId(string gid, int position, int limit);
         Task<RequestResult> GetChatsByUsers(string uid0, string uid1, int position, int limit);
         Task<RequestResult> GetUserProfile(List<string> userIds);
-
+        Task<RequestResult> GetUserGroups(string user);
+        Task<RequestResult> GetUserConnectionIds(string user);
     }
 }

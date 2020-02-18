@@ -896,5 +896,55 @@ namespace Api.Services
                 };
             }
         }
+
+        /// <summary>
+        /// Get User Groups
+        /// </summary>
+        /// <param name="user">"User ID"</param>
+        public async Task<RequestResult> GetUserGroups(string user)
+        {
+            try
+            {
+                var groupIds = (await _groupUserRepository.Get(x => x.Uid == user && !x.IsDeleted)).Select(x => x.Gid).ToList();
+                return new RequestResult
+                {
+                    Success = true,
+                    Data = groupIds,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "GetUserGroups error - " + ex.Message,
+                };
+            }
+        }
+
+        /// <summary>
+        /// Get User ConnectionIds
+        /// </summary>
+        /// <param name="user">"User ID"</param>
+        public async Task<RequestResult> GetUserConnectionIds(string user)
+        {
+            try
+            {
+                var connectionIds = (await _onlineUserRepository.Get(x => x.Uid == user && !x.IsDeleted)).ToList();
+                return new RequestResult
+                {
+                    Success = true,
+                    Data = connectionIds,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "GetUserConnectionIds error - " + ex.Message,
+                };
+            }
+        }
     }
 }

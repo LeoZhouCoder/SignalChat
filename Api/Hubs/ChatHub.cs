@@ -36,8 +36,8 @@ namespace SignalRChat.Hubs
         public override async Task OnConnectedAsync()
         {
             await _chatService.AddUserToOnlineList(Context.UserIdentifier, Context.ConnectionId);
+
             var result = await _chatService.GetRecentChatsByUser(Context.UserIdentifier);
-            // TODO: Add users to hub group
             ChatResponse response = new ChatResponse();
             if (result.Success)
             {
@@ -50,6 +50,17 @@ namespace SignalRChat.Hubs
                 response.Data = result.Message;
             }
             await SendResponseToCaller(response);
+
+            // Add users to hub groups
+            result = await _chatService.GetUserGroups(Context.UserIdentifier);
+            if (result.Success)
+            {
+                var groups = (List<string>)result.Data;
+                foreach (string group in groups)
+                {
+                    AddToGroup(group, Context.UserIdentifier);
+                }
+            }
 
             result = await _chatService.GetOnlineUsers();
 
@@ -69,7 +80,18 @@ namespace SignalRChat.Hubs
                 Type = ChatResponseType.UpdateOnlineUsers,
                 Data = result.Data
             });
-            // TODO:Remove from hub groups
+
+            // Remove from hub groups
+            result = await _chatService.GetUserGroups(Context.UserIdentifier);
+            if (result.Success)
+            {
+                var groups = (List<string>)result.Data;
+                foreach (string group in groups)
+                {
+                    RemoveFromGroup(group, Context.UserIdentifier);
+                }
+            }
+
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -224,10 +246,26 @@ namespace SignalRChat.Hubs
             ChatResponse response = new ChatResponse();
             if (result.Success)
             {
-                // TODO: Add users to hub group
+                var group = (GroupView)response.Data;
+
                 response.Type = ChatResponseType.UpdateGroup;
                 response.Data = result.Data;
-                await SendResponseToGroup(((GroupView)response.Data).Id, response);
+                await SendResponseToGroup(group.Id, response);
+
+                // Add users to hub group
+                foreach (string user in group.Users)
+                {
+                    var temResult = await _chatService.GetUserConnectionIds(user);
+
+                    if (temResult.Success)
+                    {
+                        var connectionIds = (List<string>)temResult.Data;
+                        foreach (string connectionId in connectionIds)
+                        {
+                            AddToGroup(group.Id, connectionId);
+                        }
+                    }
+                }
             }
             else
             {
@@ -261,10 +299,20 @@ namespace SignalRChat.Hubs
             ChatResponse response = new ChatResponse();
             if (result.Success)
             {
-                // TODO: Add users to hub group
                 response.Type = ChatResponseType.UpdateGroup;
                 response.Data = result.Data;
                 await SendResponseToGroup(((GroupView)response.Data).Id, response);
+
+                // Add users to hub group
+                result = await _chatService.GetUserConnectionIds(request.User);
+                if (result.Success)
+                {
+                    var connectionIds = (List<string>)result.Data;
+                    foreach (string connectionId in connectionIds)
+                    {
+                        AddToGroup(request.Group, connectionId);
+                    }
+                }
             }
             else
             {
@@ -280,10 +328,20 @@ namespace SignalRChat.Hubs
             ChatResponse response = new ChatResponse();
             if (result.Success)
             {
-                // TODO: Remove users from hub group
                 response.Type = ChatResponseType.UpdateGroup;
                 response.Data = result.Data;
                 await SendResponseToGroup(((GroupView)response.Data).Id, response);
+
+                // Remove users from hub group
+                result = await _chatService.GetUserConnectionIds(request.User);
+                if (result.Success)
+                {
+                    var connectionIds = (List<string>)result.Data;
+                    foreach (string connectionId in connectionIds)
+                    {
+                        RemoveFromGroup(request.Group, connectionId);
+                    }
+                }
             }
             else
             {
@@ -373,6 +431,16 @@ namespace SignalRChat.Hubs
                 response.Data = result.Message;
             }
             await SendResponseToCaller(response);
+        }
+
+        private void AddToGroup(string groupName, string connectionId)
+        {
+            Groups.AddToGroupAsync(connectionId, groupName);
+        }
+
+        private void RemoveFromGroup(string groupName, string connectionId)
+        {
+            Groups.RemoveFromGroupAsync(connectionId, groupName);
         }
 
         /* Old API
