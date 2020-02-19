@@ -56,6 +56,8 @@ const initHub = () => {
     })
     .build();
 
+  hubConnection.serverTimeoutInMilliseconds = 100000;
+
   hubConnection.on("ReceiveResponse", response => {
     console.log("[ChatHub] ReceiveResponse: ", response);
     var type = responseTypes[response.type];
@@ -103,10 +105,10 @@ export const { SYSTEM, MESSAGE, IMAGE } = [0, 1, 2];
 export const sendMessage = (chatType, content, group = null, receiver = null) =>
   sendRequest("SendMessage", { chatType, content, group, receiver });
 
-export const getGroupChats = (group, position=0, limit=20) =>
+export const getGroupChats = (group, position = 0, limit = 20) =>
   sendRequest("GetGroupChats", { group, position, limit });
 
-export const getUserChats = (user, position=0, limit=20) =>
+export const getUserChats = (user, position = 0, limit = 20) =>
   sendRequest("GetUserChats", { user, position, limit });
 
 export const createGroup = (name, users) =>

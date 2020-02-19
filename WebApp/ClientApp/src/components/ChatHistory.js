@@ -8,17 +8,27 @@ import { getGroupChats, getUserChats } from "../utils/Chat";
 class ChatHistory extends React.Component {
   componentDidMount() {
     this.scrollToBot();
+    /*
     const { chatHistory } = this.props;
     const { records, owner } = chatHistory;
+    if (!owner || !owner.id) return;
     if (owner.type === 0) {
       getGroupChats(owner.id, records.length);
     } else {
       getUserChats(owner.id, records.length);
-    }
+    }*/
   }
 
   componentDidUpdate() {
     this.scrollToBot();
+    /*const { chatHistory } = this.props;
+    const { records, owner } = chatHistory;
+    if (!owner || !owner.id) return;
+    if (owner.type === 0) {
+      getGroupChats(owner.id, records.length);
+    } else {
+      getUserChats(owner.id, records.length);
+    }*/
   }
 
   scrollToBot = () => {
@@ -30,6 +40,7 @@ class ChatHistory extends React.Component {
   render() {
     const { user, chatHistory } = this.props;
     const { records } = chatHistory;
+    console.log("ChatHistory render: ", records);
     if (records.length === 0) {
       return (
         <div className="extendable list chats">

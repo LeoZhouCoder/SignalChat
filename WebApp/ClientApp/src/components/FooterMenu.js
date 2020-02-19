@@ -3,7 +3,7 @@ import { Icon, Menu } from "semantic-ui-react";
 
 const MENU = [
   { name: "Chats", icon: "gamepad", key: "CHATS" },
-  { name: "OnlineUsers", icon: "video camera", key: "ONLINE_USERS" }
+  { name: "ActiveUsers", icon: "video camera", key: "ONLINE_USERS" }
 ];
 
 const FooterMenu = ({ activeItem, handleItemClick }) => {

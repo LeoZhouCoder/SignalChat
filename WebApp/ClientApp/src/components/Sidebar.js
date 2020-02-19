@@ -14,7 +14,7 @@ import { changeChatroom } from "../redux/actions";
 
 const options = [
   { key: 1, text: "Chats", value: "Chats" },
-  { key: 2, text: "OnlineUsers", value: "OnlineUsers" }
+  { key: 2, text: "ActiveUsers", value: "ActiveUsers" }
 ];
 
 class Sidebar extends Component {
@@ -30,7 +30,7 @@ class Sidebar extends Component {
         changeChatroom(0, data.gid);
       } else {
         changeChatroom(
-          0,
+          1,
           this.props.user.id === data.sender ? data.receiver : data.sender
         );
       }
@@ -49,7 +49,7 @@ class Sidebar extends Component {
       placeHolder,
       selectedData = null;
     if (activeMenu === "Chats") {
-      placeHolder = "No chat record, go to OnlineUsers find more friends.";
+      placeHolder = "No chat record, go to ActiveUsers find more friends.";
       listData = chats;
 
       itemComponent = ChatContent;

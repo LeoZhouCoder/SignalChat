@@ -125,7 +125,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async void SendMessage(MessageRequest request)
+        public async Task SendMessage(MessageRequest request)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async void GetGroupChats(GetGroupChatsRequest request)
+        public async Task GetGroupChats(GetGroupChatsRequest request)
         {
             var result = await _chatService.GetChatsByGroupId(request.Group, request.Position, request.Limit);
             ChatResponse response = new ChatResponse();
@@ -196,7 +196,7 @@ namespace SignalRChat.Hubs
             await SendResponseToCaller(response);
         }
 
-        public async void GetUserChats(GetUserChatsRequest request)
+        public async Task GetUserChats(GetUserChatsRequest request)
         {
             var result = await _chatService.GetChatsByUsers(Context.UserIdentifier, request.User, request.Position, request.Limit);
             ChatResponse response = new ChatResponse();
@@ -218,7 +218,7 @@ namespace SignalRChat.Hubs
             await SendResponseToCaller(response);
         }
 
-        public async void CreateGroup(CreateGroupRequest request)
+        public async Task CreateGroup(CreateGroupRequest request)
         {
             var result = await _chatService.CreateGroup(request.Name, request.Users);
             ChatResponse response = new ChatResponse();
@@ -253,7 +253,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async void ChangeGroupName(ChangeGroupNameRequest request)
+        public async Task ChangeGroupName(ChangeGroupNameRequest request)
         {
             var result = await _chatService.ChangeGroupName(Context.UserIdentifier, request.Group, request.Name);
             ChatResponse response = new ChatResponse();
@@ -271,7 +271,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async void AddUserToGroup(GroupUserRequest request)
+        public async Task AddUserToGroup(GroupUserRequest request)
         {
             var result = await _chatService.AddUserToGroup(Context.UserIdentifier, request.Group, request.User);
             ChatResponse response = new ChatResponse();
@@ -300,7 +300,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async void RemoveUserFromGroup(GroupUserRequest request)
+        public async Task RemoveUserFromGroup(GroupUserRequest request)
         {
             var result = await _chatService.RemoveUserFromGroup(Context.UserIdentifier, request.Group, request.User);
             ChatResponse response = new ChatResponse();
@@ -329,7 +329,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async void DeleteGroup(string group)
+        public async Task DeleteGroup(string group)
         {
             var result = await _chatService.DeleteGroup(Context.UserIdentifier, group);
             ChatResponse response = new ChatResponse();
@@ -348,7 +348,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async void AddFriend(string friend)
+        public async Task AddFriend(string friend)
         {
             var result = await _chatService.AddFriend(Context.UserIdentifier, friend);
             ChatResponse response = new ChatResponse();
@@ -371,7 +371,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async void DeleteFriend(string friend)
+        public async Task DeleteFriend(string friend)
         {
             var result = await _chatService.DeleteFriend(Context.UserIdentifier, friend);
             ChatResponse response = new ChatResponse();
@@ -394,7 +394,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async void GetUserProfile(List<string> userIds)
+        public async Task GetUserProfile(List<string> userIds)
         {
             var result = await _chatService.GetUserProfile(userIds);
             ChatResponse response = new ChatResponse();

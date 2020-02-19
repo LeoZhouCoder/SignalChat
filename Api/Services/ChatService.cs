@@ -143,7 +143,7 @@ namespace Api.Services
         }
 
         /// <summary>
-        /// Get OnlineUsers
+        /// Get ActiveUsers
         /// </summary>
         public async Task<RequestResult> GetOnlineUsers()
         {
@@ -734,6 +734,7 @@ namespace Api.Services
             {
                 var chats = await _chatRepository.Get(x => ((x.Sender == uid0 && x.Receiver == uid1) || (x.Sender == uid1 && x.Receiver == uid0)) && !x.IsDeleted);
                 var returnChats = chats.OrderByDescending(x => x.CreatedOn).Skip(position).Take(limit);
+                returnChats = returnChats.OrderBy(x => x.CreatedOn);
                 return new RequestResult { Success = true, Data = returnChats };
             }
             catch (Exception ex)
@@ -773,14 +774,14 @@ namespace Api.Services
                     allUserIds = allUserIds.Union(userIds).ToList();
                 }
 
-                // Get Recent Friends' Chat
-                var friends = (await _userRelationRepository.Get(x => x.Owner == uid)).Select(x => x.Target).ToList();
+                // Get Recent Users' Chat
+                var friends = (await _chatRepository.Get(x => (x.Sender == uid||x.Receiver == uid))).Select(x => (x.Sender==uid?x.Receiver:x.Sender)).Distinct().ToList();
                 foreach (var friend in friends)
                 {
                     var chat = (await _chatRepository.Get(x => ((x.Sender == uid && x.Receiver == friend) || (x.Sender == friend && x.Receiver == uid)) && !x.IsDeleted)).FirstOrDefault();
                     if (chat != null) chats.Add(chat);
                 }
-
+                friends.Add(uid);
                 List<User> users = new List<User>();
                 allUserIds = allUserIds.Union(friends).ToList();
                 foreach (var id in allUserIds)

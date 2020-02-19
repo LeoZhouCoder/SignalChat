@@ -151,26 +151,41 @@ const addChat = (state, payload) => {
   let gid = null;
   let uid = null;
   if (chatHistory.owner.type === 0) {
-    uid = chatHistory.owner.id;
-  } else {
     gid = chatHistory.owner.id;
+  } else {
+    uid = chatHistory.owner.id;
   }
   if (isSameGroup(newChat, gid, uid)) {
-    let records = [newChat, ...chatHistory.records];
+    let records = [...chatHistory.records, newChat];
     let owner = { ...chatHistory.owner };
     let newChatHistory = { owner: owner, records: records };
-    return { ...state, [CHATS]: newChats, [CHAT_HISTORY]: newChatHistory };
+    let newState = {
+      ...state,
+      [CHATS]: newChats,
+      [CHAT_HISTORY]: newChatHistory
+    };
+    console.log("addChat newState: ", newState);
+    return newState;
   } else {
-    return { ...state, [CHATS]: newChats };
+    let newState = { ...state, [CHATS]: newChats };
+    console.log("addChat newState 2: ", newState);
+    return newState;
   }
 };
 
 const isSameGroup = (chat, gid, uid0, uid1 = null) => {
-  if (chat.gid != null) {
+  console.log("isSameGroup1: ", chat);
+  console.log("isSameGroup2: ", gid);
+  console.log("isSameGroup3: ", uid0);
+  console.log("isSameGroup4: ", uid1);
+  if (chat.gid !== null) {
     return chat.gid === gid;
   } else {
     let { sender, receiver } = chat;
-    if (!uid1) {
+    console.log("isSameGroup5: ", sender);
+    console.log("isSameGroup6: ", receiver);
+    if (uid1 === null) {
+      console.log("isSameGroup7: ", uid0, sender === uid0 || receiver === uid0);
       return sender === uid0 || receiver === uid0;
     }
     return (
@@ -194,14 +209,15 @@ const updateChatHistoryUser = (state, payload) => {
   let { user, chats } = payload;
   let chatHistory = state[CHAT_HISTORY];
   let { owner, records } = chatHistory;
-  if (owner.type !== 0 || owner.id !== user) return state;
+  if (owner.type !== 1 || owner.id !== user) return state;
   let newRecords = [...records, ...chats];
   chatHistory = { owner, records: newRecords };
+  console.log("updateChatHistoryUser", chatHistory);
   return { ...state, [CHAT_HISTORY]: chatHistory };
 };
 
 const changeChatroomOwner = (state, payload) => {
   let chatHistory = state[CHAT_HISTORY];
-  let newChatHistory = { ...chatHistory, owner: payload, records:[] };
+  let newChatHistory = { ...chatHistory, owner: payload, records: [] };
   return { ...state, [CHAT_HISTORY]: newChatHistory };
 };

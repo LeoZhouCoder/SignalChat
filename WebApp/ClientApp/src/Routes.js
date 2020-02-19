@@ -21,7 +21,7 @@ export class Routes extends Component {
   }
 
   render() {
-    console.log(this.props.token);
+    console.log("Routes render: ", this.props.token);
     return (
       <BrowserRouter>
         <div style={{ overflow: "hidden" }}>

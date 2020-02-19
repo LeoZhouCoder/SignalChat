@@ -2,9 +2,10 @@ import React from "react";
 import { connect } from "react-redux";
 import { ListItem } from "./List";
 import { getUserProfile, getGroup } from "../redux/actions";
+import {getTimeString} from "../utils/Time";
 
-export function ChatContent({ data, selected, collapsed, onClickItem }) {
-  const { sender, gid, receiver, content, createdOn, user } = data;
+export function ChatContent({ user, data, selected, collapsed, onClickItem }) {
+  const { sender, gid, receiver, content, createdOn } = data;
   let name, img, icon;
   if (gid) {
     let group = getGroup(gid);
@@ -29,7 +30,7 @@ export function ChatContent({ data, selected, collapsed, onClickItem }) {
     >
       <div className="flexBox row extendable center space">
         <div className="subtitle single extendable unselect">{name}</div>
-        <div className="secondary unselect">{createdOn}</div>
+        <div className="secondary unselect">{getTimeString(createdOn)}</div>
         <div className="single maxWidth secondary unselect">{content}</div>
       </div>
     </ListItem>

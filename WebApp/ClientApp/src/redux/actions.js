@@ -7,7 +7,7 @@ import { store } from "./store";
 import { getScreenType } from "../utils/Dimensions";
 import { serverUrl } from "../env/Env";
 
-import { getUsersProfile } from "../utils/Chat";
+import { getUsersProfile, getGroupChats, getUserChats } from "../utils/Chat";
 
 const loginUser = loginResult => ({
   type: USER_LOGIN,
@@ -63,6 +63,7 @@ export const register = request => {
 };
 
 export const getUserProfile = uid => {
+  if(!uid) return null;
   let users = store.getState().chatReducer.users;
   let userProfile;
   users.forEach(user => {
@@ -81,9 +82,6 @@ export const getGroup = gid => {
   });
   return groupInfo;
 };
-
-
-export const getGroupChats = (gid, position=0, limit=20) => {};
 
 export const createGroup = (name, users) => {};
 
@@ -129,4 +127,9 @@ export const getDimensions = () => {
 
 export const changeChatroom = (type, id) => {
   store.dispatch({ type: CHATROOM_OWNER_CHANGE, payload: { type, id } });
+  if (type === 0) {
+    getGroupChats(id);
+  } else {
+    getUserChats(id);
+  }
 };

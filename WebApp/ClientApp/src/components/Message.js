@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Avatar } from "./Avatar";
 import { getUserProfile } from "../redux/actions";
+import {getTimeString} from "../utils/Time";
 
 const Message = ({ chat, self }) => {
   const userProfile = getUserProfile(chat.sender);
@@ -19,7 +20,7 @@ const Message = ({ chat, self }) => {
         <div className="secondary single">
           {userProfile ? userProfile.name : ""}
         </div>
-        <div className="tertiary space">{chat.createdOn}</div>
+        <div className="tertiary space">{getTimeString(chat.createdOn)}</div>
         <div className="break" />
         <div className={`message multiple flexMaxWidth ${self ? "self" : ""}`}>
           {chat.content}
