@@ -812,11 +812,15 @@ namespace Api.Services
         {
             try
             {
-                List<User> users = new List<User>();
+                List<UserView> users = new List<UserView>();
                 foreach (var uid in userIds)
                 {
                     var user = (await _userRepository.Get(x => x.Id == uid && !x.IsDeleted)).FirstOrDefault();
-                    if (user != null) users.Add(user);
+                    if (user != null) users.Add(new UserView(){
+                        Id = user.Id,
+                        Name = user.Name,
+                        ProfilePhoto = user.ProfilePhoto
+                    });
                 }
                 return new RequestResult { Success = true, Data = users };
             }

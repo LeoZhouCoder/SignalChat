@@ -58,7 +58,6 @@ namespace Api.Services
                 var userProfile = new UserView
                 {
                     Id = userModel.Id,
-                    Email = userModel.Email,
                     Name = userModel.Name,
                     ProfilePhoto = userModel.ProfilePhoto
                 };
@@ -116,7 +115,6 @@ namespace Api.Services
             var userProfile = new UserView
             {
                 Id = user.Id,
-                Email = user.Email,
                 Name = user.Name,
                 ProfilePhoto = user.ProfilePhoto
             };

@@ -1,23 +1,20 @@
 import React, { Component } from "react";
-import { Menu, Icon, Input, Dropdown } from "semantic-ui-react";
+import { connect } from "react-redux";
+import { Menu, Dropdown } from "semantic-ui-react";
 
 import { List, ContactContent, ChatContent } from "./List";
-import { Avatar } from "./Avatar";
+import Profile from "./Profile";
 
 import { SCREEN_BIG } from "../utils/Dimensions";
-
-import { getUserProfile, getChatList } from "../mockData/chats";
+import { CHATS, ONLINE_USERS, CHAT_HISTORY } from "../redux/reducers/chat";
 
 const options = [
   { key: 1, text: "Chats", value: "Chats" },
-  { key: 2, text: "Contacts", value: "Contacts" }
+  { key: 2, text: "OnlineUsers", value: "OnlineUsers" }
 ];
 
 class Sidebar extends Component {
-  state = {
-    activeMenu: "Chats",
-    selectedItem: null
-  };
+  state = { activeMenu: "Chats" };
 
   handleMenuClick = name => this.setState({ activeMenu: name });
 
@@ -25,7 +22,9 @@ class Sidebar extends Component {
 
   render() {
     const { activeMenu, selectedItem } = this.state;
+    const { chats, onlineUsers } = this.props;
     const bigScreen = this.props.screenType === SCREEN_BIG;
+    const listData = activeMenu === "Chats" ? chats : onlineUsers;
     let itemComponent = activeMenu === "Chats" ? ChatContent : ContactContent;
     return (
       <div
@@ -40,7 +39,7 @@ class Sidebar extends Component {
           handleMenuClick={this.handleMenuClick}
         />
         <List
-          list={getChatList()}
+          list={listData}
           component={itemComponent}
           selectedItem={selectedItem}
           collapsed={!bigScreen}
@@ -50,12 +49,23 @@ class Sidebar extends Component {
     );
   }
 }
-export default Sidebar;
+const mapStateToProps = state => ({
+  owner: state.chatReducer[CHAT_HISTORY].owner,
+  chats: state.chatReducer[CHATS],
+  onlineUsers: state.chatReducer[ONLINE_USERS]
+});
+export default connect(mapStateToProps)(Sidebar);
 
 function SidebarMenu({ bigScreen, activeMenu, handleMenuClick }) {
   if (bigScreen) {
     return (
-      <Menu attached pointing secondary widths={2} color="teal">
+      <Menu
+        attached
+        pointing
+        secondary
+        widths={2}
+        color="teal"
+      >
         {options.map(item => {
           return (
             <Menu.Item
@@ -81,51 +91,4 @@ function SidebarMenu({ bigScreen, activeMenu, handleMenuClick }) {
       />
     </Menu>
   );
-}
-
-class Profile extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      editing: false
-    };
-  }
-
-  getNameSection = () => {
-    if (!this.props.bigScreen) return null;
-    const user = getUserProfile("u0");
-    if (this.state.editing) {
-      return (
-        <Input
-          className="space title"
-          transparent
-          value={user.name}
-          focus
-          placeholder="Enter your name"
-        />
-      );
-    }
-
-    return (
-      <div className="title text_center space">
-        {user.name}
-        <Icon
-          name="pencil alternate"
-          size="small"
-          className="space"
-          onClick={() => this.setState({ editing: false })}
-        />
-      </div>
-    );
-  };
-
-  render() {
-    const user = getUserProfile("u0");
-    return (
-      <div className="flexBox maxWidth padding profile">
-        <Avatar src={user.img} size="big" />
-        {this.getNameSection()}
-      </div>
-    );
-  }
 }

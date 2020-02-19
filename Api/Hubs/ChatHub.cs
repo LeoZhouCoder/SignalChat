@@ -95,66 +95,7 @@ namespace SignalRChat.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        public void AddChatRequest(ChatRequest request)
-        {
-            try
-            {
-                switch (request.Type)
-                {
-                    case ChatRequestType.Message:
-                        SendMessage((MessageRequest)request.Data);
-                        break;
-                    case ChatRequestType.GetGroupChats:
-                        GetGroupChats((GetGroupChatsRequest)request.Data);
-                        break;
-                    case ChatRequestType.GetUserChats:
-                        GetUserChats((GetUserChatsRequest)request.Data);
-                        break;
-                    case ChatRequestType.CreateGroup:
-                        CreateGroup((CreateGroupRequest)request.Data);
-                        break;
-                    case ChatRequestType.ChangeGroupName:
-                        ChangeGroupName((ChangeGroupNameRequest)request.Data);
-                        break;
-                    case ChatRequestType.AddUserToGroup:
-                        AddUserToGroup((GroupUserRequest)request.Data);
-                        break;
-                    case ChatRequestType.RemoveUserFromGroup:
-                        RemoveUserFromGroup((GroupUserRequest)request.Data);
-                        break;
-                    case ChatRequestType.DeleteGroup:
-                        DeleteGroup((string)request.Data);
-                        break;
-                    case ChatRequestType.AddFriend:
-                        AddFriend((string)request.Data);
-                        break;
-                    case ChatRequestType.DeleteFriend:
-                        DeleteFriend((string)request.Data);
-                        break;
-                    case ChatRequestType.GetUserProfile:
-                        GetUserProfile((List<string>)request.Data);
-                        break;
-                    default:
-                        SendResponseToCaller(new ChatResponse
-                        {
-                            Type = ChatResponseType.SystemErrorMessage,
-                            Data = "Invalid ChatRequestType: " + request.Type
-                        });
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                SendResponseToCaller(new ChatResponse
-                {
-                    Type = ChatResponseType.SystemErrorMessage,
-                    Data = "Excute ChatRequest error: " + e.Message
-                });
-            }
-
-        }
-
-        private async void SendMessage(MessageRequest request)
+        public async void SendMessage(MessageRequest request)
         {
             var result = await _chatService.AddChat(
                 Context.UserIdentifier,
@@ -196,7 +137,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        private async void GetGroupChats(GetGroupChatsRequest request)
+        public async void GetGroupChats(GetGroupChatsRequest request)
         {
             var result = await _chatService.GetChatsByGroupId(request.Group, request.Position, request.Limit);
             ChatResponse response = new ChatResponse();
@@ -218,7 +159,7 @@ namespace SignalRChat.Hubs
             await SendResponseToCaller(response);
         }
 
-        private async void GetUserChats(GetUserChatsRequest request)
+        public async void GetUserChats(GetUserChatsRequest request)
         {
             var result = await _chatService.GetChatsByUsers(Context.UserIdentifier, request.User, request.Position, request.Limit);
             ChatResponse response = new ChatResponse();
@@ -240,7 +181,7 @@ namespace SignalRChat.Hubs
             await SendResponseToCaller(response);
         }
 
-        private async void CreateGroup(CreateGroupRequest request)
+        public async void CreateGroup(CreateGroupRequest request)
         {
             var result = await _chatService.CreateGroup(request.Name, request.Users);
             ChatResponse response = new ChatResponse();
@@ -275,7 +216,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        private async void ChangeGroupName(ChangeGroupNameRequest request)
+        public async void ChangeGroupName(ChangeGroupNameRequest request)
         {
             var result = await _chatService.ChangeGroupName(Context.UserIdentifier, request.Group, request.Name);
             ChatResponse response = new ChatResponse();
@@ -293,7 +234,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        private async void AddUserToGroup(GroupUserRequest request)
+        public async void AddUserToGroup(GroupUserRequest request)
         {
             var result = await _chatService.AddUserToGroup(Context.UserIdentifier, request.Group, request.User);
             ChatResponse response = new ChatResponse();
@@ -322,7 +263,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        private async void RemoveUserFromGroup(GroupUserRequest request)
+        public async void RemoveUserFromGroup(GroupUserRequest request)
         {
             var result = await _chatService.RemoveUserFromGroup(Context.UserIdentifier, request.Group, request.User);
             ChatResponse response = new ChatResponse();
@@ -351,7 +292,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        private async void DeleteGroup(string group)
+        public async void DeleteGroup(string group)
         {
             var result = await _chatService.DeleteGroup(Context.UserIdentifier, group);
             ChatResponse response = new ChatResponse();
@@ -370,7 +311,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        private async void AddFriend(string friend)
+        public async void AddFriend(string friend)
         {
             var result = await _chatService.AddFriend(Context.UserIdentifier, friend);
             ChatResponse response = new ChatResponse();
@@ -393,7 +334,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        private async void DeleteFriend(string friend)
+        public async void DeleteFriend(string friend)
         {
             var result = await _chatService.DeleteFriend(Context.UserIdentifier, friend);
             ChatResponse response = new ChatResponse();
@@ -416,7 +357,7 @@ namespace SignalRChat.Hubs
             }
         }
 
-        private async void GetUserProfile(List<string> userIds)
+        public async void GetUserProfile(List<string> userIds)
         {
             var result = await _chatService.GetUserProfile(userIds);
             ChatResponse response = new ChatResponse();

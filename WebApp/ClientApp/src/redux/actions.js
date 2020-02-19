@@ -1,6 +1,9 @@
 import { WINDOW_RESIZE, USER_LOGIN } from "./actionTypes";
+import { store } from "./store";
 import { getScreenType } from "../utils/Dimensions";
 import { serverUrl } from "../env/Env";
+
+import { getUsersProfile } from "../utils/Chat";
 
 const loginUser = loginResult => ({
   type: USER_LOGIN,
@@ -50,7 +53,7 @@ export const register = request => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          console.log("register success: ", data)
+          console.log("register success: ", data);
           dispatch(loginUser(data));
         } else {
           console.log("register error: ", data.message);
@@ -60,7 +63,16 @@ export const register = request => {
   };
 };
 
-export const getProfile = users => {};
+export const getUserProfile = uid => {
+  let users = store.getState().chatReducer.users;
+  let userProfile;
+  users.forEach(user => {
+    if (user.id === uid) userProfile = user;
+  });
+  if (userProfile) return userProfile;
+  getUsersProfile([uid]);
+  return null;
+};
 
 export const getRecentGroupChat = uid => {};
 
