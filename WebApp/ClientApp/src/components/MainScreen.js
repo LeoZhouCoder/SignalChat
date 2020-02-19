@@ -46,7 +46,6 @@ class MainScreen extends React.Component {
   };
 
   onClickTobBarBtn = type => {
-    
     switch (type) {
       case "back":
         if (this.state.backScreen) {
@@ -61,14 +60,9 @@ class MainScreen extends React.Component {
     }
   };
 
-  onClickFooterMenu = type => this.setState({screen:type});
-
-  onkeypress = e => {
-    console.log(e.key);
-  };
+  onClickFooterMenu = type => this.setState({ screen: type });
 
   render() {
-    console.log("MainScreen render: ", this.state);
     const { screenSize } = this.props;
     let screenType;
     if (screenSize === SCREEN_NORMAL || screenSize === SCREEN_BIG) {
@@ -76,27 +70,36 @@ class MainScreen extends React.Component {
     } else {
       screenType = this.state.screen;
     }
-    console.log("MainScreen screenType: ", screenType);
     let name, icon, isBack, ListComponent, footer;
     if (screenType === SCREEN_CHATS) {
       name = "Chats";
       icon = "plus";
       isBack = false;
       ListComponent = ChatHistory;
-      footer = <FooterMenu activeItem={screenType} handleItemClick={this.onClickFooterMenu}/>;
+      footer = (
+        <FooterMenu
+          activeItem={screenType}
+          handleItemClick={this.onClickFooterMenu}
+        />
+      );
     } else if (screenType === SCREEN_ONLINE_USERS) {
       name = "Online Users";
       icon = "search";
       isBack = false;
       ListComponent = ChatHistory;
-      footer = <FooterMenu activeItem={screenType} handleItemClick={this.onClickFooterMenu}/>;
+      footer = (
+        <FooterMenu
+          activeItem={screenType}
+          handleItemClick={this.onClickFooterMenu}
+        />
+      );
     } else {
       const { owner } = this.props;
-      if (owner.type === 0) {
+      if (owner && owner.type === 0) {
         var group = getGroup(owner.id);
         name = group ? group.name : "";
         icon = "users";
-      } else {
+      } else if (owner && owner.type === 1) {
         var user = getUserProfile(owner.id);
         name = user ? user.name : "";
         icon = "user";
@@ -105,7 +108,6 @@ class MainScreen extends React.Component {
       ListComponent = ChatHistory;
       footer = <SendMessage screenSize={screenSize} />;
     }
-
 
     return (
       <div className="flexBox extendable column">

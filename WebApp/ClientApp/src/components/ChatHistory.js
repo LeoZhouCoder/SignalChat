@@ -1,18 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { connect } from "react-redux";
 
 import Message from "./Message.js";
-
-import { getChatRecord } from "../mockData/chats";
+import { getGroupChats, getUserChats } from "../utils/Chat";
 
 class ChatHistory extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = getChatRecord("r0");
-  }
-
   componentDidMount() {
     this.scrollToBot();
+    const { chatHistory } = this.props;
+    const { records, owner } = chatHistory;
+    if (owner.type === 0) {
+      getGroupChats(owner.id, records.length);
+    } else {
+      getUserChats(owner.id, records.length);
+    }
   }
 
   componentDidUpdate() {
@@ -21,20 +23,35 @@ class ChatHistory extends React.Component {
 
   scrollToBot = () => {
     let dom = ReactDOM.findDOMNode(this.refs.chats);
+    if (!dom) return;
     dom.scrollTop = dom.scrollHeight;
   };
 
   render() {
-    const { chats } = this.state;
-    const user = "uid0";
+    const { user, chatHistory } = this.props;
+    const { records } = chatHistory;
+    if (records.length === 0) {
+      return (
+        <div className="extendable list chats">
+          <div className="flexBox column maxParent center-v secondary padding">
+            "Let's start chat."
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="extendable list chats" ref="chats">
-        {chats.map((chat, i) => (
-            <Message key={i} chat={chat} self={chat.uid === user} />
+        {records.map((chat, i) => (
+          <Message key={i} chat={chat} self={chat.sender === user.id} />
         ))}
       </div>
     );
   }
 }
 
-export default ChatHistory;
+const mapStateToProps = state => ({
+  user: state.authReducer.user,
+  chatHistory: state.chatReducer.chatHistory
+});
+export default connect(mapStateToProps)(ChatHistory);

@@ -82,9 +82,8 @@ export const getGroup = gid => {
   return groupInfo;
 };
 
-export const getRecentGroupChat = uid => {};
 
-export const getGroupChats = (gid, position, limit) => {};
+export const getGroupChats = (gid, position=0, limit=20) => {};
 
 export const createGroup = (name, users) => {};
 

@@ -35,121 +35,142 @@ namespace SignalRChat.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            await _chatService.AddUserToOnlineList(Context.UserIdentifier, Context.ConnectionId);
+            try
+            {
+                await _chatService.AddUserToOnlineList(Context.UserIdentifier, Context.ConnectionId);
 
-            var result = await _chatService.GetRecentChatsByUser(Context.UserIdentifier);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
-            {
-                response.Type = ChatResponseType.UpdateRecentChatRecord;
-                response.Data = result.Data;
-            }
-            else
-            {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
-            }
-            await SendResponseToCaller(response);
-
-            // Add users to hub groups
-            result = await _chatService.GetUserGroups(Context.UserIdentifier);
-            if (result.Success)
-            {
-                var groups = (List<string>)result.Data;
-                foreach (string group in groups)
+                var result = await _chatService.GetRecentChatsByUser(Context.UserIdentifier);
+                ChatResponse response = new ChatResponse();
+                if (result.Success)
                 {
-                    AddToGroup(group, Context.UserIdentifier);
+                    response.Type = ChatResponseType.UpdateRecentChatRecord;
+                    response.Data = result.Data;
                 }
-            }
+                else
+                {
+                    response.Type = ChatResponseType.SystemErrorMessage;
+                    response.Data = result.Message;
+                }
+                await SendResponseToCaller(response);
 
-            result = await _chatService.GetOnlineUsers();
+                // Add users to hub groups
+                result = await _chatService.GetUserGroups(Context.UserIdentifier);
+                if (result.Success)
+                {
+                    var groups = (List<string>)result.Data;
+                    foreach (string group in groups)
+                    {
+                        AddToGroup(group, Context.UserIdentifier);
+                    }
+                }
 
-            if (result.Success)
-            {
+                result = await _chatService.GetOnlineUsers();
+
+                if (result.Success)
+                {
+                    await SendResponseToAll(new ChatResponse()
+                    {
+                        Type = ChatResponseType.UpdateOnlineUsers,
+                        Data = result.Data
+                    });
+                }
+
                 await SendResponseToAll(new ChatResponse()
+                {
+                    Type = ChatResponseType.SystemMessage,
+                    Data = "User: " + Context.UserIdentifier + " Connected: " + Context.ConnectionId,
+                });
+
+                await base.OnConnectedAsync();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            try
+            {
+                await _chatService.RemoveUserFromOnlineList(Context.UserIdentifier, Context.ConnectionId);
+                var result = await _chatService.GetOnlineUsers();
+                if (result.Success) await SendResponseToAll(new ChatResponse()
                 {
                     Type = ChatResponseType.UpdateOnlineUsers,
                     Data = result.Data
                 });
-            }
 
-            await SendResponseToAll(new ChatResponse()
-            {
-                Type = ChatResponseType.SystemMessage,
-                Data = "User: " + Context.UserIdentifier + " Connected: " + Context.ConnectionId,
-            });
-
-            await base.OnConnectedAsync();
-        }
-        public override async Task OnDisconnectedAsync(Exception exception)
-        {
-            await _chatService.RemoveUserFromOnlineList(Context.UserIdentifier, Context.ConnectionId);
-            var result = await _chatService.GetOnlineUsers();
-            if (result.Success) await SendResponseToAll(new ChatResponse()
-            {
-                Type = ChatResponseType.UpdateOnlineUsers,
-                Data = result.Data
-            });
-
-            // Remove from hub groups
-            result = await _chatService.GetUserGroups(Context.UserIdentifier);
-            if (result.Success)
-            {
-                var groups = (List<string>)result.Data;
-                foreach (string group in groups)
+                // Remove from hub groups
+                result = await _chatService.GetUserGroups(Context.UserIdentifier);
+                if (result.Success)
                 {
-                    RemoveFromGroup(group, Context.UserIdentifier);
+                    var groups = (List<string>)result.Data;
+                    foreach (string group in groups)
+                    {
+                        RemoveFromGroup(group, Context.UserIdentifier);
+                    }
                 }
+
+                await SendResponseToAll(new ChatResponse()
+                {
+                    Type = ChatResponseType.SystemMessage,
+                    Data = "User: " + Context.UserIdentifier + " Disconnected: " + Context.ConnectionId,
+                });
+
+                await base.OnDisconnectedAsync(exception);
             }
-
-            await SendResponseToAll(new ChatResponse()
+            catch (Exception ex)
             {
-                Type = ChatResponseType.SystemMessage,
-                Data = "User: " + Context.UserIdentifier + " Disconnected: " + Context.ConnectionId,
-            });
 
-            await base.OnDisconnectedAsync(exception);
+            }
         }
 
         public async void SendMessage(MessageRequest request)
         {
-            var result = await _chatService.AddChat(
-                Context.UserIdentifier,
-                request.Type,
-                request.Content,
-                request.Group,
-                request.Receiver);
+            try
+            {
+                var result = await _chatService.AddChat(
+                  Context.UserIdentifier,
+                  request.Type,
+                  request.Content,
+                  request.Group,
+                  request.Receiver);
 
-            if (!result.Success)
-            {
-                await SendResponseToCaller(new ChatResponse
+                if (!result.Success)
                 {
-                    Type = ChatResponseType.SystemErrorMessage,
-                    Data = result.Message
-                });
-                return;
+                    await SendResponseToCaller(new ChatResponse
+                    {
+                        Type = ChatResponseType.SystemErrorMessage,
+                        Data = result.Message
+                    });
+                    return;
+                }
+                if (request.Group != null)
+                {
+                    await SendResponseToGroup(request.Group, new ChatResponse
+                    {
+                        Type = ChatResponseType.ChatMessage,
+                        Data = result.Data
+                    });
+                }
+                else
+                {
+                    await SendResponseToCaller(new ChatResponse
+                    {
+                        Type = ChatResponseType.ChatMessage,
+                        Data = result.Data
+                    });
+                    await SendResponseToUser(request.Receiver,
+                    new ChatResponse
+                    {
+                        Type = ChatResponseType.ChatMessage,
+                        Data = result.Data
+                    });
+                }
             }
-            if (request.Group != null)
+            catch (Exception ex)
             {
-                await SendResponseToGroup(request.Group, new ChatResponse
-                {
-                    Type = ChatResponseType.ChatMessage,
-                    Data = result.Data
-                });
-            }
-            else
-            {
-                await SendResponseToCaller(new ChatResponse
-                {
-                    Type = ChatResponseType.ChatMessage,
-                    Data = result.Data
-                });
-                await SendResponseToUser(request.Receiver,
-                new ChatResponse
-                {
-                    Type = ChatResponseType.ChatMessage,
-                    Data = result.Data
-                });
+
             }
         }
 

@@ -202,6 +202,6 @@ const updateChatHistoryUser = (state, payload) => {
 
 const changeChatroomOwner = (state, payload) => {
   let chatHistory = state[CHAT_HISTORY];
-  let newChatHistory = { ...chatHistory, owner: payload };
+  let newChatHistory = { ...chatHistory, owner: payload, records:[] };
   return { ...state, [CHAT_HISTORY]: newChatHistory };
 };
