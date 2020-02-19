@@ -760,7 +760,7 @@ namespace Api.Services
                 foreach (var gid in groupIds)
                 {
                     var group = (await _groupRepository.Get(x => x.Id == gid && !x.IsDeleted)).FirstOrDefault();
-                    var chat = (await _chatRepository.Get(x => x.Gid == gid && !x.IsDeleted)).FirstOrDefault();
+                    var chat = (await _chatRepository.Get(x => x.Gid == gid && !x.IsDeleted)).OrderByDescending(x => x.CreatedOn).FirstOrDefault();
                     if (chat != null) chats.Add(chat);
                     var userIds = (await _groupUserRepository.Get(x => x.Gid == gid && !x.IsDeleted)).Select(x => x.Uid).ToList();
                     var groupView = new GroupView
@@ -775,10 +775,11 @@ namespace Api.Services
                 }
 
                 // Get Recent Users' Chat
-                var friends = (await _chatRepository.Get(x => (x.Sender == uid||x.Receiver == uid))).Select(x => (x.Sender==uid?x.Receiver:x.Sender)).Distinct().ToList();
+                var friends = (await _chatRepository.Get(x => (x.Sender == uid || x.Receiver == uid))).Select(x => (x.Sender == uid ? x.Receiver : x.Sender)).Distinct().ToList();
                 foreach (var friend in friends)
                 {
-                    var chat = (await _chatRepository.Get(x => ((x.Sender == uid && x.Receiver == friend) || (x.Sender == friend && x.Receiver == uid)) && !x.IsDeleted)).FirstOrDefault();
+                    var chat = (await _chatRepository.Get(x => ((x.Sender == uid && x.Receiver == friend) || (x.Sender == friend && x.Receiver == uid)) && !x.IsDeleted))
+                    .OrderByDescending(x => x.CreatedOn).FirstOrDefault();
                     if (chat != null) chats.Add(chat);
                 }
                 friends.Add(uid);
@@ -817,7 +818,8 @@ namespace Api.Services
                 foreach (var uid in userIds)
                 {
                     var user = (await _userRepository.Get(x => x.Id == uid && !x.IsDeleted)).FirstOrDefault();
-                    if (user != null) users.Add(new UserView(){
+                    if (user != null) users.Add(new UserView()
+                    {
                         Id = user.Id,
                         Name = user.Name,
                         ProfilePhoto = user.ProfilePhoto

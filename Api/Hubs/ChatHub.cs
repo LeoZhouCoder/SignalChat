@@ -155,17 +155,22 @@ namespace SignalRChat.Hubs
                 }
                 else
                 {
+
                     await SendResponseToCaller(new ChatResponse
                     {
                         Type = ChatResponseType.ChatMessage,
                         Data = result.Data
                     });
-                    await SendResponseToUser(request.Receiver,
-                    new ChatResponse
+                    if (request.Receiver != Context.UserIdentifier)
                     {
-                        Type = ChatResponseType.ChatMessage,
-                        Data = result.Data
-                    });
+                        await SendResponseToUser(request.Receiver,
+                                            new ChatResponse
+                                            {
+                                                Type = ChatResponseType.ChatMessage,
+                                                Data = result.Data
+                                            });
+                    }
+
                 }
             }
             catch (Exception ex)

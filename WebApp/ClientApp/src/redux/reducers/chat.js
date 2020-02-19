@@ -12,6 +12,8 @@ import {
   CHATROOM_OWNER_CHANGE
 } from "../actionTypes";
 
+import Storage from "../../utils/Storage";
+
 export const CHATS = "chats";
 export const FRIENDS = "friends";
 export const GROUPS = "groups";
@@ -63,7 +65,6 @@ export default function chatReducer(state = initialState, action) {
     case CHAT_USER_UPDATE:
       return updateChatHistoryUser(state, action.payload);
     case CHATROOM_OWNER_CHANGE:
-      console.log("changeChatroomOwner");
       return changeChatroomOwner(state, action.payload);
     default:
       return state;
@@ -142,7 +143,13 @@ const addChat = (state, payload) => {
   let oldChats = state[CHATS];
   let newChats = [newChat];
   oldChats.forEach(oldChat => {
-    if (!isSameGroup(oldChat, newChat.sender, newChat.receiver)) {
+    let isSame = isSameGroup(
+      oldChat,
+      newChat.gid,
+      newChat.sender,
+      newChat.receiver
+    );
+    if (!isSame) {
       newChats.push(oldChat);
     }
   });
@@ -150,12 +157,19 @@ const addChat = (state, payload) => {
   let chatHistory = state[CHAT_HISTORY];
   let gid = null;
   let uid = null;
+  let uid1 = null;
   if (chatHistory.owner.type === 0) {
     gid = chatHistory.owner.id;
   } else {
     uid = chatHistory.owner.id;
+    var currentUser = Storage.retrieveData("user").id;
+    if(currentUser==uid) uid1=uid;
   }
-  if (isSameGroup(newChat, gid, uid)) {
+  // Storage.retrieveData("user")
+  
+
+
+  if (isSameGroup(newChat, gid, uid, uid1)) {
     let records = [...chatHistory.records, newChat];
     let owner = { ...chatHistory.owner };
     let newChatHistory = { owner: owner, records: records };
@@ -164,28 +178,23 @@ const addChat = (state, payload) => {
       [CHATS]: newChats,
       [CHAT_HISTORY]: newChatHistory
     };
-    console.log("addChat newState: ", newState);
     return newState;
   } else {
     let newState = { ...state, [CHATS]: newChats };
-    console.log("addChat newState 2: ", newState);
     return newState;
   }
 };
 
 const isSameGroup = (chat, gid, uid0, uid1 = null) => {
-  console.log("isSameGroup1: ", chat);
-  console.log("isSameGroup2: ", gid);
-  console.log("isSameGroup3: ", uid0);
-  console.log("isSameGroup4: ", uid1);
+  if (uid0 === uid1) {
+    let { sender, receiver } = chat;
+    if (sender !== receiver) return false;
+  }
   if (chat.gid !== null) {
     return chat.gid === gid;
   } else {
     let { sender, receiver } = chat;
-    console.log("isSameGroup5: ", sender);
-    console.log("isSameGroup6: ", receiver);
     if (uid1 === null) {
-      console.log("isSameGroup7: ", uid0, sender === uid0 || receiver === uid0);
       return sender === uid0 || receiver === uid0;
     }
     return (
@@ -212,7 +221,6 @@ const updateChatHistoryUser = (state, payload) => {
   if (owner.type !== 1 || owner.id !== user) return state;
   let newRecords = [...records, ...chats];
   chatHistory = { owner, records: newRecords };
-  console.log("updateChatHistoryUser", chatHistory);
   return { ...state, [CHAT_HISTORY]: chatHistory };
 };
 

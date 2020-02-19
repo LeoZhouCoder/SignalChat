@@ -38,7 +38,7 @@
             }
         },
         {
-            "name": "WebApp",
+            "name": "Chatroom",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",

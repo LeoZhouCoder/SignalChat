@@ -42,7 +42,7 @@ class Sidebar extends Component {
   render() {
     console.log("Sidebar render:", this.props);
     const { activeMenu } = this.state;
-    const { owner, chats, onlineUsers } = this.props;
+    const { owner, chats, onlineUsers, user } = this.props;
     const bigScreen = this.props.screenType === SCREEN_BIG;
     let listData,
       itemComponent,
@@ -55,11 +55,15 @@ class Sidebar extends Component {
       itemComponent = ChatContent;
       listData.forEach(data => {
         if (owner.type === 0 && owner.id === data.gid) selectedData = data;
-        if (
-          owner.type === 1 &&
-          (owner.id === data.sender || owner.id === data.receiver)
-        )
-          selectedData = data;
+        if(owner.type === 1)
+        {
+          if(owner.id===user.id)
+          {
+            if(owner.id === data.sender && owner.id === data.receiver)selectedData = data;
+          }else{
+            if(owner.id === data.sender || owner.id === data.receiver) selectedData = data;
+          }
+        }
       });
     } else {
       placeHolder = "No user online right now.";
