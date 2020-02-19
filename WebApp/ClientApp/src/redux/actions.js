@@ -1,4 +1,8 @@
-import { WINDOW_RESIZE, USER_LOGIN } from "./actionTypes";
+import {
+  WINDOW_RESIZE,
+  USER_LOGIN,
+  CHATROOM_OWNER_CHANGE
+} from "./actionTypes";
 import { store } from "./store";
 import { getScreenType } from "../utils/Dimensions";
 import { serverUrl } from "../env/Env";
@@ -8,11 +12,6 @@ import { getUsersProfile } from "../utils/Chat";
 const loginUser = loginResult => ({
   type: USER_LOGIN,
   payload: loginResult
-});
-
-const windowResize = size => ({
-  type: WINDOW_RESIZE,
-  payload: size
 });
 
 export const login = user => {
@@ -74,6 +73,15 @@ export const getUserProfile = uid => {
   return null;
 };
 
+export const getGroup = gid => {
+  let groups = store.getState().chatReducer.groups;
+  let groupInfo;
+  groups.forEach(group => {
+    if (group.id === gid) groupInfo = group;
+  });
+  return groupInfo;
+};
+
 export const getRecentGroupChat = uid => {};
 
 export const getGroupChats = (gid, position, limit) => {};
@@ -95,7 +103,10 @@ export const changePhoto = () => {};
 export const changeName = (firstName, lastName) => {};
 
 export const updateDimensions = () => {
-  return windowResize(getDimensions());
+  return {
+    type: WINDOW_RESIZE,
+    payload: getDimensions()
+  };
 };
 
 export const getDimensions = () => {
@@ -115,4 +126,8 @@ export const getDimensions = () => {
     type: getScreenType(width, height)
   };
   return size;
+};
+
+export const changeChatroom = (type, id) => {
+  store.dispatch({ type: CHATROOM_OWNER_CHANGE, payload: { type, id } });
 };

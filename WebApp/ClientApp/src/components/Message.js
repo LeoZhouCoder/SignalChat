@@ -8,7 +8,7 @@ const Message = ({ chat , self }) => (
     onClick={() => sendMessage(chat.name, chat.msg)}
   >
     <div className="column">
-      <Avatar size="small" src={chat.img} />
+      <Avatar size="large" src={chat.img} />
     </div>
 
     <div className="space flex row center extendable">

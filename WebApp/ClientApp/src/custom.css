@@ -146,6 +146,10 @@ p {
 .maxWidth {
   width: 100%;
 }
+.maxParent {
+  width: 100%;
+  height: 100%;
+}
 
 .flexMaxWidth {
   max-width: 100%;
@@ -228,27 +232,34 @@ p {
 /*avatar*/
 .avatar {
   display: inline-block;
+  position: relative;
   border-radius: 5%;
   background: rgba(0, 0, 0, 0.1);
   margin: 0;
 }
 
-.avatar.big {
+.avatar.huge {
   width: 5em;
 }
 
-.avatar.normal {
+.avatar.big {
   width: 4em;
 }
 
-.avatar.small {
+.avatar.large {
   width: 3em;
+}
+.avatar:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
 }
 
 .square {
+  position: absolute;
+  display: flex;
   width: 100%;
-  padding-top: 100%;
-  position: relative;
+  height: 100%;
 }
 
 .avatar img {
@@ -263,3 +274,4 @@ p {
   object-fit: cover;
   object-position: center;
 }
+

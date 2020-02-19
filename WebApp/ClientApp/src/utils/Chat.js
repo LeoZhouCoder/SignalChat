@@ -69,7 +69,8 @@ const initHub = () => {
 
   hubConnection.onclose(error => {
     connected = false;
-    console.log("[ChatHub] Connection closed: " + error);
+    console.error("[ChatHub] Connection closed: " + error);
+    store.dispatch(logout());
   });
 };
 
@@ -90,8 +91,7 @@ const sendRequest = (type, data) => {
   } else {
     console.log("[ChatHub] SendRequest " + type + " : ", data);
     hubConnection.invoke(type, data).catch(err => {
-      console.error("[ChatHub] send request error: " + err);
-      console.log("[ChatHub] SendRequest " + type + " error: " + err);
+      console.error("[ChatHub] SendRequest " + type + " error: " + err);
       connected = false;
       store.dispatch(logout());
     });

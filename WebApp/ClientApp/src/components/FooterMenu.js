@@ -1,36 +1,26 @@
 import React from "react";
+import { Icon, Menu } from "semantic-ui-react";
 
-const FooterMenu = ({ menuItems, styles }) => {
+const MENU = [
+  { name: "Chats", icon: "gamepad", key: "CHATS" },
+  { name: "OnlineUsers", icon: "video camera", key: "ONLINE_USERS" }
+];
+
+const FooterMenu = ({ activeItem, handleItemClick }) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "stretch",
-        width: "100%",
-        height: styles.footerMenuHeight,
-        backgroundColor: "#333",
-        color: "#fff",
-        position: "fixed",
-        bottom: 0
-      }}
-    >
-      {menuItems.map((item, i) => {
-        return (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flex: 1
-            }}
-          >
-            <span style={{ marginRight: 5, fontSize: 20 }}>{item.icon}</span>
-            {styles.showFooterMenuText && item.text}
-          </div>
-        );
-      })}
-    </div>
+    <Menu compact icon="labeled" color="teal" widths={2}>
+      {MENU.map(menu => (
+        <Menu.Item
+          name={menu.name}
+          key={menu.key}
+          active={activeItem === menu.key}
+          onClick={()=>handleItemClick(menu.key)}
+        >
+          <Icon name={menu.icon} />
+          {menu.name}
+        </Menu.Item>
+      ))}
+    </Menu>
   );
 };
 

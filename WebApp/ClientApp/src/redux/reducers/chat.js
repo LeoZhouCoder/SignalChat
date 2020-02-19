@@ -63,6 +63,7 @@ export default function chatReducer(state = initialState, action) {
     case CHAT_USER_UPDATE:
       return updateChatHistoryUser(state, action.payload);
     case CHATROOM_OWNER_CHANGE:
+      console.log("changeChatroomOwner");
       return changeChatroomOwner(state, action.payload);
     default:
       return state;

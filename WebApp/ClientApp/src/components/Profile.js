@@ -40,7 +40,7 @@ class Profile extends Component {
     const user = getUserProfile(this.props.user.id);
     return (
       <div className="flexBox maxWidth padding profile">
-        <Avatar src={user && user.profilePhoto ? user.profilePhoto : ""} size="big" />
+        <Avatar src={user && user.profilePhoto ? user.profilePhoto : ""} size="huge" />
         {this.getNameSection(user)}
       </div>
     );

@@ -2,11 +2,15 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Menu, Dropdown } from "semantic-ui-react";
 
-import { List, ContactContent, ChatContent } from "./List";
+import { List } from "./List";
+import ContactContent from "./ContactContent";
+import ChatContent from "./ChatContent";
+
 import Profile from "./Profile";
 
 import { SCREEN_BIG } from "../utils/Dimensions";
 import { CHATS, ONLINE_USERS, CHAT_HISTORY } from "../redux/reducers/chat";
+import { changeChatroom } from "../redux/actions";
 
 const options = [
   { key: 1, text: "Chats", value: "Chats" },
@@ -18,14 +22,56 @@ class Sidebar extends Component {
 
   handleMenuClick = name => this.setState({ activeMenu: name });
 
-  handleItemClick = data => this.setState({ selectedItem: data });
+  handleItemClick = data => {
+    console.log("Sidebar Click Item: ", data);
+    const { activeMenu } = this.state;
+    if (activeMenu === "Chats") {
+      if (data.gid !== null) {
+        changeChatroom(0, data.gid);
+      } else {
+        changeChatroom(
+          0,
+          this.props.user.id === data.sender ? data.receiver : data.sender
+        );
+      }
+    } else {
+      changeChatroom(1, data);
+    }
+  };
 
   render() {
-    const { activeMenu, selectedItem } = this.state;
-    const { chats, onlineUsers } = this.props;
+    console.log("Sidebar render:", this.props);
+    const { activeMenu } = this.state;
+    const { owner, chats, onlineUsers } = this.props;
     const bigScreen = this.props.screenType === SCREEN_BIG;
-    const listData = activeMenu === "Chats" ? chats : onlineUsers;
-    let itemComponent = activeMenu === "Chats" ? ChatContent : ContactContent;
+    let listData,
+      itemComponent,
+      placeHolder,
+      selectedData = null;
+    if (activeMenu === "Chats") {
+      placeHolder = "No chat record, go to OnlineUsers find more friends.";
+      listData = chats;
+
+      itemComponent = ChatContent;
+      listData.forEach(data => {
+        if (owner.type === 0 && owner.id === data.gid) selectedData = data;
+        if (
+          owner.type === 1 &&
+          (owner.id === data.sender || owner.id === data.receiver)
+        )
+          selectedData = data;
+      });
+    } else {
+      placeHolder = "No user online right now.";
+      listData = onlineUsers;
+      itemComponent = ContactContent;
+      if (owner.type === 1) {
+        listData.forEach(uid => {
+          if (owner.id === uid) selectedData = uid;
+        });
+      }
+    }
+    console.log("selectedData", selectedData);
     return (
       <div
         className={`flexBox column border ${
@@ -39,9 +85,10 @@ class Sidebar extends Component {
           handleMenuClick={this.handleMenuClick}
         />
         <List
+          placeHolder={placeHolder}
           list={listData}
           component={itemComponent}
-          selectedItem={selectedItem}
+          selectedData={selectedData}
           collapsed={!bigScreen}
           onClickItem={this.handleItemClick}
         />
@@ -50,6 +97,7 @@ class Sidebar extends Component {
   }
 }
 const mapStateToProps = state => ({
+  user: state.authReducer.user,
   owner: state.chatReducer[CHAT_HISTORY].owner,
   chats: state.chatReducer[CHATS],
   onlineUsers: state.chatReducer[ONLINE_USERS]
@@ -59,13 +107,7 @@ export default connect(mapStateToProps)(Sidebar);
 function SidebarMenu({ bigScreen, activeMenu, handleMenuClick }) {
   if (bigScreen) {
     return (
-      <Menu
-        attached
-        pointing
-        secondary
-        widths={2}
-        color="teal"
-      >
+      <Menu attached pointing secondary widths={2} color="teal">
         {options.map(item => {
           return (
             <Menu.Item

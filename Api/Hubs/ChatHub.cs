@@ -64,11 +64,21 @@ namespace SignalRChat.Hubs
 
             result = await _chatService.GetOnlineUsers();
 
-            if (result.Success) await SendResponseToAll(new ChatResponse()
+            if (result.Success)
             {
-                Type = ChatResponseType.UpdateOnlineUsers,
-                Data = result.Data
+                await SendResponseToAll(new ChatResponse()
+                {
+                    Type = ChatResponseType.UpdateOnlineUsers,
+                    Data = result.Data
+                });
+            }
+
+            await SendResponseToAll(new ChatResponse()
+            {
+                Type = ChatResponseType.SystemMessage,
+                Data = "User: " + Context.UserIdentifier + " Connected: " + Context.ConnectionId,
             });
+
             await base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -91,6 +101,12 @@ namespace SignalRChat.Hubs
                     RemoveFromGroup(group, Context.UserIdentifier);
                 }
             }
+
+            await SendResponseToAll(new ChatResponse()
+            {
+                Type = ChatResponseType.SystemMessage,
+                Data = "User: " + Context.UserIdentifier + " Disconnected: " + Context.ConnectionId,
+            });
 
             await base.OnDisconnectedAsync(exception);
         }

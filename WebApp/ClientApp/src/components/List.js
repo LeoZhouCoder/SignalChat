@@ -5,9 +5,17 @@ export function List({
   component: Component,
   list,
   onClickItem,
-  selectedItem,
-  collapsed
+  selectedData,
+  collapsed,
+  placeHolder,
 }) {
+  if (list.length === 0) {
+    return (
+      <div className="list column center maxParent center-v">
+        <div className="flexBox column maxParent center-v secondary padding">{placeHolder}</div>
+      </div>
+    );
+  }
   return (
     <div className="list column center">
       {list.map((data, i) => {
@@ -16,7 +24,7 @@ export function List({
             key={i}
             onClickItem={onClickItem}
             data={data}
-            selected={selectedItem && data.id === selectedItem.id}
+            selected={selectedData === data}
             collapsed={collapsed}
           />
         );
@@ -25,42 +33,15 @@ export function List({
   );
 }
 
-export function ContactContent({ data, selected, collapsed, onClickItem }) {
-  const { name } = data;
-  return (
-    <ListItem
-      data={data}
-      selected={selected}
-      collapsed={collapsed}
-      onClickItem={onClickItem}
-    >
-      <div className="flexBox row extendable center space">
-        <div className="subtitle single text_center unselect">{name}</div>
-      </div>
-    </ListItem>
-  );
-}
-
-export function ChatContent({ data, selected, collapsed, onClickItem }) {
-  const { name, time, msg } = data;
-  return (
-    <ListItem
-      data={data}
-      selected={selected}
-      collapsed={collapsed}
-      onClickItem={onClickItem}
-    >
-      <div className="flexBox row extendable center space">
-        <div className="subtitle single extendable unselect">{name}</div>
-        <div className="secondary unselect">{time}</div>
-        <div className="single maxWidth secondary unselect">{msg}</div>
-      </div>
-    </ListItem>
-  );
-}
-
-function ListItem({ data, selected, collapsed, children, onClickItem }) {
-  const { img } = data;
+export function ListItem({
+  data,
+  img,
+  selected,
+  collapsed,
+  children,
+  onClickItem,
+  icon
+}) {
   let content = collapsed ? null : children;
   return (
     <div
@@ -70,7 +51,7 @@ function ListItem({ data, selected, collapsed, children, onClickItem }) {
       onClick={() => onClickItem(data)}
     >
       <div className="flexBox column center-v">
-        <Avatar src={img} />
+        <Avatar src={img} icon={icon} />
       </div>
       {content}
     </div>
