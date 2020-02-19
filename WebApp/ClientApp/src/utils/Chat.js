@@ -7,7 +7,22 @@ import {
 import { serverUrl } from "../env/Env";
 import Storage from "./Storage";
 import { store } from "../redux/store";
-import { USER_LOGOUT } from "../redux/actionTypes";
+import {
+  USER_LOGOUT,
+  SYSTEM_MESSAGE,
+  SYSTEM_MESSAGE_ERROR,
+
+  CHAT_RECORD_UPDATE,
+  ONLINE_USER_UPDATE,
+  GROUP_UPDATE,
+  GROUP_DELETE,
+  FRIEND_ADD,
+  FRIEND_DELETE,
+  USER_PROFILE_UPDATE,
+  CHAT_ADD,
+  CHAT_GROUP_UPDATE,
+  CHAT_USER_UPDATE
+} from "../redux/actionTypes";
 
 const logout = () => ({
   type: USER_LOGOUT
@@ -16,67 +31,19 @@ const logout = () => ({
 let connected = false;
 let hubConnection = null;
 
-const showSystemMessage = data => {
-  console.log("[ChatHub] show normal message: ", data);
-};
-
-const showErrorMessage = data => {
-  console.log("[ChatHub] show error message: ", data);
-};
-
-const updateRecentChatRecord = data => {
-  console.log("[ChatHub] update recent chat record: ", data);
-};
-
-const updateOnlineUsers = data => {
-  console.log("[ChatHub] update online users: ", data);
-};
-
-const updateGroup = data => {
-  console.log("[ChatHub] update group: ", data);
-};
-
-const deleteGroup = data => {
-  console.log("[ChatHub] delete group: ", data);
-};
-
-const addFriend = data => {
-  console.log("[ChatHub] add friend: ", data);
-};
-
-const deleteFriend = data => {
-  console.log("[ChatHub] delete friend: ", data);
-};
-
-const updateUserProfile = data => {
-  console.log("[ChatHub] update user profile: ", data);
-};
-
-const receiveMessage = data => {
-  console.log("[ChatHub] receive message: ", data);
-};
-
-const updateGroupChats = data => {
-  console.log("[ChatHub] update GroupChats: ", data);
-};
-
-const updateUserChats = data => {
-  console.log("[ChatHub] update UserChats: ", data);
-};
-
-const responseHandlers = {
-  "0": showSystemMessage,
-  "1": showErrorMessage,
-  "2": updateRecentChatRecord,
-  "3": updateOnlineUsers,
-  "4": updateGroup,
-  "5": deleteGroup,
-  "6": addFriend,
-  "7": deleteFriend,
-  "8": updateUserProfile,
-  "9": receiveMessage,
-  "10": updateGroupChats,
-  "11": updateUserChats
+const responseType = {
+  "0": SYSTEM_MESSAGE,
+  "1": SYSTEM_MESSAGE_ERROR,
+  "2": CHAT_RECORD_UPDATE,
+  "3": ONLINE_USER_UPDATE,
+  "4": GROUP_UPDATE,
+  "5": GROUP_DELETE,
+  "6": FRIEND_ADD,
+  "7": FRIEND_DELETE,
+  "8": USER_PROFILE_UPDATE,
+  "9": CHAT_ADD,
+  "10": CHAT_GROUP_UPDATE,
+  "11": CHAT_USER_UPDATE
 };
 
 const initHub = () => {
@@ -92,11 +59,12 @@ const initHub = () => {
 
   hubConnection.on("ReceiveResponse", response => {
     console.log("[ChatHub] ReceiveResponse: ", response);
-    var handler = responseHandlers[response.type.toString()];
-    if (!handler) {
-      console.log("[ChatHub] Unsupported response type: ", response.type);
+    var type = responseType[response.type.toString()];
+    if (type) {
+      console.log("[ChatHub] dispatch action: ", type, response.data);
+      store.dispatch({ type: type, payload: response.data });
     } else {
-      handler(response.data);
+      console.log("[ChatHub] Unsupported response type: ", response.type);
     }
   });
 
