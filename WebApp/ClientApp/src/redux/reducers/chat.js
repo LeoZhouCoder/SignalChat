@@ -8,7 +8,8 @@ import {
   USER_PROFILE_UPDATE,
   CHAT_ADD,
   CHAT_GROUP_UPDATE,
-  CHAT_USER_UPDATE
+  CHAT_USER_UPDATE,
+  CHATROOM_OWNER_CHANGE
 } from "../actionTypes";
 
 export const CHATS = "chats";
@@ -61,6 +62,8 @@ export default function chatReducer(state = initialState, action) {
       return updateChatHistoryGroup(state, action.payload);
     case CHAT_USER_UPDATE:
       return updateChatHistoryUser(state, action.payload);
+    case CHATROOM_OWNER_CHANGE:
+      return changeChatroomOwner(state, action.payload);
     default:
       return state;
   }
@@ -194,4 +197,10 @@ const updateChatHistoryUser = (state, payload) => {
   let newRecords = [...records, ...chats];
   chatHistory = { owner, records: newRecords };
   return { ...state, [CHAT_HISTORY]: chatHistory };
+};
+
+const changeChatroomOwner = (state, payload) => {
+  let chatHistory = state[CHAT_HISTORY];
+  let newChatHistory = { ...chatHistory, owner: payload };
+  return { ...state, [CHAT_HISTORY]: newChatHistory };
 };
