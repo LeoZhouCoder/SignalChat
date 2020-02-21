@@ -26,12 +26,14 @@ class Sidebar extends Component {
 
   handleItemClick = data => {
     console.log("Sidebar Click Item: ", data);
+    const { chatroom } = this.props;
     if (this.state.activeMenu === MENU_CHATS) {
-      changeChatroom(data.id);
+      if (chatroom !== data.id) changeChatroom(data.id);
     } else {
       let group = this.findGroup(data);
+      console.log("findGroup:", group);
       if (group) {
-        changeChatroom(group.id);
+        if (chatroom !== group.id) changeChatroom(group.id);
       } else {
         if (this.props.user.id === data) {
           createGroup(null, [data]);
@@ -46,10 +48,9 @@ class Sidebar extends Component {
     const { groups, user } = this.props;
     return groups.find(group => {
       let { users } = group;
-
       if (users.length > 2) return false;
 
-      if (uid === user) {
+      if (uid === user.id) {
         if (users.length !== 1) return false;
         return users[0] === uid;
       } else {
@@ -78,13 +79,17 @@ class Sidebar extends Component {
       placeHolder = "No user online right now.";
       listData = onlineUsers;
       itemComponent = ContactContent;
+      console.log("groups:", groups);
       let group = groups.find(data => data.id === chatroom);
+      console.log("group:", group);
       if (group) {
         let { users } = group;
         if (users.length === 2) {
           selectedData = listData.find(
-            uid => users.includes(uid) && users.includes(user)
+            uid => users.includes(uid) && users.includes(user.id)
           );
+        } else if (users.length === 1 && users[0] === user.id) {
+          selectedData = listData.find(uid => users[0] === user.id);
         }
       }
     }

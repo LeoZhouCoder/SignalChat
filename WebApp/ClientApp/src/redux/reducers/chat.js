@@ -106,13 +106,13 @@ const updateUserProfile = (state, newUsers) => {
 
 const addChat = (state, newChat) => {
   let groups = state[GROUPS];
-  groups.forEach(group => {
-    if (group.id === newChat.id) {
-      if (!Array.isArray(group.chats)) group.chats = [];
-      group.chats.push(newChat);
-    }
-  });
-  return { ...state, [GROUPS]: sortGroups(groups) };
+  let group = groups.find(g => g.id === newChat.gid);
+  if (group) {
+    if (!Array.isArray(group.chats)) group.chats = [];
+    group.chats = [...group.chats, newChat];
+  }
+  const newGroups = [...groups];
+  return { ...state, [GROUPS]: sortGroups(newGroups) };
 };
 
 const addChats = (state, { groupId, chats }) => {

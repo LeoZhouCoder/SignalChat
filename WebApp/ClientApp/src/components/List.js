@@ -16,6 +16,7 @@ export function List({
       </div>
     );
   }
+  console.log("[List] render");
   return (
     <div className="list column center">
       {list.map((data, i) => {

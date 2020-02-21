@@ -17,42 +17,47 @@ namespace SignalRChat.Hubs
         {
             _chatService = chatService;
         }
-        private Task SendResponseToCaller(ChatResponse msg)
+        private async Task SendResponseToCaller(ChatResponse msg)
         {
-            return Clients.Caller.SendAsync("ReceiveResponse", msg);
+            await Clients.Caller.SendAsync("ReceiveResponse", msg);
         }
-        private Task SendResponseToUser(string user, ChatResponse msg)
+        private async Task SendResponseToUser(string user, ChatResponse msg)
         {
-            return Clients.User(user).SendAsync("ReceiveResponse", msg);
+            await Clients.User(user).SendAsync("ReceiveResponse", msg);
         }
-        private Task SendResponseToGroup(string group, ChatResponse msg)
+        private async Task SendResponseToGroup(string group, ChatResponse msg)
         {
-            return Clients.Group(group).SendAsync("ReceiveResponse", msg);
+            await Clients.Group(group).SendAsync("ReceiveResponse", msg);
         }
-        private Task SendResponseToAll(ChatResponse msg)
+        private async Task SendResponseToAll(ChatResponse msg)
         {
-            return Clients.All.SendAsync("ReceiveResponse", msg);
-        }
-
-        private Task AddToGroup(string groupName, string connectionId)
-        {
-            return Groups.AddToGroupAsync(connectionId, groupName);
+            await Clients.All.SendAsync("ReceiveResponse", msg);
         }
 
-        private Task RemoveFromGroup(string groupName, string connectionId)
+        private async Task AddToGroup(string groupName, string connectionId)
         {
-            return Groups.RemoveFromGroupAsync(connectionId, groupName);
+            await Groups.AddToGroupAsync(connectionId, groupName);
         }
 
-        private Task GroupUserConnection(string groupName, string user, bool isAdd = true)
+        private async Task RemoveFromGroup(string groupName, string connectionId)
+        {
+            await Groups.RemoveFromGroupAsync(connectionId, groupName);
+        }
+
+        private async Task GroupUserConnection(string groupName, string user, bool isAdd = true)
         {
             var connections = _connections.GetConnections(user);
-            Task result = null;
             foreach (string connection in connections)
             {
-                result = isAdd ? AddToGroup(groupName, connection) : RemoveFromGroup(groupName, connection);
+                if (isAdd)
+                {
+                    await AddToGroup(groupName, connection);
+                }
+                else
+                {
+                    await RemoveFromGroup(groupName, connection);
+                }
             }
-            return result;
         }
 
         public override async Task OnConnectedAsync()
@@ -82,7 +87,7 @@ namespace SignalRChat.Hubs
                     var groups = (List<string>)result.Data;
                     foreach (string group in groups)
                     {
-                        await AddToGroup(group, Context.UserIdentifier);
+                        await AddToGroup(group, Context.ConnectionId);
                     }
                 }
 
@@ -126,7 +131,7 @@ namespace SignalRChat.Hubs
                     var groups = (List<string>)result.Data;
                     foreach (string group in groups)
                     {
-                        await RemoveFromGroup(group, Context.UserIdentifier);
+                        await RemoveFromGroup(group, Context.ConnectionId);
                     }
                 }
 
