@@ -12,6 +12,7 @@ namespace SignalRChat.Hubs
     public class ChatHub : Hub
     {
         private readonly IChatService _chatService;
+        private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
         public ChatHub(IChatService chatService)
         {
             _chatService = chatService;
@@ -33,17 +34,38 @@ namespace SignalRChat.Hubs
             return Clients.All.SendAsync("ReceiveResponse", msg);
         }
 
+        private Task AddToGroup(string groupName, string connectionId)
+        {
+            return Groups.AddToGroupAsync(connectionId, groupName);
+        }
+
+        private Task RemoveFromGroup(string groupName, string connectionId)
+        {
+            return Groups.RemoveFromGroupAsync(connectionId, groupName);
+        }
+
+        private Task GroupUserConnection(string groupName, string user, bool isAdd = true)
+        {
+            var connections = _connections.GetConnections(user);
+            Task result = null;
+            foreach (string connection in connections)
+            {
+                result = isAdd ? AddToGroup(groupName, connection) : RemoveFromGroup(groupName, connection);
+            }
+            return result;
+        }
+
         public override async Task OnConnectedAsync()
         {
             try
             {
-                await _chatService.AddUserToOnlineList(Context.UserIdentifier, Context.ConnectionId);
+                _connections.Add(Context.UserIdentifier, Context.ConnectionId);
 
-                var result = await _chatService.GetRecentChatsByUser(Context.UserIdentifier);
+                var result = await _chatService.GetGroupsAndRecords(Context.UserIdentifier);
                 ChatResponse response = new ChatResponse();
                 if (result.Success)
                 {
-                    response.Type = ChatResponseType.UpdateRecentChatRecord;
+                    response.Type = ChatResponseType.UpdateChatrooms;
                     response.Data = result.Data;
                 }
                 else
@@ -60,21 +82,17 @@ namespace SignalRChat.Hubs
                     var groups = (List<string>)result.Data;
                     foreach (string group in groups)
                     {
-                        AddToGroup(group, Context.UserIdentifier);
+                        await AddToGroup(group, Context.UserIdentifier);
                     }
                 }
 
-                result = await _chatService.GetOnlineUsers();
-
-                if (result.Success)
+                await SendResponseToAll(new ChatResponse()
                 {
-                    await SendResponseToAll(new ChatResponse()
-                    {
-                        Type = ChatResponseType.UpdateOnlineUsers,
-                        Data = result.Data
-                    });
-                }
+                    Type = ChatResponseType.UpdateOnlineUsers,
+                    Data = _connections.Keys
+                });
 
+                // TODO: test use.
                 await SendResponseToAll(new ChatResponse()
                 {
                     Type = ChatResponseType.SystemMessage,
@@ -88,29 +106,31 @@ namespace SignalRChat.Hubs
 
             }
         }
+
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             try
             {
-                await _chatService.RemoveUserFromOnlineList(Context.UserIdentifier, Context.ConnectionId);
-                var result = await _chatService.GetOnlineUsers();
-                if (result.Success) await SendResponseToAll(new ChatResponse()
+                _connections.Remove(Context.UserIdentifier, Context.ConnectionId);
+
+                await SendResponseToAll(new ChatResponse()
                 {
                     Type = ChatResponseType.UpdateOnlineUsers,
-                    Data = result.Data
+                    Data = _connections.Keys
                 });
 
                 // Remove from hub groups
-                result = await _chatService.GetUserGroups(Context.UserIdentifier);
+                var result = await _chatService.GetUserGroups(Context.UserIdentifier);
                 if (result.Success)
                 {
                     var groups = (List<string>)result.Data;
                     foreach (string group in groups)
                     {
-                        RemoveFromGroup(group, Context.UserIdentifier);
+                        await RemoveFromGroup(group, Context.UserIdentifier);
                     }
                 }
 
+                // TODO: test use.
                 await SendResponseToAll(new ChatResponse()
                 {
                     Type = ChatResponseType.SystemMessage,
@@ -143,34 +163,14 @@ namespace SignalRChat.Hubs
                         Type = ChatResponseType.SystemErrorMessage,
                         Data = result.Message
                     });
-                    return;
-                }
-                if (request.Group != null)
-                {
-                    await SendResponseToGroup(request.Group, new ChatResponse
-                    {
-                        Type = ChatResponseType.ChatMessage,
-                        Data = result.Data
-                    });
                 }
                 else
                 {
-
-                    await SendResponseToCaller(new ChatResponse
+                    await SendResponseToGroup(request.Group, new ChatResponse
                     {
-                        Type = ChatResponseType.ChatMessage,
+                        Type = ChatResponseType.AddChat,
                         Data = result.Data
                     });
-                    if (request.Receiver != Context.UserIdentifier)
-                    {
-                        await SendResponseToUser(request.Receiver,
-                                            new ChatResponse
-                                            {
-                                                Type = ChatResponseType.ChatMessage,
-                                                Data = result.Data
-                                            });
-                    }
-
                 }
             }
             catch (Exception ex)
@@ -179,251 +179,191 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async Task GetGroupChats(GetGroupChatsRequest request)
+        public async Task GetChats(GetGroupChatsRequest request)
         {
-            var result = await _chatService.GetChatsByGroupId(request.Group, request.Position, request.Limit);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
+            try
             {
-                response.Type = ChatResponseType.UpdateGroupChats;
-                response.Data = new
+                var result = await _chatService.GetChatsByGroupId(request.Group, request.Position, request.Limit);
+                ChatResponse response = new ChatResponse();
+                if (result.Success)
                 {
-                    Group = request.Group,
-                    Chats = result.Data
-                };
+                    response.Type = ChatResponseType.UpdateChats;
+                    response.Data = new
+                    {
+                        Group = request.Group,
+                        Chats = result.Data
+                    };
+                }
+                else
+                {
+                    response.Type = ChatResponseType.SystemErrorMessage;
+                    response.Data = result.Message;
+                }
+                // TODO: Update read last chat
+                await SendResponseToCaller(response);
             }
-            else
+            catch (Exception ex)
             {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
-            }
-            // TODO: Update read last chat
-            await SendResponseToCaller(response);
-        }
 
-        public async Task GetUserChats(GetUserChatsRequest request)
-        {
-            var result = await _chatService.GetChatsByUsers(Context.UserIdentifier, request.User, request.Position, request.Limit);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
-            {
-                response.Type = ChatResponseType.UpdateUserChats;
-                response.Data = new
-                {
-                    User = request.User,
-                    Chats = result.Data
-                };
             }
-            else
-            {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
-            }
-            // TODO: Update read last chat
-            await SendResponseToCaller(response);
         }
 
         public async Task CreateGroup(CreateGroupRequest request)
         {
-            var result = await _chatService.CreateGroup(request.Name, request.Users);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
+            try
             {
-                var group = (GroupView)response.Data;
-
-                response.Type = ChatResponseType.UpdateGroup;
-                response.Data = result.Data;
-                await SendResponseToGroup(group.Id, response);
-
-                // Add users to hub group
-                foreach (string user in group.Users)
+                var result = await _chatService.CreateGroup(request.Name, request.Users);
+                ChatResponse response = new ChatResponse();
+                if (result.Success)
                 {
-                    var temResult = await _chatService.GetUserConnectionIds(user);
-
-                    if (temResult.Success)
+                    var group = (GroupView)result.Data;
+                    foreach (string user in group.Users)
                     {
-                        var connectionIds = (List<string>)temResult.Data;
-                        foreach (string connectionId in connectionIds)
-                        {
-                            AddToGroup(group.Id, connectionId);
-                        }
+                        await GroupUserConnection(group.Id, user, true);
                     }
+
+                    response.Type = ChatResponseType.UpdateGroup;
+                    response.Data = result.Data;
+                    await SendResponseToGroup(group.Id, response);
+                }
+                else
+                {
+                    response.Type = ChatResponseType.SystemErrorMessage;
+                    response.Data = result.Message;
+                    await SendResponseToCaller(response);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
-                await SendResponseToCaller(response);
+
             }
         }
 
         public async Task ChangeGroupName(ChangeGroupNameRequest request)
         {
-            var result = await _chatService.ChangeGroupName(Context.UserIdentifier, request.Group, request.Name);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
+            try
             {
-                response.Type = ChatResponseType.UpdateGroup;
-                response.Data = result.Data;
-                await SendResponseToGroup(((GroupView)response.Data).Id, response);
+                var result = await _chatService.ChangeGroupName(Context.UserIdentifier, request.Group, request.Name);
+                ChatResponse response = new ChatResponse();
+                if (result.Success)
+                {
+                    response.Type = ChatResponseType.UpdateGroupView;
+                    response.Data = result.Data;
+                    await SendResponseToGroup(request.Group, response);
+                }
+                else
+                {
+                    response.Type = ChatResponseType.SystemErrorMessage;
+                    response.Data = result.Message;
+                    await SendResponseToCaller(response);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
-                await SendResponseToCaller(response);
+
             }
         }
 
         public async Task AddUserToGroup(GroupUserRequest request)
         {
-            var result = await _chatService.AddUserToGroup(Context.UserIdentifier, request.Group, request.User);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
+            try
             {
-                response.Type = ChatResponseType.UpdateGroup;
-                response.Data = result.Data;
-                await SendResponseToGroup(((GroupView)response.Data).Id, response);
-
-                // Add users to hub group
-                result = await _chatService.GetUserConnectionIds(request.User);
+                var result = await _chatService.AddUserToGroup(Context.UserIdentifier, request.Group, request.User);
+                ChatResponse response = new ChatResponse();
                 if (result.Success)
                 {
-                    var connectionIds = (List<string>)result.Data;
-                    foreach (string connectionId in connectionIds)
-                    {
-                        AddToGroup(request.Group, connectionId);
-                    }
+                    response.Type = ChatResponseType.UpdateGroupView;
+                    response.Data = result.Data;
+                    await SendResponseToGroup(request.Group, response);
+                    await GroupUserConnection(request.Group, request.User, true);
+                }
+                else
+                {
+                    response.Type = ChatResponseType.SystemErrorMessage;
+                    response.Data = result.Message;
+                    await SendResponseToCaller(response);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
-                await SendResponseToCaller(response);
+
             }
         }
 
         public async Task RemoveUserFromGroup(GroupUserRequest request)
         {
-            var result = await _chatService.RemoveUserFromGroup(Context.UserIdentifier, request.Group, request.User);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
+            try
             {
-                response.Type = ChatResponseType.UpdateGroup;
-                response.Data = result.Data;
-                await SendResponseToGroup(((GroupView)response.Data).Id, response);
-
-                // Remove users from hub group
-                result = await _chatService.GetUserConnectionIds(request.User);
+                var result = await _chatService.RemoveUserFromGroup(Context.UserIdentifier, request.Group, request.User);
+                ChatResponse response = new ChatResponse();
                 if (result.Success)
                 {
-                    var connectionIds = (List<string>)result.Data;
-                    foreach (string connectionId in connectionIds)
-                    {
-                        RemoveFromGroup(request.Group, connectionId);
-                    }
+                    response.Type = ChatResponseType.UpdateGroupView;
+                    response.Data = result.Data;
+                    await SendResponseToGroup(request.Group, response);
+                    await GroupUserConnection(request.Group, request.User, false);
+                }
+                else
+                {
+                    response.Type = ChatResponseType.SystemErrorMessage;
+                    response.Data = result.Message;
+                    await SendResponseToCaller(response);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
-                await SendResponseToCaller(response);
+
             }
         }
 
         public async Task DeleteGroup(string group)
         {
-            var result = await _chatService.DeleteGroup(Context.UserIdentifier, group);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
+            try
             {
-                response.Type = ChatResponseType.DeleteGroup;
-                response.Data = group;
-                // TODO: Remove users from hub group ?????
-                await SendResponseToGroup(group, response);
+                var result = await _chatService.DeleteGroup(Context.UserIdentifier, group);
+                ChatResponse response = new ChatResponse();
+                if (result.Success)
+                {
+                    response.Type = ChatResponseType.DeleteGroup;
+                    response.Data = group;
+                    // TODO: Remove users from hub group ?????
+                    await SendResponseToGroup(group, response);
+                }
+                else
+                {
+                    response.Type = ChatResponseType.SystemErrorMessage;
+                    response.Data = result.Message;
+                    await SendResponseToCaller(response);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
-                await SendResponseToCaller(response);
-            }
-        }
 
-        public async Task AddFriend(string friend)
-        {
-            var result = await _chatService.AddFriend(Context.UserIdentifier, friend);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
-            {
-                response.Type = ChatResponseType.AddFriend;
-                response.Data = friend;
-                await SendResponseToCaller(response);
-
-                response = new ChatResponse();
-                response.Type = ChatResponseType.AddFriend;
-                response.Data = Context.UserIdentifier;
-                await SendResponseToUser(friend, response);
-            }
-            else
-            {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
-                await SendResponseToCaller(response);
-            }
-        }
-
-        public async Task DeleteFriend(string friend)
-        {
-            var result = await _chatService.DeleteFriend(Context.UserIdentifier, friend);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
-            {
-                response.Type = ChatResponseType.DeleteFriend;
-                response.Data = friend;
-                await SendResponseToCaller(response);
-
-                response = new ChatResponse();
-                response.Type = ChatResponseType.DeleteFriend;
-                response.Data = Context.UserIdentifier;
-                await SendResponseToUser(friend, response);
-            }
-            else
-            {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
-                await SendResponseToCaller(response);
             }
         }
 
         public async Task GetUserProfile(List<string> userIds)
         {
-            var result = await _chatService.GetUserProfile(userIds);
-            ChatResponse response = new ChatResponse();
-            if (result.Success)
+            try
             {
-                response.Type = ChatResponseType.UpdateUserProfile;
-                response.Data = result.Data;
+                var result = await _chatService.GetUserProfile(userIds);
+                ChatResponse response = new ChatResponse();
+                if (result.Success)
+                {
+                    response.Type = ChatResponseType.UpdateUserProfile;
+                    response.Data = result.Data;
+                }
+                else
+                {
+                    response.Type = ChatResponseType.SystemErrorMessage;
+                    response.Data = result.Message;
+                }
+                await SendResponseToCaller(response);
             }
-            else
+            catch (Exception ex)
             {
-                response.Type = ChatResponseType.SystemErrorMessage;
-                response.Data = result.Message;
+
             }
-            await SendResponseToCaller(response);
-        }
-
-        private void AddToGroup(string groupName, string connectionId)
-        {
-            Groups.AddToGroupAsync(connectionId, groupName);
-        }
-
-        private void RemoveFromGroup(string groupName, string connectionId)
-        {
-            Groups.RemoveFromGroupAsync(connectionId, groupName);
         }
     }
 }

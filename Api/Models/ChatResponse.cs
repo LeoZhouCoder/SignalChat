@@ -10,15 +10,13 @@ namespace Api.Models
     { 
         SystemMessage = 0, 
         SystemErrorMessage,
-        UpdateRecentChatRecord,
+        UpdateChatrooms,
         UpdateOnlineUsers,
         UpdateGroup,
+        UpdateGroupView,
         DeleteGroup,
-        AddFriend,
-        DeleteFriend,
         UpdateUserProfile,
-        ChatMessage,
-        UpdateGroupChats,
-        UpdateUserChats,
+        AddChat,
+        UpdateChats,
     }
 }

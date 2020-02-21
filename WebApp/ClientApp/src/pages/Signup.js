@@ -25,10 +25,10 @@ class Signup extends Component {
   isDisabled = () => {
     let { formData, errors } = this.state;
     let disabled = false;
-    Object.keys(formData).forEach(function(key) {
+    Object.keys(formData).forEach(key => {
       if (formData[key] === "") disabled = true;
     });
-    Object.keys(errors).forEach(function(key) {
+    Object.keys(errors).forEach(key => {
       if (errors[key]) return (disabled = true);
     });
     return disabled;
@@ -171,7 +171,6 @@ class Signup extends Component {
     );
   }
 }
-
 
 const mapStateToProps = state => ({
   user: state.authReducer.user

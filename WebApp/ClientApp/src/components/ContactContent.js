@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { ListItem } from "./List";
-import { getUserProfile } from "../redux/actions";
+import { getUserProfile } from "../redux/chatActions";
 
 export class ContactContent extends Component {
   render() {

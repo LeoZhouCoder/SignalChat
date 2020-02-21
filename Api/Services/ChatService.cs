@@ -10,162 +10,176 @@ namespace Api.Services
 {
     public class ChatService : IChatService
     {
-        private IRepository<Group> _groupRepository;
-        private IRepository<User> _userRepository;
-        private IRepository<OnlineUser> _onlineUserRepository;
-        private IRepository<GroupUser> _groupUserRepository;
-        private IRepository<Chat> _chatRepository;
-        private IRepository<UserRelation> _userRelationRepository;
+        private IRepository<Group> _group;
+        private IRepository<User> _user;
+        private IRepository<OnlineUser> _onlineUser;
+        private IRepository<GroupUser> _groupUser;
+        private IRepository<Chat> _chat;
+        private IRepository<UserRelation> _userRelation;
 
-        public ChatService(IRepository<Group> groupRepository,
-                            IRepository<User> userRepository,
-                            IRepository<OnlineUser> onlineUserRepository,
-                            IRepository<GroupUser> groupUserRepository,
-                            IRepository<Chat> chatRepository,
-                            IRepository<UserRelation> userRelationRepository)
+        public ChatService(IRepository<Group> group,
+                            IRepository<User> user,
+                            IRepository<OnlineUser> onlineUser,
+                            IRepository<GroupUser> groupUser,
+                            IRepository<Chat> chat,
+                            IRepository<UserRelation> userRelation)
         {
-            _groupRepository = groupRepository;
-            _userRepository = userRepository;
-            _onlineUserRepository = onlineUserRepository;
-            _groupUserRepository = groupUserRepository;
-            _chatRepository = chatRepository;
-            _userRelationRepository = userRelationRepository;
+            _group = group;
+            _user = user;
+            _onlineUser = onlineUser;
+            _groupUser = groupUser;
+            _chat = chat;
+            _userRelation = userRelation;
         }
 
-        private async Task<Boolean> IsUserExisted(string uid)
+        /// <summary>
+        /// Get all groups and chat records related user
+        /// </summary>
+        /// <param name="uid">User ID</param>
+        public async Task<RequestResult> GetGroupsAndRecords(string uid)
         {
             try
             {
-                var user = (await _userRepository.Get(x => x.Id == uid)).FirstOrDefault();
-                return user != null;
+                List<GroupView> groups = new List<GroupView>();
+                List<string> userIds = new List<string>();
+
+                // Get groups' ID
+                var groupIds = (await _groupUser.Get(x => x.Uid == uid && !x.IsDeleted))
+                .Select(x => x.Gid).ToList();
+
+                foreach (var gid in groupIds)
+                {
+                    var groupView = await GetGroupView(gid);
+                    if (groupView == null)
+                    {
+                        // TODO: Add log: group is not existent
+                        continue;
+                    }
+                    groups.Add(groupView);
+                    userIds = userIds.Union(groupView.Users).ToList();
+                }
+                
+                if (userIds.IndexOf(uid) == -1)
+                {
+                    userIds.Add(uid);
+                }
+
+                List<UserView> users = await GetUserProfileByIds(userIds);
+
+                return new RequestResult { Success = true, Data = new { groups, users } };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                return new RequestResult { Success = false, Message = "GetGroupsAndRecords error - " + ex.Message };
             }
         }
 
         /// <summary>
-        /// Add User To Online List
+        /// Add Chat
         /// </summary>
-        /// <param name="uid">"User Id"</param>
-        /// <param name="connectionId">"connectionId"</param>
-        public async Task<RequestResult> AddUserToOnlineList(string uid, string connectionId)
+        /// <param name="sender">Sender User ID</param>
+        /// <param name="type">Chat Type</param>
+        /// <param name="content">Chat Content</param>
+        /// <param name="gid">Group ID</param>
+        /// <param name="Receiver">Receiver User ID</param>
+        public async Task<RequestResult> AddChat(string sender, ChatType type, string content, string gid, string receiver = null)
         {
             try
             {
-                var user = (await _userRepository.Get(x => x.Id == uid)).FirstOrDefault();
-                if (user == null)
+                var user = (await _user.Get(x => x.Id == sender)).FirstOrDefault();
+                if (user == null || user.IsDeleted)
                 {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "Can't find user.",
-                    };
+                    return new RequestResult { Success = false, Message = "Sender is not existing." };
                 }
 
-                var onlineUser = (await _onlineUserRepository.Get(x => x.Uid == uid && x.ConnectionId == connectionId)).FirstOrDefault();
-                if (onlineUser != null)
+                if (string.IsNullOrWhiteSpace(content))
                 {
-                    onlineUser.IsDeleted = false;
-                    onlineUser.ActiveTime = DateTime.UtcNow;
-                    await _onlineUserRepository.Update(onlineUser);
+                    return new RequestResult { Success = false, Message = "Can't send empty message." };
                 }
-                else
+
+                if (!Enum.IsDefined(typeof(ChatType), type))
                 {
-                    onlineUser = (await _onlineUserRepository.Get(x => x.Uid == uid && x.IsDeleted)).FirstOrDefault();
-                    if (onlineUser != null)
+                    return new RequestResult { Success = false, Message = "Unsupported message type." };
+                }
+
+                if (string.IsNullOrWhiteSpace(gid))
+                {
+                    return new RequestResult { Success = false, Message = "group is not existing." };
+                }
+
+                var group = (await _group.Get(x => x.Id == gid)).FirstOrDefault();
+                if (group == null || group.IsDeleted)
+                {
+                    return new RequestResult { Success = false, Message = "Group is not existing." };
+                }
+
+                var groupUser = (await _groupUser.Get(x => x.Gid == gid && x.Uid == sender && !x.IsDeleted)).FirstOrDefault();
+                if (groupUser == null || groupUser.IsDeleted)
+                {
+                    return new RequestResult { Success = false, Message = "Sender no authority." };
+                }
+
+                if (receiver != null)
+                {
+                    var userReceiver = (await _user.Get(x => x.Id == receiver)).FirstOrDefault();
+                    if (userReceiver == null || userReceiver.IsDeleted)
                     {
-                        onlineUser.IsDeleted = false;
-                        onlineUser.ConnectionId = connectionId;
-                        onlineUser.ActiveTime = DateTime.UtcNow;
-                        await _onlineUserRepository.Update(onlineUser);
+                        return new RequestResult { Success = false, Message = "User is not existing." };
                     }
-                    else
+
+                    groupUser = (await _groupUser.Get(x => x.Gid == gid && x.Uid == sender && !x.IsDeleted)).FirstOrDefault();
+                    if (groupUser == null || groupUser.IsDeleted)
                     {
-                        onlineUser = new OnlineUser()
+                        return new RequestResult { Success = false, Message = "receiver is not in this group." };
+                    }
+                }
+
+                var chat = new Chat()
+                {
+                    Id = ObjectId.GenerateNewId().ToString(),
+                    Sender = sender,
+                    Type = type,
+                    Content = content,
+                    Gid = gid,
+                    Receiver = receiver,
+                    CreatedOn = DateTime.UtcNow,
+                    IsDeleted = false
+                };
+                await _chat.Add(chat);
+                return new RequestResult { Success = true, Data = chat };
+            }
+            catch (Exception ex)
+            {
+                return new RequestResult { Success = false, Message = "AddChat error - " + ex.Message };
+            }
+        }
+
+        /// <summary>
+        /// Delete Chat
+        /// </summary>
+        /// <param name="cid">"Chat ID"</param>
+        public async Task<RequestResult> DeleteChat(string editor, string cid)
+        {
+            try
+            {
+                var chat = (await _chat.Get(x => x.Id == cid)).FirstOrDefault();
+                if (chat != null)
+                {
+                    if (!chat.IsDeleted)
+                    {
+                        if (chat.Sender != editor)
                         {
-                            Id = ObjectId.GenerateNewId().ToString(),
-                            Uid = uid,
-                            ConnectionId = connectionId,
-                            ActiveTime = DateTime.UtcNow,
-                            IsDeleted = false
-                        };
-                        await _onlineUserRepository.Add(onlineUser);
+                            return new RequestResult { Success = false, Message = "No authority." };
+                        }
+                        chat.IsDeleted = true;
+                        await _chat.Update(chat);
                     }
                 }
-                return new RequestResult
-                {
-                    Success = true,
-                };
+                return new RequestResult { Success = true };
             }
             catch (Exception ex)
             {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "AddUserToOnlineList error - " + ex.Message,
-                };
-            }
-        }
-
-        /// <summary>
-        /// Remove User From OnlineList
-        /// </summary>
-        /// <param name="uid">"User Id"</param>
-        /// <param name="connectionId">"connectionId"</param>
-        public async Task<RequestResult> RemoveUserFromOnlineList(string uid, string connectionId)
-        {
-            try
-            {
-                var onlineUser = (await _onlineUserRepository.Get(x => x.Uid == uid && x.ConnectionId == connectionId)).FirstOrDefault();
-                if (onlineUser != null)
-                {
-                    if (!onlineUser.IsDeleted)
-                    {
-                        onlineUser.IsDeleted = true;
-                        await _onlineUserRepository.Update(onlineUser);
-                    }
-                }
-                return new RequestResult
-                {
-                    Success = true,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "RemoveUserFromOnlineList error - " + ex.Message,
-                };
-            }
-        }
-
-        /// <summary>
-        /// Get ActiveUsers
-        /// </summary>
-        public async Task<RequestResult> GetOnlineUsers()
-        {
-            try
-            {
-                var onlineUsers = (await _onlineUserRepository.Get(x => !x.IsDeleted))
-                .OrderByDescending(x => x.ActiveTime)
-                .Select(x => x.Uid).Distinct().ToList();
-
-                return new RequestResult
-                {
-                    Success = true,
-                    Data = onlineUsers,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "GetOnlineUsers error - " + ex.Message,
-                };
+                return new RequestResult { Success = false, Message = "DeleteChat error - " + ex.Message };
             }
         }
 
@@ -178,16 +192,19 @@ namespace Api.Services
         {
             try
             {
-                if (users.Count() < 2)
+                if (users.Count() == 0)
                 {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "One group need at least two members.",
-                    };
+                    return new RequestResult { Success = false, Message = "Can't create a group without any user." };
                 }
-                List<string> errorUsers = new List<string>();
+
+                List<string> unionUsers = new List<string>();
                 foreach (string uid in users)
+                {
+                    if (unionUsers.IndexOf(uid) == -1) unionUsers.Add(uid);
+                }
+
+                List<string> errorUsers = new List<string>();
+                foreach (string uid in unionUsers)
                 {
                     if ((await IsUserExisted(uid))) continue;
                     errorUsers.Add(uid);
@@ -201,45 +218,74 @@ namespace Api.Services
                     };
                 }
 
-                var group = new Group()
+                string existedGroup = null;
+                if (unionUsers.Count() == 1) existedGroup = await GetExistedOneUserGroup(unionUsers[0]);
+                if (unionUsers.Count() == 2) existedGroup = await GetExistedTwoUsersGroup(unionUsers[0], unionUsers[1]);
+                if (existedGroup == null)
                 {
-                    Id = ObjectId.GenerateNewId().ToString(),
-                    Name = name,
-                    IsDeleted = false
-                };
-                await _groupRepository.Add(group);
-
-                // Add Users to Group
-                foreach (string uid in users)
-                {
-                    var groupUser = new GroupUser()
+                    var group = new Group()
                     {
                         Id = ObjectId.GenerateNewId().ToString(),
-                        Gid = group.Id,
-                        Uid = uid,
+                        Name = name,
                         IsDeleted = false
                     };
-                    await _groupUserRepository.Add(groupUser);
+                    await _group.Add(group);
+                    // Add Users to Group
+                    foreach (string uid in unionUsers)
+                    {
+                        var groupUser = new GroupUser()
+                        {
+                            Id = ObjectId.GenerateNewId().ToString(),
+                            Gid = group.Id,
+                            Uid = uid,
+                            IsDeleted = false
+                        };
+                        await _groupUser.Add(groupUser);
+                    }
+
+                    var groupView = new GroupView
+                    {
+                        Id = group.Id,
+                        Name = group.Name,
+                        Users = unionUsers,
+                        Chats = new List<Chat>()
+                    };
+                    return new RequestResult
+                    {
+                        Success = true,
+                        Data = groupView,
+                    };
                 }
-                var groupView = new GroupView
+                else
                 {
-                    Id = group.Id,
-                    Name = group.Name,
-                    Users = users
-                };
-                return new RequestResult
-                {
-                    Success = true,
-                    Data = groupView,
-                };
+                    var group = (await _group.Get(x => x.Id == existedGroup)).FirstOrDefault();
+                    if (group.IsDeleted)
+                    {
+                        group.IsDeleted = false;
+                        await _group.Update(group);
+                    }
+                    var groupView = await GetGroupView(existedGroup);
+                    foreach (string uid in groupView.Users)
+                    {
+                        var groupUser = (await _groupUser.Get(x => x.Gid == existedGroup && x.Uid == uid)).FirstOrDefault();
+                        if (groupUser.IsDeleted)
+                        {
+                            groupUser.IsDeleted = false;
+                            await _groupUser.Update(groupUser);
+                        }
+                    }
+
+                    return new RequestResult
+                    {
+                        Success = true,
+                        Data = groupView
+                    };
+
+                }
             }
             catch (Exception ex)
             {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "CreateGroup error - " + ex.Message,
-                };
+                return new RequestResult { Success = false, Message = "CreateNewGroup error - " + ex.Message };
             }
         }
 
@@ -252,30 +298,26 @@ namespace Api.Services
         {
             try
             {
-                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
+                var groupUser = (await _groupUser.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
                 if (groupUser == null || groupUser.IsDeleted)
                 {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "No authority.",
-                    };
+                    return new RequestResult { Success = false, Message = "No authority." };
                 }
 
                 // delete group users
-                var groupUsers = (await _groupUserRepository.Get(x => x.Gid == gid && !x.IsDeleted));
+                var groupUsers = (await _groupUser.Get(x => x.Gid == gid && !x.IsDeleted));
                 foreach (var gUser in groupUsers)
                 {
                     gUser.IsDeleted = true;
-                    await _groupUserRepository.Update(gUser);
+                    await _groupUser.Update(gUser);
                 }
 
                 // delete group
-                var group = (await _groupRepository.Get(x => x.Id == gid)).FirstOrDefault();
+                var group = (await _group.Get(x => x.Id == gid)).FirstOrDefault();
                 if (group != null && !group.IsDeleted)
                 {
                     group.IsDeleted = false;
-                    await _groupRepository.Update(group);
+                    await _group.Update(group);
                 }
 
                 return new RequestResult
@@ -285,17 +327,8 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "DeleteGroup error - " + ex.Message,
-                };
+                return new RequestResult { Success = false, Message = "DeleteGroup error - " + ex.Message };
             }
-        }
-
-        private async Task<List<string>> GetGroupUsers(string gid)
-        {
-            return (await _groupUserRepository.Get(x => x.Gid == gid && !x.IsDeleted)).Select(x => x.Uid).ToList();
         }
 
         /// <summary>
@@ -308,21 +341,17 @@ namespace Api.Services
         {
             try
             {
-                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
+                var groupUser = (await _groupUser.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
                 if (groupUser == null || groupUser.IsDeleted)
                 {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "No authority.",
-                    };
+                    return new RequestResult { Success = false, Message = "No authority." };
                 }
 
-                var group = (await _groupRepository.Get(x => x.Id == gid)).FirstOrDefault();
+                var group = (await _group.Get(x => x.Id == gid)).FirstOrDefault();
                 if (group != null && !group.IsDeleted)
                 {
                     group.Name = name;
-                    await _groupRepository.Update(group);
+                    await _group.Update(group);
 
                     var groupView = new GroupView
                     {
@@ -335,21 +364,13 @@ namespace Api.Services
                 }
                 else
                 {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "Group is not existing."
-                    };
+                    return new RequestResult { Success = false, Message = "Group is not existing." };
                 }
 
             }
             catch (Exception ex)
             {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "ChangeGroupName error - " + ex.Message,
-                };
+                return new RequestResult { Success = false, Message = "ChangeGroupName error - " + ex.Message };
             }
         }
 
@@ -363,42 +384,30 @@ namespace Api.Services
         {
             try
             {
-                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
+                var groupUser = (await _groupUser.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
                 if (groupUser == null || groupUser.IsDeleted)
                 {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "No authority.",
-                    };
+                    return new RequestResult { Success = false, Message = "No authority." };
                 }
 
-                var group = (await _groupRepository.Get(x => x.Id == gid)).FirstOrDefault();
+                var group = (await _group.Get(x => x.Id == gid)).FirstOrDefault();
                 if (group == null || group.IsDeleted)
                 {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "Group is not existing."
-                    };
+                    return new RequestResult { Success = false, Message = "Group is not existing." };
                 }
 
                 if (!(await IsUserExisted(uid)))
                 {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "User is not existing."
-                    };
+                    return new RequestResult { Success = false, Message = "User is not existing." };
                 }
 
-                groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
+                groupUser = (await _groupUser.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
                 if (groupUser != null)
                 {
                     if (groupUser.IsDeleted)
                     {
                         groupUser.IsDeleted = false;
-                        await _groupUserRepository.Update(groupUser);
+                        await _groupUser.Update(groupUser);
                     }
                 }
                 else
@@ -410,7 +419,7 @@ namespace Api.Services
                         Uid = uid,
                         IsDeleted = false
                     };
-                    await _groupUserRepository.Add(groupUser);
+                    await _groupUser.Add(groupUser);
                 }
 
                 var groupView = new GroupView
@@ -424,11 +433,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "AddUserToGroup error - " + ex.Message,
-                };
+                return new RequestResult { Success = false, Message = "AddUserToGroup error - " + ex.Message };
             }
         }
 
@@ -442,33 +447,25 @@ namespace Api.Services
         {
             try
             {
-                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
+                var groupUser = (await _groupUser.Get(x => x.Gid == gid && x.Uid == editor && !x.IsDeleted)).FirstOrDefault();
                 if (groupUser == null || groupUser.IsDeleted)
                 {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "No authority.",
-                    };
+                    return new RequestResult { Success = false, Message = "No authority." };
                 }
 
-                var group = (await _groupRepository.Get(x => x.Id == gid)).FirstOrDefault();
+                var group = (await _group.Get(x => x.Id == gid)).FirstOrDefault();
                 if (group == null || group.IsDeleted)
                 {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "Group is not existing."
-                    };
+                    return new RequestResult { Success = false, Message = "Group is not existing." };
                 }
 
-                groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
+                groupUser = (await _groupUser.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
                 if (groupUser != null)
                 {
                     if (!groupUser.IsDeleted)
                     {
                         groupUser.IsDeleted = true;
-                        await _groupUserRepository.Update(groupUser);
+                        await _groupUser.Update(groupUser);
                     }
                 }
 
@@ -483,222 +480,25 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "RemoveUserFromGroup error - " + ex.Message,
-                };
+                return new RequestResult { Success = false, Message = "RemoveUserFromGroup error - " + ex.Message };
             }
         }
 
         /// <summary>
-        /// Add Chat
+        /// Get UserProfile
         /// </summary>
-        /// <param name="sender">Sender User ID</param>
-        /// <param name="type">Chat Type</param>
-        /// <param name="content">Chat Content</param>
-        /// <param name="gid">Group ID</param>
-        /// <param name="Receiver">Receiver User ID</param>
-        public async Task<RequestResult> AddChat(string sender, ChatType type, string content, string gid = null, string receiver = null)
+        /// <param name="userIds">User ID</param>
+        public async Task<RequestResult> GetUserProfile(List<string> userIds)
         {
             try
             {
-                var user = (await _userRepository.Get(x => x.Id == sender)).FirstOrDefault();
-                if (user == null || user.IsDeleted)
-                {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "Sender is not existing."
-                    };
-                }
-
-                if (string.IsNullOrWhiteSpace(content))
-                {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "Can't send empty message."
-                    };
-                }
-
-                if (!Enum.IsDefined(typeof(ChatType), type))
-                {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "Unsupported message type."
-                    };
-                }
-
-                if (gid != null)
-                {
-                    var group = (await _groupRepository.Get(x => x.Id == gid)).FirstOrDefault();
-                    if (group == null || group.IsDeleted)
-                    {
-                        return new RequestResult
-                        {
-                            Success = false,
-                            Message = "Group is not existing."
-                        };
-                    }
-                }
-
-                if (receiver != null)
-                {
-                    var userReceiver = (await _userRepository.Get(x => x.Id == receiver)).FirstOrDefault();
-                    if (userReceiver == null || userReceiver.IsDeleted)
-                    {
-                        return new RequestResult
-                        {
-                            Success = false,
-                            Message = "User is not existing."
-                        };
-                    }
-                }
-
-
-                var chat = new Chat()
-                {
-                    Id = ObjectId.GenerateNewId().ToString(),
-                    Sender = sender,
-                    Type = type,
-                    Content = content,
-                    Gid = gid,
-                    Receiver = receiver,
-                    CreatedOn = DateTime.UtcNow,
-                    IsDeleted = false
-                };
-                await _chatRepository.Add(chat);
-                return new RequestResult
-                {
-                    Success = true,
-                    Data = chat,
-                };
+                List<UserView> users = await GetUserProfileByIds(userIds);
+                return new RequestResult { Success = true, Data = users };
             }
             catch (Exception ex)
             {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "AddChat error - " + ex.Message,
-                };
+                return new RequestResult { Success = false, Message = "GetUserProfile error - " + ex.Message };
             }
-        }
-
-        /// <summary>
-        /// Delete Chat
-        /// </summary>
-        /// <param name="cid">"Chat ID"</param>
-        public async Task<RequestResult> DeleteChat(string editor, string cid)
-        {
-            try
-            {
-                var chat = (await _chatRepository.Get(x => x.Id == cid)).FirstOrDefault();
-                if (chat != null)
-                {
-                    if (!chat.IsDeleted)
-                    {
-                        if (chat.Sender != editor)
-                        {
-                            return new RequestResult
-                            {
-                                Success = false,
-                                Message = "No authority.",
-                            };
-                        }
-                        chat.IsDeleted = true;
-                        await _chatRepository.Update(chat);
-                    }
-                }
-                return new RequestResult { Success = true };
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "DeleteChat error - " + ex.Message,
-                };
-            }
-        }
-
-        private async Task<RequestResult> AddRelation(string owner, string target, UserRelationType type = 0)
-        {
-            try
-            {
-                var relation = (await _userRelationRepository.Get(x => x.Owner == owner && x.Target == target)).FirstOrDefault();
-                if (relation == null)
-                {
-                    relation = new UserRelation()
-                    {
-                        Id = ObjectId.GenerateNewId().ToString(),
-                        Owner = owner,
-                        Target = target,
-                        Type = type,
-                        IsDeleted = false
-                    };
-                    await _userRelationRepository.Add(relation);
-                }
-                else
-                {
-                    relation.IsDeleted = false;
-                    relation.Type = type;
-                    await _userRelationRepository.Update(relation);
-                }
-                return new RequestResult { Success = true };
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult { Success = false, Message = "AddRelation error - " + ex.Message };
-            }
-        }
-
-        /// <summary>
-        /// Add Friend
-        /// </summary>
-        /// <param name="owner">Owner User ID</param>
-        /// <param name="target">Target User ID</param>
-        public async Task<RequestResult> AddFriend(string owner, string target)
-        {
-            var result = await AddRelation(owner, target, UserRelationType.Friend);
-            if (!result.Success) return result;
-            return await AddRelation(target, owner, UserRelationType.Friend);
-        }
-
-        /// <summary>
-        /// Delete Relation
-        /// </summary>
-        /// <param name="owner">Owner User ID</param>
-        /// <param name="target">Target User ID</param>
-        private async Task<RequestResult> DeleteRelation(string owner, string target)
-        {
-            try
-            {
-                var relation = (await _userRelationRepository.Get(x => x.Owner == owner && x.Target == target)).FirstOrDefault();
-                if (relation != null && !relation.IsDeleted)
-                {
-                    relation.IsDeleted = true;
-                    await _userRelationRepository.Update(relation);
-                }
-                return new RequestResult { Success = true };
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult { Success = false, Message = "DeleteRelation error - " + ex.Message };
-            }
-        }
-
-        /// <summary>
-        /// Delete Friend
-        /// </summary>
-        /// <param name="owner">Owner User ID</param>
-        /// <param name="target">Target User ID</param>
-        public async Task<RequestResult> DeleteFriend(string owner, string target)
-        {
-            var result = await DeleteRelation(owner, target);
-            if (!result.Success) return result;
-            return await DeleteRelation(target, owner);
         }
 
         /// <summary>
@@ -711,9 +511,7 @@ namespace Api.Services
         {
             try
             {
-                var chats = await _chatRepository.Get(x => x.Gid == gid && !x.IsDeleted);
-                var returnChats = chats.OrderByDescending(x => x.CreatedOn).Skip(position).Take(limit);
-                return new RequestResult { Success = true, Data = returnChats };
+                return new RequestResult { Success = true, Data = await GetGroupChats(gid, position, limit) };
             }
             catch (Exception ex)
             {
@@ -722,116 +520,100 @@ namespace Api.Services
         }
 
         /// <summary>
-        /// Get Chats
+        /// Get User Groups
         /// </summary>
-        /// <param name="uid0">User A</param>
-        /// <param name="uid1">User B</param>
-        /// <param name="position">Start Position</param>
-        /// <param name="limit">Chat Number</param>
-        public async Task<RequestResult> GetChatsByUsers(string uid0, string uid1, int position, int limit)
+        /// <param name="user">"User ID"</param>
+        public async Task<RequestResult> GetUserGroups(string user)
         {
             try
             {
-                var chats = await _chatRepository.Get(x => ((x.Sender == uid0 && x.Receiver == uid1) || (x.Sender == uid1 && x.Receiver == uid0)) && !x.IsDeleted);
-                var returnChats = chats.OrderByDescending(x => x.CreatedOn).Skip(position).Take(limit);
-                returnChats = returnChats.OrderBy(x => x.CreatedOn);
-                return new RequestResult { Success = true, Data = returnChats };
+                var groupIds = (await _groupUser.Get(x => x.Uid == user && !x.IsDeleted)).Select(x => x.Gid).ToList();
+                return new RequestResult { Success = true, Data = groupIds };
             }
             catch (Exception ex)
             {
-                return new RequestResult { Success = false, Message = "GetChats error - " + ex.Message };
+                return new RequestResult { Success = false, Message = "GetUserGroups error - " + ex.Message };
             }
         }
 
-        /// <summary>
-        /// Get Recent Chats By User
-        /// </summary>
-        /// <param name="uid">User ID</param>
-        public async Task<RequestResult> GetRecentChatsByUser(string uid)
+        private async Task<List<string>> GetGroupUsers(string gid)
         {
-            try
-            {
-                List<Chat> chats = new List<Chat>();
-                List<GroupView> groups = new List<GroupView>();
-                List<string> allUserIds = new List<string>();
-
-                // Get Recent Group Chats
-                var groupIds = (await _groupUserRepository.Get(x => x.Uid == uid && !x.IsDeleted)).Select(x => x.Gid).ToList();
-                foreach (var gid in groupIds)
-                {
-                    var group = (await _groupRepository.Get(x => x.Id == gid && !x.IsDeleted)).FirstOrDefault();
-                    var chat = (await _chatRepository.Get(x => x.Gid == gid && !x.IsDeleted)).OrderByDescending(x => x.CreatedOn).FirstOrDefault();
-                    if (chat != null) chats.Add(chat);
-                    var userIds = (await _groupUserRepository.Get(x => x.Gid == gid && !x.IsDeleted)).Select(x => x.Uid).ToList();
-                    var groupView = new GroupView
-                    {
-                        Id = group.Id,
-                        Name = group.Name,
-                        Users = userIds
-                    };
-                    groups.Add(groupView);
-
-                    allUserIds = allUserIds.Union(userIds).ToList();
-                }
-
-                // Get Recent Users' Chat
-                var friends = (await _chatRepository.Get(x => (x.Sender == uid || x.Receiver == uid))).Select(x => (x.Sender == uid ? x.Receiver : x.Sender)).Distinct().ToList();
-                foreach (var friend in friends)
-                {
-                    var chat = (await _chatRepository.Get(x => ((x.Sender == uid && x.Receiver == friend) || (x.Sender == friend && x.Receiver == uid)) && !x.IsDeleted))
-                    .OrderByDescending(x => x.CreatedOn).FirstOrDefault();
-                    if (chat != null) chats.Add(chat);
-                }
-                friends.Add(uid);
-                List<User> users = new List<User>();
-                allUserIds = allUserIds.Union(friends).ToList();
-                foreach (var id in allUserIds)
-                {
-                    var user = (await _userRepository.Get(x => x.Id == id && !x.IsDeleted)).FirstOrDefault();
-                    if (user != null) users.Add(user);
-                }
-
-                var data = new
-                {
-                    chats,
-                    groups,
-                    friends,
-                    users
-                };
-                return new RequestResult { Success = true, Data = data };
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult { Success = false, Message = "GetRecentGroupChatByUser error - " + ex.Message };
-            }
+            return (await _groupUser.Get(x => x.Gid == gid && !x.IsDeleted)).Select(x => x.Uid).ToList();
         }
 
-        /// <summary>
-        /// Get UserProfile
-        /// </summary>
-        /// <param name="userIds">User ID</param>
-        public async Task<RequestResult> GetUserProfile(List<string> userIds)
+        private async Task<GroupView> GetGroupView(string groupId)
         {
-            try
+            var group = (await _group.Get(x => x.Id == groupId && !x.IsDeleted)).FirstOrDefault();
+            if (group == null) return null;
+            // group users' ID
+            var groupUsers = (await _groupUser.Get(x => x.Gid == groupId && !x.IsDeleted)).Select(x => x.Uid).ToList();
+            return new GroupView
             {
-                List<UserView> users = new List<UserView>();
-                foreach (var uid in userIds)
-                {
-                    var user = (await _userRepository.Get(x => x.Id == uid && !x.IsDeleted)).FirstOrDefault();
-                    if (user != null) users.Add(new UserView()
-                    {
-                        Id = user.Id,
-                        Name = user.Name,
-                        ProfilePhoto = user.ProfilePhoto
-                    });
-                }
-                return new RequestResult { Success = true, Data = users };
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult { Success = false, Message = "GetRecentGroupChatByUser error - " + ex.Message };
-            }
+                Id = group.Id,
+                Name = group.Name,
+                Users = groupUsers,
+                Chats = await GetGroupChats(groupId, 0, 20)
+            };
         }
+
+        private async Task<List<Chat>> GetGroupChats(string groupId, int position, int limit)
+        {
+            return (await _chat.Get(x => x.Gid == groupId && !x.IsDeleted))
+            .OrderByDescending(x => x.CreatedOn).Skip(position).Take(limit).OrderBy(x => x.CreatedOn).ToList();
+        }
+
+        private async Task<List<UserView>> GetUserProfileByIds(List<string> userIds)
+        {
+            List<UserView> users = new List<UserView>();
+            foreach (var uid in userIds)
+            {
+                var user = (await _user.Get(x => x.Id == uid && !x.IsDeleted)).FirstOrDefault();
+                if (user != null) users.Add(new UserView()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    ProfilePhoto = user.ProfilePhoto
+                });
+            }
+            return users;
+        }
+
+        private async Task<string> GetExistedOneUserGroup(string uid)
+        {
+            var groupIds = (await _groupUser.Get(x => x.Uid == uid)).Select(x => x.Gid).ToList();
+
+            foreach (var gid in groupIds)
+            {
+                var groupUsers = (await _groupUser.Get(x => x.Gid == gid && !x.IsDeleted)).Select(x => x.Uid).ToList();
+                if (groupUsers.Count() != 1) continue;
+                if (groupUsers[0] == uid) return gid;
+            }
+            return null;
+        }
+
+        private async Task<string> GetExistedTwoUsersGroup(string uid0, string uid1)
+        {
+            var uid0groups = (await _groupUser.Get(x => x.Uid == uid0));
+            var uid1groups = (await _groupUser.Get(x => x.Uid == uid1));
+            var sameGroups = (from group0 in uid0groups
+                              join group1 in uid1groups
+                              on group0.Gid equals group1.Gid
+                              select group1.Gid).ToList();
+
+            foreach (var groupId in sameGroups)
+            {
+                var groupUsers = (await _groupUser.Get(x => x.Gid == groupId && !x.IsDeleted)).Select(x => x.Uid).ToList();
+                if (groupUsers.Count() == 2) return groupId;
+            }
+            return null;
+        }
+
+        private async Task<Boolean> IsUserExisted(string uid)
+        {
+            return ((await _user.Get(x => x.Id == uid)).FirstOrDefault()) != null;
+        }
+
+        //=============================================================================================
 
         /// <summary>
         /// Update User Read Chats
@@ -843,11 +625,11 @@ namespace Api.Services
         {
             try
             {
-                var groupUser = (await _groupUserRepository.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
+                var groupUser = (await _groupUser.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
                 if (groupUser != null)
                 {
                     groupUser.ReadChatID = cid;
-                    await _groupUserRepository.Update(groupUser);
+                    await _groupUser.Update(groupUser);
                     return new RequestResult { Success = true };
                 }
                 else
@@ -879,11 +661,11 @@ namespace Api.Services
         {
             try
             {
-                var friend = (await _userRelationRepository.Get(x => x.Owner == sender && x.Target == receiver)).FirstOrDefault();
+                var friend = (await _userRelation.Get(x => x.Owner == sender && x.Target == receiver)).FirstOrDefault();
                 if (friend != null)
                 {
                     friend.ReadChatID = cid;
-                    await _userRelationRepository.Update(friend);
+                    await _userRelation.Update(friend);
                     return new RequestResult { Success = true };
                 }
                 else
@@ -901,56 +683,6 @@ namespace Api.Services
                 {
                     Success = false,
                     Message = "UpdateUserReadChats error - " + ex.Message,
-                };
-            }
-        }
-
-        /// <summary>
-        /// Get User Groups
-        /// </summary>
-        /// <param name="user">"User ID"</param>
-        public async Task<RequestResult> GetUserGroups(string user)
-        {
-            try
-            {
-                var groupIds = (await _groupUserRepository.Get(x => x.Uid == user && !x.IsDeleted)).Select(x => x.Gid).ToList();
-                return new RequestResult
-                {
-                    Success = true,
-                    Data = groupIds,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "GetUserGroups error - " + ex.Message,
-                };
-            }
-        }
-
-        /// <summary>
-        /// Get User ConnectionIds
-        /// </summary>
-        /// <param name="user">"User ID"</param>
-        public async Task<RequestResult> GetUserConnectionIds(string user)
-        {
-            try
-            {
-                var connectionIds = (await _onlineUserRepository.Get(x => x.Uid == user && !x.IsDeleted)).ToList();
-                return new RequestResult
-                {
-                    Success = true,
-                    Data = connectionIds,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "GetUserConnectionIds error - " + ex.Message,
                 };
             }
         }

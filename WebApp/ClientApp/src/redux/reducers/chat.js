@@ -1,231 +1,127 @@
-import {
-  CHAT_RECORD_UPDATE,
-  ONLINE_USER_UPDATE,
-  GROUP_UPDATE,
-  GROUP_DELETE,
-  FRIEND_ADD,
-  FRIEND_DELETE,
-  USER_PROFILE_UPDATE,
-  CHAT_ADD,
-  CHAT_GROUP_UPDATE,
-  CHAT_USER_UPDATE,
-  CHATROOM_OWNER_CHANGE
-} from "../actionTypes";
-
-import Storage from "../../utils/Storage";
-
-export const CHATS = "chats";
-export const FRIENDS = "friends";
+// actions
+export const UPDATE_CHATROOM = "CHAT_UPDATE_CHATROOM";
+export const UPDATE_ONLINE_USER = "UPDATE_ONLINE_USER";
+export const UPDATE_GROUP = "UPDATE_GROUP";
+export const UPDATE_GROUP_VIEW = "UPDATE_GROUP_VIEW";
+export const DELETE_GROUP = "DELETE_GROUP";
+export const UPDATE_USERS = "UPDATE_USERS";
+export const ADD_CHAT = "ADD_CHAT";
+export const ADD_CHATS = "ADD_CHATS";
+export const SWITCH_CHATROOM = "SWITCH_CHATROOM";
+// data nodes
 export const GROUPS = "groups";
 export const USERS = "users";
 export const ONLINE_USERS = "onlineUsers";
-export const CHAT_HISTORY = "chatHistory";
+export const CHATROOM = "chatroom";
 
-const initialState = {
-  [FRIENDS]: [],
-  [GROUPS]: [],
-  [CHATS]: [],
-  [USERS]: [],
-  [ONLINE_USERS]: [],
-  [CHAT_HISTORY]: {
-    records: [],
-    owner: {
-      type: 0, // 0 user 1 group
-      id: null // base on type: 0: UserId 1: GroupId
-    }
-  }
-};
-
-export default function chatReducer(state = initialState, action) {
+export default function chatReducer(
+  state = {
+    [GROUPS]: [],
+    [USERS]: [],
+    [ONLINE_USERS]: [],
+    [CHATROOM]: null
+  },
+  action
+) {
   switch (action.type) {
-    case CHAT_RECORD_UPDATE:
-      return {
-        ...state,
-        [CHATS]: action.payload[CHATS],
-        [FRIENDS]: action.payload[FRIENDS],
-        [GROUPS]: action.payload[GROUPS],
-        [USERS]: action.payload[USERS]
-      };
-    case ONLINE_USER_UPDATE:
+    case UPDATE_CHATROOM:
+      const { groups, users } = action.payload;
+      return { ...state, [GROUPS]: groups, [USERS]: users };
+    case UPDATE_ONLINE_USER:
       return { ...state, [ONLINE_USERS]: action.payload };
-    case GROUP_UPDATE:
+    case UPDATE_GROUP:
       return updateGroup(state, action.payload);
-    case GROUP_DELETE:
+    case UPDATE_GROUP_VIEW:
+      return updateGroupView(state, action.payload);
+    case DELETE_GROUP:
       return deleteGroup(state, action.payload);
-    case FRIEND_ADD:
-      return addFriend(state, action.payload);
-    case FRIEND_DELETE:
-      return deleteFriend(state, action.payload);
-    case USER_PROFILE_UPDATE:
+    case UPDATE_USERS:
       return updateUserProfile(state, action.payload);
-    case CHAT_ADD:
+    case ADD_CHAT:
       return addChat(state, action.payload);
-    case CHAT_GROUP_UPDATE:
-      return updateChatHistoryGroup(state, action.payload);
-    case CHAT_USER_UPDATE:
-      return updateChatHistoryUser(state, action.payload);
-    case CHATROOM_OWNER_CHANGE:
-      return changeChatroomOwner(state, action.payload);
+    case ADD_CHATS:
+      return addChats(state, action.payload);
+    case SWITCH_CHATROOM:
+      return { ...state, [CHATROOM]: action.payload };
     default:
       return state;
   }
 }
 
-const updateGroup = (state, payload) => {
-  let newGroup = payload;
-  let groups = state[GROUPS];
+const sortGroups = groups => {
+  groups.sort((a, b) => {
+    let aChat = a.chats ? a.chats[a.chats.length - 1] : null;
+    let bChat = b.chats ? b.chats[b.chats.length - 1] : null;
+    if (aChat == null && bChat == null) return 0;
+    if (aChat == null) return -1;
+    if (bChat == null) return 1;
+    return aChat.createOn > bChat.createOn ? 1 : -1;
+  });
+  return groups;
+};
+
+const updateGroup = (state, newGroup) => {
   let newGroups = [newGroup];
-  groups.forEach(group => {
+  state[GROUPS].forEach(group => {
     if (group.id !== newGroup.id) {
       newGroups.push(group);
     }
   });
+  return { ...state, [GROUPS]: sortGroups(newGroups), [CHATROOM]: newGroup.id };
+};
+
+const updateGroupView = (state, groupView) => {
+  let newGroups = [];
+  state[GROUPS].forEach(group => {
+    if (group.id === groupView.id) {
+      groupView.chats = group.chats;
+      newGroups.push(groupView);
+    } else {
+      newGroups.push(group);
+    }
+  });
   return { ...state, [GROUPS]: newGroups };
 };
 
-const deleteGroup = (state, payload) => {
-  let groupId = payload;
-  let groups = state[GROUPS];
+const deleteGroup = (state, groupId) => {
   let newGroups = [];
-  let inGroups = false;
-  groups.forEach(group => {
+  state[GROUPS].forEach(group => {
     if (group.id !== groupId) {
       newGroups.push(group);
-    } else {
-      inGroups = true;
     }
   });
-  if (!inGroups) return state;
   return { ...state, [GROUPS]: newGroups };
 };
 
-const addFriend = (state, payload) => {
-  let userId = payload;
-  let friends = state[FRIENDS];
-  if (friends.includes(userId)) {
-    return state;
-  } else {
-    return { ...state, [FRIENDS]: [...friends, userId] };
-  }
-};
-
-const deleteFriend = (state, payload) => {
-  let userId = payload;
-  let friends = state[FRIENDS];
-  if (!friends.includes(userId)) {
-    return state;
-  } else {
-    var newFriends = friends.filter(uid => uid !== userId);
-    return { ...state, [FRIENDS]: newFriends };
-  }
-};
-
-const updateUserProfile = (state, payload) => {
-  let oldUsers = state[USERS];
-  let newUsers = payload;
-  let users = [];
-  newUsers.forEach(newUser => {
-    users.push(newUser);
-  });
-  oldUsers.forEach(user => {
-    let existed = false;
-    newUsers.forEach(newUser => {
-      if (user.id === newUser.id) existed = true;
-    });
-    if (!existed) users.push(user);
-  });
-  return { ...state, [USERS]: users };
-};
-
-const addChat = (state, payload) => {
-  let newChat = payload;
-  // chats
-  let oldChats = state[CHATS];
-  let newChats = [newChat];
-  oldChats.forEach(oldChat => {
-    let isSame = isSameGroup(
-      oldChat,
-      newChat.gid,
-      newChat.sender,
-      newChat.receiver
-    );
-    if (!isSame) {
-      newChats.push(oldChat);
+const updateUserProfile = (state, newUsers) => {
+  if (!Array.isArray(newUsers)) return state;
+  if (newUsers.length === 0) return state;
+  state[USERS].forEach(user => {
+    if (!newUsers.find(x => x.id === user.id)) {
+      newUsers.push(user);
     }
   });
-  // chatHistory
-  let chatHistory = state[CHAT_HISTORY];
-  let gid = null;
-  let uid = null;
-  let uid1 = null;
-  if (chatHistory.owner.type === 0) {
-    gid = chatHistory.owner.id;
-  } else {
-    uid = chatHistory.owner.id;
-    var currentUser = Storage.retrieveData("user").id;
-    if(currentUser==uid) uid1=uid;
-  }
-  // Storage.retrieveData("user")
-  
-
-
-  if (isSameGroup(newChat, gid, uid, uid1)) {
-    let records = [...chatHistory.records, newChat];
-    let owner = { ...chatHistory.owner };
-    let newChatHistory = { owner: owner, records: records };
-    let newState = {
-      ...state,
-      [CHATS]: newChats,
-      [CHAT_HISTORY]: newChatHistory
-    };
-    return newState;
-  } else {
-    let newState = { ...state, [CHATS]: newChats };
-    return newState;
-  }
+  return { ...state, [USERS]: newUsers };
 };
 
-const isSameGroup = (chat, gid, uid0, uid1 = null) => {
-  if (uid0 === uid1) {
-    let { sender, receiver } = chat;
-    if (sender !== receiver) return false;
-  }
-  if (chat.gid !== null) {
-    return chat.gid === gid;
-  } else {
-    let { sender, receiver } = chat;
-    if (uid1 === null) {
-      return sender === uid0 || receiver === uid0;
+const addChat = (state, newChat) => {
+  let groups = state[GROUPS];
+  groups.forEach(group => {
+    if (group.id === newChat.id) {
+      if (!Array.isArray(group.chats)) group.chats = [];
+      group.chats.push(newChat);
     }
-    return (
-      (sender === uid0 && receiver === uid1) ||
-      (sender === uid1 && receiver === uid0)
-    );
-  }
+  });
+  return { ...state, [GROUPS]: sortGroups(groups) };
 };
 
-const updateChatHistoryGroup = (state, payload) => {
-  let { group, chats } = payload;
-  let chatHistory = state[CHAT_HISTORY];
-  let { owner, records } = chatHistory;
-  if (owner.type !== 0 || owner.id !== group) return state;
-  let newRecords = [...records, ...chats];
-  chatHistory = { owner, records: newRecords };
-  return { ...state, [CHAT_HISTORY]: chatHistory };
-};
-
-const updateChatHistoryUser = (state, payload) => {
-  let { user, chats } = payload;
-  let chatHistory = state[CHAT_HISTORY];
-  let { owner, records } = chatHistory;
-  if (owner.type !== 1 || owner.id !== user) return state;
-  let newRecords = [...records, ...chats];
-  chatHistory = { owner, records: newRecords };
-  return { ...state, [CHAT_HISTORY]: chatHistory };
-};
-
-const changeChatroomOwner = (state, payload) => {
-  let chatHistory = state[CHAT_HISTORY];
-  let newChatHistory = { ...chatHistory, owner: payload, records: [] };
-  return { ...state, [CHAT_HISTORY]: newChatHistory };
+const addChats = (state, { groupId, chats }) => {
+  let groups = state[GROUPS];
+  groups.forEach(group => {
+    if (group.id === groupId) {
+      if (!Array.isArray(group.chats)) group.chats = [];
+      group.chats = [...chats, ...group.chats];
+    }
+  });
+  return { ...state, [GROUPS]: groups };
 };

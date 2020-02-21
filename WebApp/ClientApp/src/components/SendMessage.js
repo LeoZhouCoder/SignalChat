@@ -11,7 +11,7 @@ import {
 import { connect } from "react-redux";
 
 import { SCREEN_BIG } from "../utils/Dimensions";
-import { sendMessage } from "../utils/Chat";
+import { sendMessage } from "../redux/chatActions";
 
 class SendMessage extends Component {
   state = { text: "" };
@@ -23,17 +23,12 @@ class SendMessage extends Component {
   onKeyPress = e => {
     if (e.key !== "Enter") return;
     e.preventDefault();
-    this.sendMessage();
+    this.doSendMessage();
     this.setState({ text: "" });
   };
 
-  sendMessage = () => {
-    const { type, id } = this.props.owner;
-    if (type === 0) {
-      sendMessage(0, this.state.text, id, null);
-    } else {
-      sendMessage(0, this.state.text, null, id);
-    }
+  doSendMessage = () => {
+    sendMessage(0, this.state.text, this.props.chatroom, null);
     this.setState({ text: "" });
   };
 
@@ -78,7 +73,7 @@ class SendMessage extends Component {
         </div>
         <div className="flexBox center-v space">
           <Icon name="smile outline" size="big" color="grey" />
-          <Button className="space" color="teal" onClick={this.sendMessage}>
+          <Button className="space" color="teal" onClick={this.doSendMessage}>
             Send
           </Button>
         </div>
@@ -87,6 +82,6 @@ class SendMessage extends Component {
   }
 }
 const mapStateToProps = state => ({
-  owner: state.chatReducer.chatHistory.owner
+  chatroom: state.chatReducer.chatroom
 });
 export default connect(mapStateToProps)(SendMessage);

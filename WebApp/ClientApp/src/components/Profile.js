@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Icon, Input } from "semantic-ui-react";
 
 import { Avatar } from "./Avatar";
-import { getUserProfile } from "../redux/actions";
+import { getUserProfile } from "../redux/chatActions";
 
 class Profile extends Component {
   state = { editing: false };

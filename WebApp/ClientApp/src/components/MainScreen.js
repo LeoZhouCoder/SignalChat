@@ -13,7 +13,7 @@ import {
   SCREEN_BIG
 } from "../utils/Dimensions";
 
-import { getUserProfile, getGroup } from "../redux/actions";
+import { getUserProfile } from "../redux/chatActions";
 
 const SCREEN_DIALOG = "DIALOG";
 export const SCREEN_CHATS = "CHATS";
@@ -35,15 +35,6 @@ class MainScreen extends React.Component {
       };
     }
   }
-
-  getScreenType = () => {
-    const { screenSize } = this.props;
-    if (screenSize === SCREEN_NORMAL || screenSize === SCREEN_BIG) {
-      return SCREEN_DIALOG;
-    } else {
-      return this.state.screen;
-    }
-  };
 
   onClickTobBarBtn = type => {
     switch (type) {
@@ -94,16 +85,28 @@ class MainScreen extends React.Component {
         />
       );
     } else {
-      const { owner } = this.props;
-      if (owner && owner.type === 0) {
-        var group = getGroup(owner.id);
-        name = group ? group.name : "";
-        icon = "users";
-      } else if (owner && owner.type === 1) {
-        var user = getUserProfile(owner.id);
-        name = user ? user.name : "";
-        icon = "user";
+      const { chatroom, groups, user } = this.props;
+      let group = groups.find(g => g.id === chatroom);
+      if (group) {
+        let { users } = group;
+        if (users.length > 2) {
+          name = group ? group.name : "";
+          icon = "users";
+        } else {
+          var profile;
+          if (users.length === 1) {
+            profile = getUserProfile(users[0]);
+          } else {
+            profile = getUserProfile(users.find(u => u !== user.id));
+          }
+          name = profile ? profile.name : "";
+          icon = "user";
+        }
+      } else {
+        name = "";
+        icon = "";
       }
+
       isBack = screenSize === SCREEN_SMALL || screenSize === SCREEN_MEDIUM;
       ListComponent = ChatHistory;
       footer = <SendMessage screenSize={screenSize} />;
@@ -126,8 +129,9 @@ class MainScreen extends React.Component {
 
 const mapStateToProps = state => ({
   screenSize: state.dimensionReducer.type,
-  owner: state.chatReducer.chatHistory.owner,
+  chatroom: state.chatReducer.chatroom,
   groups: state.chatReducer.groups,
-  users: state.chatReducer.users
+  users: state.chatReducer.users,
+  user: state.authReducer.user
 });
 export default connect(mapStateToProps)(MainScreen);

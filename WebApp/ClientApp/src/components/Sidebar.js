@@ -9,70 +9,83 @@ import ChatContent from "./ChatContent";
 import Profile from "./Profile";
 
 import { SCREEN_BIG } from "../utils/Dimensions";
-import { CHATS, ONLINE_USERS, CHAT_HISTORY } from "../redux/reducers/chat";
-import { changeChatroom } from "../redux/actions";
+import { CHATROOM, ONLINE_USERS, GROUPS } from "../redux/reducers/chat";
+import { changeChatroom, createGroup } from "../redux/chatActions";
 
+const MENU_CHATS = "Chats";
+const MENU_CONTACTS = "OnlineUsers";
 const options = [
-  { key: 1, text: "Chats", value: "Chats" },
-  { key: 2, text: "ActiveUsers", value: "ActiveUsers" }
+  { key: 1, text: MENU_CHATS, value: MENU_CHATS },
+  { key: 2, text: MENU_CONTACTS, value: MENU_CONTACTS }
 ];
 
 class Sidebar extends Component {
-  state = { activeMenu: "Chats" };
+  state = { activeMenu: MENU_CHATS };
 
   handleMenuClick = name => this.setState({ activeMenu: name });
 
   handleItemClick = data => {
     console.log("Sidebar Click Item: ", data);
-    const { activeMenu } = this.state;
-    if (activeMenu === "Chats") {
-      if (data.gid !== null) {
-        changeChatroom(0, data.gid);
-      } else {
-        changeChatroom(
-          1,
-          this.props.user.id === data.sender ? data.receiver : data.sender
-        );
-      }
+    if (this.state.activeMenu === MENU_CHATS) {
+      changeChatroom(data.id);
     } else {
-      changeChatroom(1, data);
+      let group = this.findGroup(data);
+      if (group) {
+        changeChatroom(group.id);
+      } else {
+        if (this.props.user.id === data) {
+          createGroup(null, [data]);
+        } else {
+          createGroup(null, [this.props.user.id, data]);
+        }
+      }
     }
   };
 
+  findGroup = uid => {
+    const { groups, user } = this.props;
+    return groups.find(group => {
+      let { users } = group;
+
+      if (users.length > 2) return false;
+
+      if (uid === user) {
+        if (users.length !== 1) return false;
+        return users[0] === uid;
+      } else {
+        if (users.length !== 2) return false;
+        if (!users.includes(uid) || !users.includes(user)) return false;
+        return true;
+      }
+    });
+  };
+
   render() {
-    console.log("Sidebar render:", this.props);
+    console.log("[Sidebar] render:", this.props);
     const { activeMenu } = this.state;
-    const { owner, chats, onlineUsers, user } = this.props;
+    const { user, groups, onlineUsers, chatroom } = this.props;
     const bigScreen = this.props.screenType === SCREEN_BIG;
     let listData,
       itemComponent,
       placeHolder,
       selectedData = null;
-    if (activeMenu === "Chats") {
-      placeHolder = "No chat record, go to ActiveUsers find more friends.";
-      listData = chats;
-
+    if (activeMenu === MENU_CHATS) {
+      placeHolder = "No chat record, go to OnlineUsers find more friends.";
+      listData = groups;
       itemComponent = ChatContent;
-      listData.forEach(data => {
-        if (owner.type === 0 && owner.id === data.gid) selectedData = data;
-        if(owner.type === 1)
-        {
-          if(owner.id===user.id)
-          {
-            if(owner.id === data.sender && owner.id === data.receiver)selectedData = data;
-          }else{
-            if(owner.id === data.sender || owner.id === data.receiver) selectedData = data;
-          }
-        }
-      });
+      selectedData = listData.find(data => data.id === chatroom);
     } else {
       placeHolder = "No user online right now.";
       listData = onlineUsers;
       itemComponent = ContactContent;
-      if (owner.type === 1) {
-        listData.forEach(uid => {
-          if (owner.id === uid) selectedData = uid;
-        });
+      let group = groups.find(data => data.id === chatroom);
+      if (group) {
+        let { users } = group;
+        if (users.length === 2) {
+          selectedData = listData.find(
+            uid => users.includes(uid) && users.includes(user)
+          );
+        }
       }
     }
     console.log("selectedData", selectedData);
@@ -102,8 +115,8 @@ class Sidebar extends Component {
 }
 const mapStateToProps = state => ({
   user: state.authReducer.user,
-  owner: state.chatReducer[CHAT_HISTORY].owner,
-  chats: state.chatReducer[CHATS],
+  chatroom: state.chatReducer[CHATROOM],
+  groups: state.chatReducer[GROUPS],
   onlineUsers: state.chatReducer[ONLINE_USERS]
 });
 export default connect(mapStateToProps)(Sidebar);

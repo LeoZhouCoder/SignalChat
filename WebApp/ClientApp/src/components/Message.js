@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Avatar } from "./Avatar";
-import { getUserProfile } from "../redux/actions";
+import { getUserProfile } from "../redux/chatActions";
 import {getTimeString} from "../utils/Time";
 
 const Message = ({ chat, self }) => {
