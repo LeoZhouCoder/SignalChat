@@ -55,7 +55,6 @@ const mapStateToProps = (state, props) => {
   const group = props.data;
   const groups = state.chatReducer.groups;
   const groupIndex = groups.indexOf(group);
-  console.log("[ChatContent] mapStateToProps: ", groupIndex);
   return {
     currentUser: state.authReducer.user,
     group: state.chatReducer.groups[groupIndex],

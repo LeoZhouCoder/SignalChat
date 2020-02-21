@@ -28,7 +28,6 @@ class SendMessage extends Component {
   };
 
   doSendMessage = () => {
-    console.log("doSendMessage: ", this.props);
     sendMessage(0, this.state.text, this.props.chatroom, null);
     this.setState({ text: "" });
   };

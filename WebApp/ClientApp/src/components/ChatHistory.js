@@ -20,11 +20,18 @@ class ChatHistory extends React.Component {
     dom.scrollTop = dom.scrollHeight;
   };
 
+  handleScroll = e => {
+    let list = e.target;
+    console.log(list.scrollTop);
+    if(list.scrollTop===0){
+      // loadmore
+    }
+  };
+
   render() {
     const { user, chatroom, groups } = this.props;
     let group = groups.find(group => group.id === chatroom);
-    const chats = group?group.chats:[];
-    console.log("ChatHistory render: ", chats);
+    const chats = group ? group.chats : [];
     if (chats.length === 0) {
       return (
         <div className="extendable list chats">
@@ -36,7 +43,11 @@ class ChatHistory extends React.Component {
     }
 
     return (
-      <div className="extendable list chats" ref="chats">
+      <div
+        className="extendable list chats"
+        ref="chats"
+        onScroll={this.handleScroll}
+      >
         {chats.map((chat, i) => (
           <Message key={i} chat={chat} self={chat.sender === user.id} />
         ))}

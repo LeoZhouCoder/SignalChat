@@ -25,13 +25,11 @@ class Sidebar extends Component {
   handleMenuClick = name => this.setState({ activeMenu: name });
 
   handleItemClick = data => {
-    console.log("Sidebar Click Item: ", data);
     const { chatroom } = this.props;
     if (this.state.activeMenu === MENU_CHATS) {
       if (chatroom !== data.id) changeChatroom(data.id);
     } else {
       let group = this.findGroup(data);
-      console.log("findGroup:", group);
       if (group) {
         if (chatroom !== group.id) changeChatroom(group.id);
       } else {
@@ -62,7 +60,6 @@ class Sidebar extends Component {
   };
 
   render() {
-    console.log("[Sidebar] render:", this.props);
     const { activeMenu } = this.state;
     const { user, groups, onlineUsers, chatroom } = this.props;
     const bigScreen = this.props.screenType === SCREEN_BIG;
@@ -79,9 +76,7 @@ class Sidebar extends Component {
       placeHolder = "No user online right now.";
       listData = onlineUsers;
       itemComponent = ContactContent;
-      console.log("groups:", groups);
       let group = groups.find(data => data.id === chatroom);
-      console.log("group:", group);
       if (group) {
         let { users } = group;
         if (users.length === 2) {
@@ -93,7 +88,6 @@ class Sidebar extends Component {
         }
       }
     }
-    console.log("selectedData", selectedData);
     return (
       <div
         className={`flexBox column border ${
