@@ -71,22 +71,4 @@ export const sendRequest = (type, data) => {
         closeHub("[ChatHub] SendRequest " + type + " error: " + err)
       );
   }
-
-  /*if (!connected) {
-    hubConnection
-      .start()
-      .then(() => {
-        connected = true;
-        console.log("[ChatHub] Connection successful!");
-        sendRequest(type, data);
-      })
-      .catch(err => closeHub("[ChatHub] Connection error: " + err));
-  } else {
-    console.log("[ChatHub] SendRequest " + type + " : ", data);
-    hubConnection
-      .invoke(type, data)
-      .catch(err =>
-        closeHub("[ChatHub] SendRequest " + type + " error: " + err)
-      );
-  }*/
 };

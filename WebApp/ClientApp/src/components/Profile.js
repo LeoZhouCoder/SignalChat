@@ -10,7 +10,7 @@ class Profile extends Component {
 
   getNameSection = user => {
     if (!this.props.bigScreen) return null;
-    let name = user && user.name ? user.name : "";
+    let name = user ? user.name : "";
     if (this.state.editing) {
       return (
         <Input
@@ -37,17 +37,20 @@ class Profile extends Component {
   };
 
   render() {
-    const user = getUserProfile(this.props.user.id);
+    const {user} = this.props;
     return (
       <div className="flexBox maxWidth padding profile">
-        <Avatar src={user && user.profilePhoto ? user.profilePhoto : ""} size="huge" />
+        <Avatar
+          src={user && user.profilePhoto ? user.profilePhoto : ""}
+          size="huge"
+        />
         {this.getNameSection(user)}
       </div>
     );
   }
 }
+
 const mapStateToProps = state => ({
-  user: state.authReducer.user,
-  userProfile: state.chatReducer.users
+  user: getUserProfile(state.authReducer.user.id)
 });
 export default connect(mapStateToProps)(Profile);

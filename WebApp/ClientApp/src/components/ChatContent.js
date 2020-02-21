@@ -5,46 +5,31 @@ import { getUserProfile } from "../redux/chatActions";
 import { getTimeString } from "../utils/Time";
 
 export function ChatContent({
-  currentUser,
-  group,
-  chats,
+  chat,
+  data,
+  name,
+  photo,
+  icon,
   selected,
   collapsed,
   onClickItem
 }) {
-  const { name, users, photo } = group;
-  const lastChat = chats[chats.length - 1];
-  let displayName, displayImg, displayIcon;
-
-  if (users.length <= 2) {
-    let uid =
-      users.length === 1 ? users[0] : users.find(u => u !== currentUser.id);
-    let profile = getUserProfile(uid);
-    displayName = profile ? profile.name : "";
-    displayImg = profile ? profile.profilePhoto : "";
-    displayIcon = "user";
-  } else {
-    displayName = name;
-    displayImg = photo;
-    displayIcon = "users";
-  }
-
   return (
     <ListItem
-      img={displayImg}
-      icon={displayIcon}
-      data={group}
+      img={photo}
+      icon={icon}
+      data={data}
       selected={selected}
       collapsed={collapsed}
       onClickItem={onClickItem}
     >
       <div className="flexBox row extendable center space">
-        <div className="subtitle single extendable unselect">{displayName}</div>
+        <div className="subtitle single extendable unselect">{name}</div>
         <div className="secondary unselect">
-          {lastChat ? getTimeString(lastChat.createdOn) : " "}
+          {chat ? getTimeString(chat.createdOn) : " "}
         </div>
         <div className="single maxWidth secondary unselect">
-          {lastChat ? lastChat.content : " "}
+          {chat ? chat.content : " "}
         </div>
       </div>
     </ListItem>
@@ -52,15 +37,20 @@ export function ChatContent({
 }
 
 const mapStateToProps = (state, props) => {
-  const group = props.data;
-  const groups = state.chatReducer.groups;
-  const groupIndex = groups.indexOf(group);
-  return {
-    currentUser: state.authReducer.user,
-    group: state.chatReducer.groups[groupIndex],
-    chats: state.chatReducer.groups[groupIndex].chats,
-    usersProfile: state.chatReducer.users
-  };
+  let { name, users, photo, chats } = props.data;
+  const chat = chats[chats.length - 1];
+  let icon;
+  if (users.length <= 2) {
+    const cuid = state.authReducer.user.id;
+    let uid = users.length === 1 ? users[0] : users.find(u => u !== cuid);
+    let profile = getUserProfile(uid);
+    name = profile ? profile.name : "";
+    photo = profile ? profile.profilePhoto : "";
+    icon = "user";
+  } else {
+    icon = "users";
+  }
+  return { chat, name, photo, icon };
 };
 
 export default connect(mapStateToProps)(ChatContent);

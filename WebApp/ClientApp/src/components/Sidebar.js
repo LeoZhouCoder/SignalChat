@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Menu, Dropdown } from "semantic-ui-react";
 
+import Profile from "./Profile";
+import SidebarMenu from "./SidebarMenu";
 import { List } from "./List";
 import ContactContent from "./ContactContent";
 import ChatContent from "./ChatContent";
-
-import Profile from "./Profile";
 
 import { SCREEN_BIG } from "../utils/Dimensions";
 import { CHATROOM, ONLINE_USERS, GROUPS } from "../redux/reducers/chat";
@@ -99,6 +98,7 @@ class Sidebar extends Component {
           bigScreen={bigScreen}
           activeMenu={activeMenu}
           handleMenuClick={this.handleMenuClick}
+          options={options}
         />
         <List
           placeHolder={placeHolder}
@@ -119,34 +119,3 @@ const mapStateToProps = state => ({
   onlineUsers: state.chatReducer[ONLINE_USERS]
 });
 export default connect(mapStateToProps)(Sidebar);
-
-function SidebarMenu({ bigScreen, activeMenu, handleMenuClick }) {
-  if (bigScreen) {
-    return (
-      <Menu attached pointing secondary widths={2} color="teal">
-        {options.map(item => {
-          return (
-            <Menu.Item
-              key={item.value}
-              active={activeMenu === item.value}
-              onClick={() => handleMenuClick(item.value)}
-            >
-              {item.value}
-            </Menu.Item>
-          );
-        })}
-      </Menu>
-    );
-  }
-  return (
-    <Menu compact>
-      <Dropdown
-        options={options}
-        simple
-        item
-        value={activeMenu}
-        onChange={(e, data) => handleMenuClick(data.value)}
-      />
-    </Menu>
-  );
-}

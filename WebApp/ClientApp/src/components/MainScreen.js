@@ -85,8 +85,7 @@ class MainScreen extends React.Component {
         />
       );
     } else {
-      const { chatroom, groups, user } = this.props;
-      let group = groups.find(g => g.id === chatroom);
+      const { group, currentUser } = this.props;
       if (group) {
         let { users } = group;
         if (users.length > 2) {
@@ -97,7 +96,7 @@ class MainScreen extends React.Component {
           if (users.length === 1) {
             profile = getUserProfile(users[0]);
           } else {
-            profile = getUserProfile(users.find(u => u !== user.id));
+            profile = getUserProfile(users.find(u => u !== currentUser));
           }
           name = profile ? profile.name : "";
           icon = "user";
@@ -127,11 +126,15 @@ class MainScreen extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  screenSize: state.dimensionReducer.type,
-  chatroom: state.chatReducer.chatroom,
-  groups: state.chatReducer.groups,
-  users: state.chatReducer.users,
-  user: state.authReducer.user
-});
+const mapStateToProps = state => {
+  const group = state.chatReducer.groups.find(
+    g => g.id === state.chatReducer.chatroom
+  );
+
+  return {
+    screenSize: state.dimensionReducer.type,
+    group: group,
+    currentUser: state.authReducer.user.id
+  };
+};
 export default connect(mapStateToProps)(MainScreen);
