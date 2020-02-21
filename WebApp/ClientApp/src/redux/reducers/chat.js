@@ -115,13 +115,9 @@ const addChat = (state, newChat) => {
   return { ...state, [GROUPS]: sortGroups(newGroups) };
 };
 
-const addChats = (state, { groupId, chats }) => {
+const addChats = (state, data) => {
   let groups = state[GROUPS];
-  groups.forEach(group => {
-    if (group.id === groupId) {
-      if (!Array.isArray(group.chats)) group.chats = [];
-      group.chats = [...chats, ...group.chats];
-    }
-  });
+  const group = groups.find(g => g.id === data.group);
+  if (group) group.chats = [...data.chats, ...group.chats];
   return { ...state, [GROUPS]: groups };
 };

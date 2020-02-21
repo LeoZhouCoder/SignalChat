@@ -2,23 +2,22 @@ import React from "react";
 import { connect } from "react-redux";
 import { Avatar } from "./Avatar";
 import { getUserProfile } from "../redux/chatActions";
-import {getTimeString} from "../utils/Time";
+import { getTimeString } from "../utils/Time";
 
-const Message = ({ chat, self }) => {
-  const userProfile = getUserProfile(chat.sender);
+const Message = ({ chat, user, self }) => {
   return (
     <div className="flexBox maxWidth padding">
       <div className="column">
         <Avatar
           size="large"
-          src={userProfile ? userProfile.profilePhoto : ""}
+          src={user ? user.profilePhoto : ""}
           icon="user"
         />
       </div>
 
       <div className="space flex row center extendable">
         <div className="secondary single">
-          {userProfile ? userProfile.name : ""}
+          {user ? user.name : ""}
         </div>
         <div className="tertiary space">{getTimeString(chat.createdOn)}</div>
         <div className="break" />
@@ -30,8 +29,13 @@ const Message = ({ chat, self }) => {
   );
 };
 
+const mapStateToProps = (state, props) => {
+  const { chat } = props;
+  const { sender } = chat;
+  return {
+    user: getUserProfile(sender),
+    self: state.authReducer.user.id === sender
+  };
+};
 
-const mapStateToProps = state => ({
-  userProfile: state.chatReducer.users
-});
 export default connect(mapStateToProps)(Message);

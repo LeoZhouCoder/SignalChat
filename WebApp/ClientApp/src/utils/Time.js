@@ -6,8 +6,11 @@ export const getTimeString = dateString => {
     today.getMonth() === date.getMonth() &&
     today.getDate() === date.getDate()
   ) {
-    return date.getHours() + ":" + date.getMinutes();
+    return numberToString(date.getHours()) + ":" + numberToString(date.getMinutes());
   } else {
-    return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
+    return date.getFullYear() + "-" + numberToString(date.getMonth()) + "-" + numberToString(date.getDate());
   }
+};
+const numberToString = num => {
+  return num < 10 ? "0" + num : num.toString();
 };
