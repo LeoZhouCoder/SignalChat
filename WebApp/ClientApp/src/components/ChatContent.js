@@ -6,10 +6,10 @@ import { getTimeString } from "../utils/Time";
 
 export function ChatContent({
   chat,
-  data,
   name,
   photo,
   icon,
+  data,
   selected,
   collapsed,
   onClickItem

@@ -3,12 +3,11 @@ import { connect } from "react-redux";
 
 import Profile from "./Profile";
 import SidebarMenu from "./SidebarMenu";
-import { List } from "./List";
-import ContactContent from "./ContactContent";
-import ChatContent from "./ChatContent";
+import ChatList from "./ChatList";
+import ContactList from "./ContactList";
 
 import { SCREEN_BIG } from "../utils/Dimensions";
-import { CHATROOM, ONLINE_USERS, GROUPS } from "../redux/reducers/chat";
+import { CHATROOM, GROUPS } from "../redux/reducers/chat";
 import { changeChatroom, createGroup } from "../redux/chatActions";
 
 const MENU_CHATS = "Chats";
@@ -24,68 +23,40 @@ class Sidebar extends Component {
   handleMenuClick = name => this.setState({ activeMenu: name });
 
   handleItemClick = data => {
-    const { chatroom } = this.props;
+    const { chatroom, currentUser } = this.props;
     if (this.state.activeMenu === MENU_CHATS) {
       if (chatroom !== data.id) changeChatroom(data.id);
     } else {
-      let group = this.findGroup(data);
+      const { groups } = this.props;
+
+      let group = groups.find(group => {
+        let { users } = group;
+        if (users.length > 2) return false;
+        if (users.length === 1)
+          return users[0] === data && data === currentUser;
+        return users.includes(data) && users.includes(currentUser);
+      });
+
       if (group) {
         if (chatroom !== group.id) changeChatroom(group.id);
       } else {
-        if (this.props.user.id === data) {
+        if (currentUser === data) {
           createGroup(null, [data]);
         } else {
-          createGroup(null, [this.props.user.id, data]);
+          createGroup(null, [currentUser, data]);
         }
       }
     }
   };
 
-  findGroup = uid => {
-    const { groups, user } = this.props;
-    return groups.find(group => {
-      let { users } = group;
-      if (users.length > 2) return false;
-
-      if (uid === user.id) {
-        if (users.length !== 1) return false;
-        return users[0] === uid;
-      } else {
-        if (users.length !== 2) return false;
-        if (!users.includes(uid) || !users.includes(user)) return false;
-        return true;
-      }
-    });
-  };
-
   render() {
     const { activeMenu } = this.state;
-    const { user, groups, onlineUsers, chatroom } = this.props;
     const bigScreen = this.props.screenType === SCREEN_BIG;
-    let listData,
-      itemComponent,
-      placeHolder,
-      selectedData = null;
+    let ListComponent;
     if (activeMenu === MENU_CHATS) {
-      placeHolder = "No chat record, go to OnlineUsers find more friends.";
-      listData = groups;
-      itemComponent = ChatContent;
-      selectedData = listData.find(data => data.id === chatroom);
+      ListComponent = ChatList;
     } else {
-      placeHolder = "No user online right now.";
-      listData = onlineUsers;
-      itemComponent = ContactContent;
-      let group = groups.find(data => data.id === chatroom);
-      if (group) {
-        let { users } = group;
-        if (users.length === 2) {
-          selectedData = listData.find(
-            uid => users.includes(uid) && users.includes(user.id)
-          );
-        } else if (users.length === 1 && users[0] === user.id) {
-          selectedData = listData.find(uid => users[0] === user.id);
-        }
-      }
+      ListComponent = ContactList;
     }
     return (
       <div
@@ -100,11 +71,7 @@ class Sidebar extends Component {
           handleMenuClick={this.handleMenuClick}
           options={options}
         />
-        <List
-          placeHolder={placeHolder}
-          list={listData}
-          component={itemComponent}
-          selectedData={selectedData}
+        <ListComponent
           collapsed={!bigScreen}
           onClickItem={this.handleItemClick}
         />
@@ -113,9 +80,8 @@ class Sidebar extends Component {
   }
 }
 const mapStateToProps = state => ({
-  user: state.authReducer.user,
+  currentUser: state.authReducer.user.id,
   chatroom: state.chatReducer[CHATROOM],
-  groups: state.chatReducer[GROUPS],
-  onlineUsers: state.chatReducer[ONLINE_USERS]
+  groups: state.chatReducer[GROUPS]
 });
 export default connect(mapStateToProps)(Sidebar);

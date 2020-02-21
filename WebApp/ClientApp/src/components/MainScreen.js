@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 
 import { TopBar } from "./TopBar";
 import ChatHistory from "./ChatHistory";
+import ChatList from "./ChatList";
+import ContactList from "./ContactList";
 import FooterMenu from "./FooterMenu";
 import SendMessage from "./SendMessage";
 
@@ -13,7 +15,11 @@ import {
   SCREEN_BIG
 } from "../utils/Dimensions";
 
-import { getUserProfile } from "../redux/chatActions";
+import {
+  getUserProfile,
+  changeChatroom,
+  createGroup
+} from "../redux/chatActions";
 
 const SCREEN_DIALOG = "DIALOG";
 export const SCREEN_CHATS = "CHATS";
@@ -53,7 +59,46 @@ class MainScreen extends React.Component {
 
   onClickFooterMenu = type => this.setState({ screen: type });
 
-  render() {
+  onClickItem = data => {
+    let screenType = this.getScreenType();
+    const { chatroom, currentUser, groups } = this.props;
+    if (screenType === SCREEN_CHATS) {
+      if (chatroom !== data.id) {
+        changeChatroom(data.id);
+      }
+      this.setState({ backScreen: SCREEN_CHATS, screen: SCREEN_DIALOG });
+    } else if (screenType === SCREEN_ONLINE_USERS) {
+      let group = groups.find(group => {
+        let { users } = group;
+        if (users.length > 2) return false;
+        if (users.length === 1)
+          return users[0] === data && data === currentUser;
+        return users.includes(data) && users.includes(currentUser);
+      });
+
+      if (group) {
+        if (chatroom !== group.id) {
+          changeChatroom(group.id);
+        }
+        this.setState({
+          backScreen: SCREEN_ONLINE_USERS,
+          screen: SCREEN_DIALOG
+        });
+      } else {
+        if (currentUser === data) {
+          createGroup(null, [data]);
+        } else {
+          createGroup(null, [currentUser, data]);
+        }
+        this.setState({
+          backScreen: SCREEN_ONLINE_USERS,
+          screen: SCREEN_DIALOG
+        });
+      }
+    }
+  };
+
+  getScreenType = () => {
     const { screenSize } = this.props;
     let screenType;
     if (screenSize === SCREEN_NORMAL || screenSize === SCREEN_BIG) {
@@ -61,6 +106,12 @@ class MainScreen extends React.Component {
     } else {
       screenType = this.state.screen;
     }
+    return screenType;
+  };
+
+  render() {
+    const { screenSize } = this.props;
+    let screenType = this.getScreenType();
     let name, icon, isBack, ListComponent, footer;
     if (screenType === SCREEN_CHATS) {
       name = "Chats";
@@ -73,6 +124,7 @@ class MainScreen extends React.Component {
           handleItemClick={this.onClickFooterMenu}
         />
       );
+      ListComponent = ChatList;
     } else if (screenType === SCREEN_ONLINE_USERS) {
       name = "Online Users";
       icon = "search";
@@ -84,6 +136,7 @@ class MainScreen extends React.Component {
           handleItemClick={this.onClickFooterMenu}
         />
       );
+      ListComponent = ContactList;
     } else {
       const { group, currentUser } = this.props;
       if (group) {
@@ -108,6 +161,7 @@ class MainScreen extends React.Component {
 
       isBack = screenSize === SCREEN_SMALL || screenSize === SCREEN_MEDIUM;
       ListComponent = ChatHistory;
+
       footer = <SendMessage screenSize={screenSize} />;
     }
 
@@ -119,7 +173,7 @@ class MainScreen extends React.Component {
           onClickBtn={this.onClickTobBarBtn}
           isBack={isBack}
         />
-        <ListComponent />
+        <ListComponent onClickItem={this.onClickItem} />
         {footer}
       </div>
     );
@@ -134,7 +188,9 @@ const mapStateToProps = state => {
   return {
     screenSize: state.dimensionReducer.type,
     group: group,
-    currentUser: state.authReducer.user.id
+    currentUser: state.authReducer.user.id,
+    chatroom: state.chatReducer.chatroom,
+    groups: state.chatReducer.groups
   };
 };
 export default connect(mapStateToProps)(MainScreen);

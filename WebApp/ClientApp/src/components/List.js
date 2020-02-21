@@ -7,17 +7,19 @@ export function List({
   onClickItem,
   selectedData,
   collapsed,
-  placeHolder,
+  placeHolder
 }) {
-  if (list.length === 0) {
+  if (!list || list.length === 0) {
     return (
       <div className="list column center maxParent center-v">
-        <div className="flexBox column maxParent center-v secondary padding">{placeHolder}</div>
+        <div className="flexBox column maxParent center-v secondary padding">
+          {placeHolder}
+        </div>
       </div>
     );
   }
   return (
-    <div className="list column center">
+    <div className="list column center extendable">
       {list.map((data, i) => {
         return (
           <Component

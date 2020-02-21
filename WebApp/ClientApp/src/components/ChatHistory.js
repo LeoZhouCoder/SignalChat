@@ -27,6 +27,7 @@ class ChatHistory extends React.Component {
     } else {
       const { oldChats, scrollHeight } = this.temState;
       const newChats = this.props.chats;
+      if(!newChats||!oldChats) return;
       if (
         oldChats !== newChats &&
         newChats[newChats.length - 1].id === oldChats[oldChats.length - 1].id
@@ -55,7 +56,7 @@ class ChatHistory extends React.Component {
 
   render() {
     const { chats } = this.props;
-    if (chats.length === 0) {
+    if (!chats||chats.length === 0) {
       return (
         <div className="extendable list chats">
           <div className="flexBox column maxParent center-v secondary padding">
