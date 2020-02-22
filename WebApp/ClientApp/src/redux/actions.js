@@ -8,7 +8,7 @@ const loginUser = loginResult => ({
 });
 
 export const login = user => {
-  console.log("[login] start:", user);
+  console.log("[login]: start", user);
   return dispatch => {
     return fetch(serverUrl + "auth/signIn", {
       method: "POST",
@@ -22,17 +22,17 @@ export const login = user => {
       .then(data => {
         if (data.success) {
           dispatch(loginUser(data));
-          console.log("[login] success: ", data);
+          console.log("[login]: success", data);
         } else {
-          console.log("[login] error: ", data.message);
+          console.log("[login]: error", data.message);
         }
       })
-      .catch(error => console.log("[login] fetch error: ", error));
+      .catch(error => console.log("[login]: fetch error", error));
   };
 };
 
 export const register = request => {
-  console.log("[register] start:", request);
+  console.log("[register]: start", request);
   return dispatch => {
     return fetch(serverUrl + "auth/signUp", {
       method: "POST",
@@ -45,13 +45,13 @@ export const register = request => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          console.log("[register] success: ", data);
+          console.log("[register]: success", data);
           dispatch(loginUser(data));
         } else {
-          console.log("[register] error: ", data.message);
+          console.log("[register]: error", data.message);
         }
       })
-      .catch(error => console.log("[register] fetch error: ", error));
+      .catch(error => console.log("[register]: fetch error", error));
   };
 };
 
