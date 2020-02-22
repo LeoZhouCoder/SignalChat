@@ -55,7 +55,7 @@ p {
 :root {
   --color-primary: rgba(176, 228, 110, 1);
   --color-bg: white;
-  --color-bg-selected: rgba(0, 0, 0, 0.1);
+  --color-bg-selected: rgba(128, 184, 216, 0.2);
   --color-bg-none: rgba(243, 243, 243, 1);
   --color-border: #d4d4d5;
   --active:rgba(84, 181, 55, 1)

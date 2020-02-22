@@ -61,8 +61,8 @@ class SendMessage extends Component {
     }
 
     return (
-      <div className="flexBox maxWidth padding divider center-v">
-        <div className="flexBox maxWidth">
+      <div className="flexBox maxWidth divider center-v">
+        <div className="flexBox padding maxWidth">
           <Input
             placeholder="Message"
             value={this.state.text}
@@ -71,8 +71,8 @@ class SendMessage extends Component {
             onKeyDown={this.onKeyPress}
           />
         </div>
-        <div className="flexBox center-v space">
-          <Icon name="smile outline" size="big" color="grey" />
+        <div className="flexBox padding center-v">
+          <Icon name="smile outline" size="big" />
           <Button className="space" color="green" onClick={this.doSendMessage}>
             Send
           </Button>

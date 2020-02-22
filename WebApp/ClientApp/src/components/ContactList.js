@@ -27,9 +27,7 @@ const mapStateToProps = state => {
   if (group) {
     let { users } = group;
     if (users.length === 2) {
-      selectedUser = onlineUsers.find(
-        uid => users.includes(uid) && users.includes(currentUser)
-      );
+      selectedUser = users.find(uid => uid !== currentUser);
     } else if (users.length === 1 && users[0] === currentUser) {
       selectedUser = currentUser;
     }

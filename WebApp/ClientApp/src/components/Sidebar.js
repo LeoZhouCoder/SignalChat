@@ -22,6 +22,8 @@ class Sidebar extends Component {
 
   handleMenuClick = name => this.setState({ activeMenu: name });
 
+  onClickProfile = e => console.log("[Sidebar]: ClickProfile");
+
   handleItemClick = data => {
     const { chatroom, currentUser } = this.props;
     if (this.state.activeMenu === MENU_CHATS) {
@@ -64,7 +66,7 @@ class Sidebar extends Component {
           bigScreen ? "sidebar" : "collapsedSidebar"
         }`}
       >
-        <Profile bigScreen={bigScreen} />
+        <Profile bigScreen={bigScreen} onClick={this.onClickProfile} />
         <SidebarMenu
           bigScreen={bigScreen}
           activeMenu={activeMenu}

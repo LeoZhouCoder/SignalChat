@@ -2,8 +2,8 @@ import React from "react";
 import { Icon, Menu } from "semantic-ui-react";
 
 const MENU = [
-  { name: "Chats", icon: "gamepad", key: "CHATS" },
-  { name: "ActiveUsers", icon: "video camera", key: "ONLINE_USERS" }
+  { name: "Chats", icon: "chat", key: "CHATS" },
+  { name: "ActiveUsers", icon: "address book outline", key: "ONLINE_USERS" }
 ];
 
 const FooterMenu = ({ activeItem, handleItemClick }) => {

@@ -7,7 +7,7 @@ import { getTimeString } from "../utils/Time";
 const Message = ({ chat, user, self }) => {
   return (
     <div className="flexBox maxWidth padding">
-      <div className="column">
+      <div className="flexBox column">
         <Avatar
           size="large"
           src={user ? user.profilePhoto : ""}
@@ -15,7 +15,7 @@ const Message = ({ chat, user, self }) => {
         />
       </div>
 
-      <div className="space flex row center extendable">
+      <div className="space flexBox row center extendable chat">
         <div className="secondary single">
           {user ? user.name : ""}
         </div>
