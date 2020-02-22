@@ -58,7 +58,7 @@ p {
   --color-bg-selected: rgba(128, 184, 216, 0.2);
   --color-bg-none: rgba(243, 243, 243, 1);
   --color-border: #d4d4d5;
-  --active:rgba(84, 181, 55, 1)
+  --active: rgba(84, 181, 55, 1);
 }
 
 /*font*/
@@ -76,7 +76,7 @@ p {
 }
 
 .active {
-  color:var(--teal);
+  color: var(--teal);
 }
 
 .secondary {
@@ -142,6 +142,11 @@ p {
 .center-v {
   align-items: center;
   justify-content: space-around;
+}
+
+.center-e {
+  align-items: center;
+  justify-content: space-between;
 }
 
 /*common*/
@@ -237,7 +242,8 @@ p {
 
 /*avatar*/
 .avatar {
-  display: inline-block;
+  display: flex;
+  align-self: center;
   position: relative;
   border-radius: 5%;
   background: rgba(0, 0, 0, 0.1);
@@ -281,3 +287,34 @@ p {
   object-position: center;
 }
 
+/*popup*/
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.popupContent {
+  width: 50em;
+  max-width: 80%;
+  max-height: 80%;
+  padding: 3em;
+  border-radius: 0.4em;
+  background: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.scrollList {
+  display: flex;
+  flex-flow: column;
+}
+
+.blur {
+  -webkit-filter: blur(0.2em); /* Chrome, Opera */
+  -moz-filter: blur(0.2em);
+  -ms-filter: blur(0.2em);
+  filter: blur(0.2em);
+}

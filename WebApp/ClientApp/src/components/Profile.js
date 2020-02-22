@@ -12,7 +12,7 @@ function Profile({ user, bigScreen, onClick }) {
     >
       <Avatar
         src={user && user.profilePhoto ? user.profilePhoto : ""}
-        size="huge"
+        width="5em"
       />
       {bigScreen && (
         <div className="title text_center space">{user ? user.name : ""}</div>

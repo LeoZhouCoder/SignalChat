@@ -5,6 +5,7 @@ import { SCREEN_NORMAL, SCREEN_BIG } from "../utils/Dimensions";
 
 import Sidebar from "../components/Sidebar";
 import MainScreen from "../components/MainScreen";
+import { UserProfileCard } from "../components/UserProfileCard";
 import { hubStart } from "../utils/ChatHub";
 
 class Chatroom extends Component {
@@ -22,13 +23,17 @@ class Chatroom extends Component {
       activeMenu = "ChatHistory";
     }
     return (
-      <div className="flexBox max">
-        {showSidebar && <Sidebar screenType={screenType} />}
-        <MainScreen screenType={screenType} activeMenu={activeMenu} />
+      <div>
+        <div className="flexBox max blur">
+          {showSidebar && <Sidebar screenType={screenType} />}
+          <MainScreen screenType={screenType} activeMenu={activeMenu} />
+        </div>
+        <UserProfileCard />
       </div>
     );
   }
 }
-
 const mapStateToProps = state => ({ screenType: state.dimensionReducer });
 export default connect(mapStateToProps)(Chatroom);
+//
+//
