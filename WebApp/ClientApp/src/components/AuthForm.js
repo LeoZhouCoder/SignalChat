@@ -6,8 +6,8 @@ function AuthForm(props) {
   return (
     <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 450 }}>
-        <Header as="h2" color="teal" textAlign="center">
-          <Icon name="chat" color="teal" />
+        <Header as="h2" color="green" textAlign="center">
+          <Icon name="chat" color="green" />
           Let's Chat
         </Header>
         <Form size="large">

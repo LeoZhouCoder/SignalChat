@@ -9,7 +9,7 @@ export default function SidebarMenu({
 }) {
   if (bigScreen) {
     return (
-      <Menu attached pointing secondary widths={2} color="teal">
+      <Menu attached pointing secondary widths={2} color="green">
         {options.map(item => {
           return (
             <Menu.Item

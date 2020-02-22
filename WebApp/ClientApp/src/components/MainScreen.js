@@ -186,7 +186,7 @@ const mapStateToProps = state => {
   );
 
   return {
-    screenSize: state.dimensionReducer.type,
+    screenSize: state.dimensionReducer,
     group: group,
     currentUser: state.authReducer.user.id,
     chatroom: state.chatReducer.chatroom,

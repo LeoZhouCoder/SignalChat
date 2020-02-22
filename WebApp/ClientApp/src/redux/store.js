@@ -9,7 +9,7 @@ export const store = createStore(rootReducer, applyMiddleware(thunk));
 
 store.subscribe(() => {
   const state = store.getState();
-  console.log("[Redux] :", state);
+  console.log("[Redux]:", state);
   if (Storage.retrieveData(TOKEN) !== state.authReducer[TOKEN]) {
     Storage.storeData(TOKEN, state.authReducer[TOKEN]);
     Storage.storeData(USER, state.authReducer[USER]);

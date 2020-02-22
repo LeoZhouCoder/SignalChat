@@ -1,7 +1,6 @@
 import { WINDOW_RESIZE, USER_LOGIN } from "./actionTypes";
-import { store } from "./store";
-import { getScreenType } from "../utils/Dimensions";
 import { serverUrl } from "../env/Env";
+import { getScreenType } from "../utils/Dimensions";
 
 const loginUser = loginResult => ({
   type: USER_LOGIN,
@@ -56,31 +55,9 @@ export const register = request => {
   };
 };
 
-export const getGroup = gid =>
-  store.getState().chatReducer.groups.find(group => group.id === gid);
-
-export const updateDimensions = () => {
+export const updateScreenType = () => {
   return {
     type: WINDOW_RESIZE,
-    payload: getDimensions()
+    payload: getScreenType()
   };
-};
-
-export const getDimensions = () => {
-  let width, height;
-  if (typeof window !== "undefined") {
-    width = window.innerWidth;
-    height = window.innerHeight;
-  } else {
-    width =
-      document.documentElement.clientWidth || document.body.clientWidth || 0;
-    height =
-      document.documentElement.clientHeight || document.body.clientHeight || 0;
-  }
-  let size = {
-    width: width,
-    height: height,
-    type: getScreenType(width, height)
-  };
-  return size;
 };

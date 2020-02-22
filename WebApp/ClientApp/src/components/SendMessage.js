@@ -73,7 +73,7 @@ class SendMessage extends Component {
         </div>
         <div className="flexBox center-v space">
           <Icon name="smile outline" size="big" color="grey" />
-          <Button className="space" color="teal" onClick={this.doSendMessage}>
+          <Button className="space" color="green" onClick={this.doSendMessage}>
             Send
           </Button>
         </div>

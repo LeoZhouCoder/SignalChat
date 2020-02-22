@@ -25,23 +25,32 @@ export default function chatReducer(
 ) {
   switch (action.type) {
     case UPDATE_CHATROOM:
+      console.log("[ChatReducer]:", action);
       const { groups, users } = action.payload;
       return { ...state, [GROUPS]: groups, [USERS]: users };
     case UPDATE_ONLINE_USER:
+      console.log("[ChatReducer]:", action);
       return { ...state, [ONLINE_USERS]: action.payload };
     case UPDATE_GROUP:
+      console.log("[ChatReducer]:", action);
       return updateGroup(state, action.payload);
     case UPDATE_GROUP_VIEW:
+      console.log("[ChatReducer]:", action);
       return updateGroupView(state, action.payload);
     case DELETE_GROUP:
+      console.log("[ChatReducer]:", action);
       return deleteGroup(state, action.payload);
     case UPDATE_USERS:
+      console.log("[ChatReducer]:", action);
       return updateUserProfile(state, action.payload);
     case ADD_CHAT:
+      console.log("[ChatReducer]:", action);
       return addChat(state, action.payload);
     case ADD_CHATS:
+      console.log("[ChatReducer]:", action);
       return addChats(state, action.payload);
     case SWITCH_CHATROOM:
+      console.log("[ChatReducer]:", action);
       return { ...state, [CHATROOM]: action.payload };
     default:
       return state;

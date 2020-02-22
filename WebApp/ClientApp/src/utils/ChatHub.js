@@ -4,15 +4,8 @@ import {
   HttpTransportType
 } from "@aspnet/signalr";
 
-let connected = false;
 let hubConnection = null;
 let closeHubHandler = null;
-
-const closeHub = message => {
-  console.error(message);
-  connected = false;
-  if (closeHubHandler != null) closeHubHandler();
-};
 
 export const hubInit = (
   serverUrl,
@@ -28,7 +21,7 @@ export const hubInit = (
     hubConnection
   )
     return;
-  console.log("[ChatHub] initHub: " + serverUrl + " token: " + tokenHandler());
+  console.log("[ChatHub]: initHub:", serverUrl);
   closeHubHandler = onCloseHub;
   hubConnection = new HubConnectionBuilder()
     .configureLogging(LogLevel.Debug)
@@ -43,32 +36,44 @@ export const hubInit = (
 
   hubConnection.on("ReceiveResponse", response => responseHandler(response));
 
-  hubConnection.onclose(err => closeHub("[ChatHub] Connection closed: " + err));
+  hubConnection.onclose(err => hubStop("[ChatHub]: closed: " + err));
 };
 
-const hubStart = callBack => {
-  if (connected) return;
-  console.log("[ChatHub] Connection start");
+export const hubStart = () => {
+  if (!hubConnection || hubConnection.state) return;
+  console.log("[ChatHub]: start");
   hubConnection
     .start()
     .then(() => {
-      connected = true;
-      console.log("[ChatHub] Connection successful");
-      if (callBack != null) callBack();
+      console.log("[ChatHub]: start successful:", hubConnection.state);
     })
-    .catch(err => closeHub("[ChatHub] Connection error: " + err));
+    .catch(err => hubStop("[ChatHub]: start error: " + err));
+};
+
+const hubStop = message => {
+  console.error(message);
+  if (hubConnection && hubConnection.state) {
+    console.log("[ChatHub]: stop:", hubConnection.state);
+    hubConnection
+      .stop()
+      .catch(err => console.error("[ChatHub]: stop error:", err));
+  }
+  if (closeHubHandler != null) closeHubHandler();
 };
 
 export const sendRequest = (type, data) => {
-  if (!hubConnection) return;
-  if (!connected) {
-    hubStart(() => sendRequest(type, data));
-  } else {
-    console.log("[ChatHub] SendRequest " + type + " : ", data);
-    hubConnection
-      .invoke(type, data)
-      .catch(err =>
-        closeHub("[ChatHub] SendRequest " + type + " error: " + err)
-      );
-  }
+  if (!hubConnection || !hubConnection.state) return;
+  console.log("[ChatHub]: sendRequest:", type, data);
+  hubConnection
+    .invoke(type, data)
+    .catch(err =>
+      hubStop(
+        "[ChatHub]: sendRequest error: " +
+          err +
+          " type: " +
+          type +
+          " data: " +
+          data
+      )
+    );
 };

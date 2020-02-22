@@ -38,10 +38,10 @@ export const tokenHandler = () => {
 export const chatResponseHandler = response => {
   var type = responseTypes[response.type];
   if (type) {
-    console.log("[ChatHub] ReceiveResponse: ", type, response.data);
+    console.log("[ChatHub] receiveResponse: ", type, response.data);
     store.dispatch({ type: type, payload: response.data });
   } else {
-    console.error("[ChatHub] Unsupported response: ", response);
+    console.error("[ChatHub] unsupported response: ", response);
   }
 };
 

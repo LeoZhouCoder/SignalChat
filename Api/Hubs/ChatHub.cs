@@ -97,13 +97,6 @@ namespace SignalRChat.Hubs
                     Data = _connections.Keys
                 });
 
-                // TODO: test use.
-                await SendResponseToAll(new ChatResponse()
-                {
-                    Type = ChatResponseType.SystemMessage,
-                    Data = "User: " + Context.UserIdentifier + " Connected: " + Context.ConnectionId,
-                });
-
                 await base.OnConnectedAsync();
             }
             catch (Exception ex)
@@ -134,13 +127,6 @@ namespace SignalRChat.Hubs
                         await RemoveFromGroup(group, Context.ConnectionId);
                     }
                 }
-
-                // TODO: test use.
-                await SendResponseToAll(new ChatResponse()
-                {
-                    Type = ChatResponseType.SystemMessage,
-                    Data = "User: " + Context.UserIdentifier + " Disconnected: " + Context.ConnectionId,
-                });
 
                 await base.OnDisconnectedAsync(exception);
             }

@@ -8,7 +8,7 @@ const MENU = [
 
 const FooterMenu = ({ activeItem, handleItemClick }) => {
   return (
-    <Menu compact icon="labeled" color="teal" widths={2}>
+    <Menu compact icon="labeled" color="green" widths={2}>
       {MENU.map(menu => (
         <Menu.Item
           name={menu.name}

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { BrowserRouter, Route } from "react-router-dom";
 
-import { updateDimensions } from "./redux/actions";
+import { updateScreenType } from "./redux/actions";
 
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -10,15 +10,22 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ChatRoom from "./pages/ChatRoom";
 
+import { getScreenType } from "./utils/Dimensions";
+
 export class Routes extends Component {
   componentDidMount() {
     this.props.updateDimensions();
-    window.addEventListener("resize", this.props.updateDimensions);
+    window.addEventListener("resize", this.onResize);
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.props.updateDimensions);
+    window.removeEventListener("resize", this.onResize);
   }
+
+  onResize = () => {
+    const { screenType, updateDimensions } = this.props;
+    if (getScreenType() !== screenType) updateDimensions();
+  };
 
   render() {
     return (
@@ -37,8 +44,11 @@ export class Routes extends Component {
     );
   }
 }
-const mapStateToProps = state => ({ token: state.authReducer.token });
+const mapStateToProps = state => ({
+  token: state.authReducer.token,
+  screenType: state.dimensionReducer
+});
 const mapDispatchToProps = dispatch => ({
-  updateDimensions: () => dispatch(updateDimensions())
+  updateDimensions: () => dispatch(updateScreenType())
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Routes);

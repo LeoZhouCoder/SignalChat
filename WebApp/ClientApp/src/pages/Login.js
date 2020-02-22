@@ -102,7 +102,7 @@ class Login extends Component {
           onChange={this.handleInputChange}
         />
         <Button
-          color="teal"
+          color="green"
           fluid
           size="large"
           disabled={this.isDisabled()}

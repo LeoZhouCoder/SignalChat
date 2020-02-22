@@ -5,10 +5,14 @@ import { SCREEN_NORMAL, SCREEN_BIG } from "../utils/Dimensions";
 
 import Sidebar from "../components/Sidebar";
 import MainScreen from "../components/MainScreen";
+import { hubStart } from "../utils/ChatHub";
 
 class Chatroom extends Component {
   state = { activeMenu: "Chats" };
-
+  constructor(props) {
+    hubStart();
+    super(props);
+  }
   render() {
     let { screenType } = this.props;
     let { activeMenu } = this.state;
@@ -26,5 +30,5 @@ class Chatroom extends Component {
   }
 }
 
-const mapStateToProps = state => ({ screenType: state.dimensionReducer.type });
+const mapStateToProps = state => ({ screenType: state.dimensionReducer });
 export default connect(mapStateToProps)(Chatroom);

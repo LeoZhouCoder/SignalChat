@@ -58,12 +58,14 @@ p {
   --color-bg-selected: rgba(0, 0, 0, 0.1);
   --color-bg-none: rgba(243, 243, 243, 1);
   --color-border: #d4d4d5;
+  --active:rgba(84, 181, 55, 1)
 }
 
 /*font*/
 .title {
   font-size: 140% !important;
   font-weight: bold !important;
+  display: inline-block;
   color: black !important;
 }
 
@@ -71,6 +73,10 @@ p {
   font-size: 120%;
   font-weight: bold;
   color: black;
+}
+
+.active {
+  color:var(--teal);
 }
 
 .secondary {
