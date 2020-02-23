@@ -60,7 +60,6 @@ p {
   --color-border: #d4d4d5;
   --active: rgba(84, 181, 55, 1);
 }
-
 /*font*/
 .title {
   font-size: 140% !important;
@@ -250,24 +249,13 @@ p {
   margin: 0;
 }
 
-.avatar.huge {
-  width: 5em;
-}
-
-.avatar.big {
-  width: 4em;
-}
-
-.avatar.large {
-  width: 3em;
-}
 .avatar:after {
   content: "";
   display: block;
   padding-bottom: 100%;
 }
 
-.square {
+.avatar.square {
   position: absolute;
   display: flex;
   width: 100%;
@@ -299,9 +287,9 @@ p {
 
 .popupContent {
   width: 50em;
-  max-width: 80%;
-  max-height: 80%;
-  padding: 3em;
+  max-width: 90%;
+  max-height: 90%;
+  padding: 1em;
   border-radius: 0.4em;
   background: white;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -310,6 +298,7 @@ p {
 .scrollList {
   display: flex;
   flex-flow: column;
+  width:100%;
 }
 
 .blur {

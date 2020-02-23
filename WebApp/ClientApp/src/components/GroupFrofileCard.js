@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 import { Popup } from "./Popup";
 import { Avatar } from "./Avatar";
-import { EditMemberList } from "./EditMemberList";
-import { SelectUserList } from "./SelectUserList";
 
 const avatars = [
   "https://react.semantic-ui.com/images/avatar/large/daniel.jpg",
@@ -15,7 +13,7 @@ const avatars = [
   "https://react.semantic-ui.com/images/avatar/large/jenny.jpg"
 ];
 
-export class UserProfileCard extends Component {
+export class GroupProfileCard extends Component {
   state = { type: "display" };
   onClose = () => {
     console.log("[UserProfileCard]: onClose");
@@ -23,21 +21,12 @@ export class UserProfileCard extends Component {
   render() {
     return (
       <Popup width="30em" onClose={this.onClose}>
-        <EditMemberList />
-        <SelectUserList />
-      </Popup>
-    );
-  }
-}
-/**<Avatar
+        <Avatar
           src="https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
-          style={{ width: "10em",alignSelf: "center" }}
+          style={{ width: "10em" }}
           onClick={() => this.setState({ type: "editingAvatar" })}
         />
-        <div className="title text_center padding">Leo Zhou</div>
-        <Button positive>Send Message</Button>
- * <EditMemberList/>
- * <div className="flexBox row padding maxWidth center-v text_center">
+        <div className="flexBox row padding maxWidth center-v text_center">
           {avatars.map((avatar, i) => (
             <Avatar
               key={i}
@@ -47,4 +36,9 @@ export class UserProfileCard extends Component {
             />
           ))}
         </div>
- */
+        <div className="title text_center padding">Leo Zhou</div>
+        <Button positive>Send Message</Button>
+      </Popup>
+    );
+  }
+}

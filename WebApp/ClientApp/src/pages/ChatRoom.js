@@ -5,7 +5,7 @@ import { SCREEN_NORMAL, SCREEN_BIG } from "../utils/Dimensions";
 
 import Sidebar from "../components/Sidebar";
 import MainScreen from "../components/MainScreen";
-import { UserProfileCard } from "../components/UserProfileCard";
+import { SelectMemberCard } from "../components/SelectMemberCard";
 import { hubStart } from "../utils/ChatHub";
 
 class Chatroom extends Component {
@@ -28,7 +28,7 @@ class Chatroom extends Component {
           {showSidebar && <Sidebar screenType={screenType} />}
           <MainScreen screenType={screenType} activeMenu={activeMenu} />
         </div>
-        <UserProfileCard />
+        <SelectMemberCard />
       </div>
     );
   }

@@ -9,7 +9,7 @@ const Message = ({ chat, user, self }) => {
     <div className="flexBox maxWidth padding">
       <div className="flexBox column">
         <Avatar
-          width="3em"
+          style={{ width: "3em" }}
           src={user ? user.profilePhoto : ""}
           icon="user"
         />

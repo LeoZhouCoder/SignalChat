@@ -176,38 +176,38 @@ export const chats = [
 
 export const chatUsers = [
   {
-    uid: "u0",
+    id: "u0",
     name: "Daniel",
-    img: "https://react.semantic-ui.com/images/avatar/small/daniel.jpg"
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
   },
   {
-    uid: "u1",
+    id: "u1",
     name: "Stevie",
-    img: "https://react.semantic-ui.com/images/avatar/small/stevie.jpg"
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/stevie.jpg"
   },
   {
-    uid: "u2",
+    id: "u2",
     name: "Elliot",
-    img: "https://react.semantic-ui.com/images/avatar/small/elliot.jpg"
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/elliot.jpg"
   },
   {
-    uid: "u3",
+    id: "u3",
     name: "Matt",
-    img: "https://react.semantic-ui.com/images/avatar/small/matt.jpg"
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/matt.jpg"
   },
   {
-    uid: "u4",
+    id: "u4",
     name: "Christian",
-    img: "https://react.semantic-ui.com/images/avatar/small/christian.jpg"
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
   },
   {
     uid: "u5",
     name: "Tom",
-    img: "https://react.semantic-ui.com/images/avatar/small/tom.jpg"
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/tom.jpg"
   },
   {
-    uid: "u6",
+    id: "u6",
     name: "Jenny",
-    img: "https://react.semantic-ui.com/images/avatar/small/jenny.jpg"
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/jenny.jpg"
   }
 ];
