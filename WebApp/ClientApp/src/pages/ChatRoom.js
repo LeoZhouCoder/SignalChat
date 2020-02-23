@@ -5,7 +5,7 @@ import { SCREEN_NORMAL, SCREEN_BIG } from "../utils/Dimensions";
 
 import Sidebar from "../components/Sidebar";
 import MainScreen from "../components/MainScreen";
-import { SelectMemberCard } from "../components/SelectMemberCard";
+import { GroupProfileCard } from "../components/GroupProfileCard";
 import { hubStart } from "../utils/ChatHub";
 
 class Chatroom extends Component {
@@ -28,12 +28,10 @@ class Chatroom extends Component {
           {showSidebar && <Sidebar screenType={screenType} />}
           <MainScreen screenType={screenType} activeMenu={activeMenu} />
         </div>
-        <SelectMemberCard />
+        <GroupProfileCard />
       </div>
     );
   }
 }
 const mapStateToProps = state => ({ screenType: state.dimensionReducer });
 export default connect(mapStateToProps)(Chatroom);
-//
-//

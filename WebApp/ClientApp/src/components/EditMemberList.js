@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { Avatar } from "./Avatar";
 import { RowList } from "./RowList";
 
@@ -9,7 +9,6 @@ export function EditMemberList({ selectedUsers, style }) {
     <RowList style={style}>
       {selectedUsers.map((user, i) => {
         const userProfile = chatUsers.find(u => u.id === user);
-        console.log("[EditMemberList]:", user, userProfile);
         return (
           <Avatar
             key={i}
