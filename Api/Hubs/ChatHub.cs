@@ -243,9 +243,20 @@ namespace SignalRChat.Hubs
                 ChatResponse response = new ChatResponse();
                 if (result.Success)
                 {
+                    UpdateGroupResponse updateGroupResponse = (UpdateGroupResponse)result.Data;
                     response.Type = ChatResponseType.UpdateGroupView;
-                    response.Data = result.Data;
+                    response.Data = updateGroupResponse.Group;
                     await SendResponseToGroup(request.Group, response);
+
+                    response = new ChatResponse();
+                    response.Type = ChatResponseType.DeleteGroup;
+                    response.Data = request.Group;
+
+                    foreach (string user in updateGroupResponse.DeletedUsers)
+                    {
+                        await SendResponseToUser(user, response);
+                        await GroupUserConnection(request.Group, user, false);
+                    }
                 }
                 else
                 {

@@ -366,12 +366,14 @@ namespace Api.Services
                 var group = (await _group.Get(x => x.Id == gid)).FirstOrDefault();
                 if (group != null && !group.IsDeleted)
                 {
+                    List<string> deletedUser = new List<string>();
                     // Delete Users
                     var oldUsers = (await _groupUser.Get(x => x.Gid == gid && !x.IsDeleted)).ToList();
                     foreach (GroupUser user in oldUsers)
                     {
                         if (!users.Contains(user.Uid))
                         {
+                            deletedUser.Add(user.Uid);
                             user.IsDeleted = true;
                             await _groupUser.Update(user);
                         }
@@ -412,7 +414,7 @@ namespace Api.Services
                         Users = (await GetGroupUsers(group.Id))
                     };
 
-                    return new RequestResult { Success = true, Data = groupView };
+                    return new RequestResult { Success = true, Data = new UpdateGroupResponse{ Group = groupView, DeletedUsers = deletedUser } };
                 }
                 else
                 {
