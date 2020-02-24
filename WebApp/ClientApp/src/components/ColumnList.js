@@ -1,18 +1,15 @@
 import React from "react";
 
-export function ColumnList({ children }) {
+export function ColumnList({ className, style, children, onClick }) {
   return (
     <div
-      style={{
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-        padding: "1em"
+      className={className}
+      style={{ display: "flex", width: "100%", overflow: "hidden", ...style }}
+      onClick={e => {
+        if (onClick) onClick(e);
       }}
     >
-      <div style={{ display: "flex", "overflow-x": "scroll" }}>
-        <div style={{ display: "flex" }}>{children}</div>
-      </div>
+      <div style={{ display: "flex", overflowY: "scroll" }}>{children}</div>
     </div>
   );
 }

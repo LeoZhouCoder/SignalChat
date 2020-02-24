@@ -249,6 +249,11 @@ p {
   margin: 0;
 }
 
+.avatar.selected {
+  border: 2px solid rgba(84, 166, 233, 1);
+  box-shadow: 0 0 3px 3px rgba(84, 166, 233, 0.2), 0 0 3px 3px rgba(84, 166, 233, 0.15);
+}
+
 .avatar:after {
   content: "";
   display: block;
@@ -286,6 +291,8 @@ p {
 }
 
 .popupContent {
+  display: flex;
+  overflow: hidden;
   width: 50em;
   max-width: 90%;
   max-height: 90%;
@@ -298,7 +305,7 @@ p {
 .scrollList {
   display: flex;
   flex-flow: column;
-  width:100%;
+  width: 100%;
 }
 
 .blur {
@@ -306,4 +313,12 @@ p {
   -moz-filter: blur(0.2em);
   -ms-filter: blur(0.2em);
   filter: blur(0.2em);
+}
+
+.avatarPicker {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  align-self: center;
+  overflow-y: scroll;
 }

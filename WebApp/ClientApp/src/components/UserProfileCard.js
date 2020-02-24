@@ -3,7 +3,7 @@ import { Button } from "semantic-ui-react";
 import { Popup } from "./Popup";
 import { Avatar } from "./Avatar";
 import { EditMemberList } from "./EditMemberList";
-import { SelectUserList } from "./SelectUserList";
+import SelectUserList from "./SelectUserList";
 
 const avatars = [
   "https://react.semantic-ui.com/images/avatar/large/daniel.jpg",

@@ -198,7 +198,296 @@ export const chatUsers = [
   {
     id: "u4",
     name: "Christian",
-    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
+    profilePhoto:
+      "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
+  },
+  {
+    uid: "u5",
+    name: "Tom",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/tom.jpg"
+  },
+  {
+    id: "u6",
+    name: "Jenny",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/jenny.jpg"
+  },
+  {
+    id: "u0",
+    name: "Daniel",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
+  },
+  {
+    id: "u1",
+    name: "Stevie",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/stevie.jpg"
+  },
+  {
+    id: "u2",
+    name: "Elliot",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/elliot.jpg"
+  },
+  {
+    id: "u3",
+    name: "Matt",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/matt.jpg"
+  },
+  {
+    id: "u4",
+    name: "Christian",
+    profilePhoto:
+      "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
+  },
+  {
+    uid: "u5",
+    name: "Tom",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/tom.jpg"
+  },
+  {
+    id: "u6",
+    name: "Jenny",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/jenny.jpg"
+  },
+  {
+    id: "u0",
+    name: "Daniel",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
+  },
+  {
+    id: "u1",
+    name: "Stevie",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/stevie.jpg"
+  },
+  {
+    id: "u2",
+    name: "Elliot",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/elliot.jpg"
+  },
+  {
+    id: "u3",
+    name: "Matt",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/matt.jpg"
+  },
+  {
+    id: "u4",
+    name: "Christian",
+    profilePhoto:
+      "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
+  },
+  {
+    uid: "u5",
+    name: "Tom",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/tom.jpg"
+  },
+  {
+    id: "u6",
+    name: "Jenny",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/jenny.jpg"
+  },
+  {
+    id: "u0",
+    name: "Daniel",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
+  },
+  {
+    id: "u1",
+    name: "Stevie",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/stevie.jpg"
+  },
+  {
+    id: "u2",
+    name: "Elliot",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/elliot.jpg"
+  },
+  {
+    id: "u3",
+    name: "Matt",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/matt.jpg"
+  },
+  {
+    id: "u4",
+    name: "Christian",
+    profilePhoto:
+      "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
+  },
+  {
+    uid: "u5",
+    name: "Tom",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/tom.jpg"
+  },
+  {
+    id: "u6",
+    name: "Jenny",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/jenny.jpg"
+  },
+  {
+    id: "u0",
+    name: "Daniel",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
+  },
+  {
+    id: "u1",
+    name: "Stevie",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/stevie.jpg"
+  },
+  {
+    id: "u2",
+    name: "Elliot",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/elliot.jpg"
+  },
+  {
+    id: "u3",
+    name: "Matt",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/matt.jpg"
+  },
+  {
+    id: "u4",
+    name: "Christian",
+    profilePhoto:
+      "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
+  },
+  {
+    uid: "u5",
+    name: "Tom",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/tom.jpg"
+  },
+  {
+    id: "u6",
+    name: "Jenny",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/jenny.jpg"
+  },
+  {
+    id: "u0",
+    name: "Daniel",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
+  },
+  {
+    id: "u1",
+    name: "Stevie",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/stevie.jpg"
+  },
+  {
+    id: "u2",
+    name: "Elliot",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/elliot.jpg"
+  },
+  {
+    id: "u3",
+    name: "Matt",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/matt.jpg"
+  },
+  {
+    id: "u4",
+    name: "Christian",
+    profilePhoto:
+      "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
+  },
+  {
+    uid: "u5",
+    name: "Tom",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/tom.jpg"
+  },
+  {
+    id: "u6",
+    name: "Jenny",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/jenny.jpg"
+  },
+  {
+    id: "u0",
+    name: "Daniel",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
+  },
+  {
+    id: "u1",
+    name: "Stevie",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/stevie.jpg"
+  },
+  {
+    id: "u2",
+    name: "Elliot",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/elliot.jpg"
+  },
+  {
+    id: "u3",
+    name: "Matt",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/matt.jpg"
+  },
+  {
+    id: "u4",
+    name: "Christian",
+    profilePhoto:
+      "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
+  },
+  {
+    uid: "u5",
+    name: "Tom",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/tom.jpg"
+  },
+  {
+    id: "u6",
+    name: "Jenny",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/jenny.jpg"
+  },
+  {
+    id: "u0",
+    name: "Daniel",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
+  },
+  {
+    id: "u1",
+    name: "Stevie",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/stevie.jpg"
+  },
+  {
+    id: "u2",
+    name: "Elliot",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/elliot.jpg"
+  },
+  {
+    id: "u3",
+    name: "Matt",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/matt.jpg"
+  },
+  {
+    id: "u4",
+    name: "Christian",
+    profilePhoto:
+      "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
+  },
+  {
+    uid: "u5",
+    name: "Tom",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/tom.jpg"
+  },
+  {
+    id: "u6",
+    name: "Jenny",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/jenny.jpg"
+  },
+  {
+    id: "u0",
+    name: "Daniel",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
+  },
+  {
+    id: "u1",
+    name: "Stevie",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/stevie.jpg"
+  },
+  {
+    id: "u2",
+    name: "Elliot",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/elliot.jpg"
+  },
+  {
+    id: "u3",
+    name: "Matt",
+    profilePhoto: "https://react.semantic-ui.com/images/avatar/large/matt.jpg"
+  },
+  {
+    id: "u4",
+    name: "Christian",
+    profilePhoto:
+      "https://react.semantic-ui.com/images/avatar/large/christian.jpg"
   },
   {
     uid: "u5",

@@ -110,19 +110,11 @@ class Signup extends Component {
       >
         <Form.Group widths="equal">
           <Form.Input
-            id="firstName"
+            id="name"
             fluid
-            placeholder="First name"
+            placeholder="Name"
             value={this.state.formData.firstName}
             error={this.state.errors.firstName}
-            onChange={this.handleInputChange}
-          />
-          <Form.Input
-            id="lastName"
-            fluid
-            placeholder="Last name"
-            value={this.state.formData.lastName}
-            error={this.state.errors.lastName}
             onChange={this.handleInputChange}
           />
         </Form.Group>

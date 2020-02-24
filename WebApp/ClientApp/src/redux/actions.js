@@ -1,4 +1,5 @@
 import { WINDOW_RESIZE, USER_LOGIN } from "./actionTypes";
+
 import { serverUrl } from "../env/Env";
 import { getScreenType } from "../utils/Dimensions";
 
@@ -6,6 +7,7 @@ const loginUser = loginResult => ({
   type: USER_LOGIN,
   payload: loginResult
 });
+
 
 export const login = user => {
   console.log("[login]: start", user);

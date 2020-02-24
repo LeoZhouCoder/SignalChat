@@ -5,7 +5,8 @@ import { SCREEN_NORMAL, SCREEN_BIG } from "../utils/Dimensions";
 
 import Sidebar from "../components/Sidebar";
 import MainScreen from "../components/MainScreen";
-import { GroupProfileCard } from "../components/GroupProfileCard";
+import GroupProfileCard from "../components/GroupProfileCard";
+import { UserProfileCard } from "../components/UserProfileCard";
 import { hubStart } from "../utils/ChatHub";
 
 class Chatroom extends Component {
@@ -15,23 +16,36 @@ class Chatroom extends Component {
     super(props);
   }
   render() {
-    let { screenType } = this.props;
+    let { screenType, profile } = this.props;
     let { activeMenu } = this.state;
     let showSidebar = false;
     if (screenType === SCREEN_NORMAL || screenType === SCREEN_BIG) {
       showSidebar = true;
       activeMenu = "ChatHistory";
     }
+
+    let profileCard = null;
+    if (profile) {
+      if (profile.type) {
+        profileCard = <UserProfileCard uid={profile.id} />;
+      } else {
+        profileCard = <GroupProfileCard gid={profile.id} />;
+      }
+    }
+
     return (
       <div>
-        <div className="flexBox max blur">
+        <div className={`flexBox max ${profileCard === null ? "" : "blur"}`}>
           {showSidebar && <Sidebar screenType={screenType} />}
           <MainScreen screenType={screenType} activeMenu={activeMenu} />
         </div>
-        <GroupProfileCard />
+        {profileCard}
       </div>
     );
   }
 }
-const mapStateToProps = state => ({ screenType: state.dimensionReducer });
+const mapStateToProps = state => ({
+  screenType: state.dimensionReducer,
+  profile: state.chatReducer.profile
+});
 export default connect(mapStateToProps)(Chatroom);

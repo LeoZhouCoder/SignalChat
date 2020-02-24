@@ -1,9 +1,9 @@
 import React from "react";
 
-export function Avatar({ src, style }) {
+export function Avatar({ src, style, selected, onClick }) {
   return (
-    <div style={{ width: "4em", ...style }}>
-      <div className="avatar">
+    <div style={{ width: "4em", ...style }} onClick={onClick}>
+      <div className={`avatar ${selected ? "selected" : ""}`}>
         <div className="square center-v">
           <img alt={src} src={src} />
         </div>

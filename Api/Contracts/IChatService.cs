@@ -5,6 +5,7 @@ namespace Api.Services
 {
     public interface IChatService
     {
+        Task<RequestResult> GetAllUsers();
         Task<RequestResult> GetGroupsAndRecords(string uid);
         Task<RequestResult> CreateGroup(string name, List<string> users);
         Task<RequestResult> DeleteGroup(string editor, string gid);

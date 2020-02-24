@@ -1,9 +1,11 @@
 import React from "react";
-import { Icon } from "semantic-ui-react";
-import { Avatar } from "./Avatar";
-import { chatUsers } from "../mockData/chats";
+import { connect } from "react-redux";
+import SelectableUser from "./SelectableUser";
 
-export function SelectUserList({ selectedUsers, searchKey, onClickItem }) {
+import { getUserProfile } from "../redux/chatActions";
+
+function SelectUserList({ selectedUsers, searchKey, onClickItem, allUsers }) {
+  console.log("[SelectUserList]: render", selectedUsers, searchKey, allUsers);
   return (
     <div
       style={{
@@ -23,9 +25,10 @@ export function SelectUserList({ selectedUsers, searchKey, onClickItem }) {
         }}
       >
         <div style={{ display: "flex", width: "100%", flexFlow: "column" }}>
-          {chatUsers.map((user, i) => {
+          {allUsers.map((uid, i) => {
+            const user = getUserProfile(uid);
             const re = new RegExp(searchKey, "i");
-            const isMatch = re.test(user.name);
+            const isMatch = user ? re.test(user.name) : false;
             if (!isMatch) return null;
             const selected = selectedUsers.includes(user.id);
             const unselectable = selected && selectedUsers.length < 3;
@@ -39,7 +42,9 @@ export function SelectUserList({ selectedUsers, searchKey, onClickItem }) {
                 user={user}
                 selected={selected}
                 unselectable={unselectable}
-                onClickItem={() => onClickItem(user)}
+                onClickItem={() => {
+                  if (onClickItem) onClickItem(uid);
+                }}
               />
             );
           })}
@@ -49,33 +54,11 @@ export function SelectUserList({ selectedUsers, searchKey, onClickItem }) {
   );
 }
 
-export function SelectableUser({ user, selected, unselectable, onClickItem }) {
-  const { name, profilePhoto } = user;
-  return (
-    <div
-      className={`divider ${unselectable ? "" : "pointer"}`}
-      style={{
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        overflow: "hidden",
-        paddingTop: ".5em",
-        paddingBottom: ".5em"
-      }}
-      onClick={() => {
-        if (!unselectable) onClickItem();
-      }}
-    >
-      <Avatar
-        src={profilePhoto}
-        style={{ width: "3em", paddingRight: "1em" }}
-      />
-      <div className="single text_center extendable unselect">{name}</div>
-      <Icon
-        name={selected ? "check circle" : "circle outline"}
-        size="large"
-        color={selected && !unselectable ? "green" : "grey"}
-      />
-    </div>
-  );
-}
+const mapStateToProps = state => {
+  return {
+    allUsers: state.chatReducer.allUsers,
+    users: state.chatReducer.users
+  };
+};
+
+export default connect(mapStateToProps)(SelectUserList);

@@ -1,18 +1,18 @@
 import React from "react";
+
 import { Avatar } from "./Avatar";
 import { RowList } from "./RowList";
-
-import { chatUsers } from "../mockData/chats";
+import { getUserProfile } from "../redux/chatActions";
 
 export function EditMemberList({ selectedUsers, style }) {
   return (
     <RowList style={style}>
-      {selectedUsers.map((user, i) => {
-        const userProfile = chatUsers.find(u => u.id === user);
+      {selectedUsers.map((uid, i) => {
+        let profile = getUserProfile(uid);
         return (
           <Avatar
             key={i}
-            src={userProfile ? userProfile.profilePhoto : ""}
+            src={profile ? profile.profilePhoto : ""}
             style={{ margin: ".1em", width: "2em" }}
           />
         );

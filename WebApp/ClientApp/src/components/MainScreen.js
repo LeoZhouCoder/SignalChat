@@ -21,6 +21,8 @@ import {
   createGroup
 } from "../redux/chatActions";
 
+import { SHOW_PROFILE } from "../redux/reducers/chat";
+
 const SCREEN_DIALOG = "DIALOG";
 export const SCREEN_CHATS = "CHATS";
 export const SCREEN_ONLINE_USERS = "ONLINE_USERS";
@@ -51,6 +53,7 @@ class MainScreen extends React.Component {
         break;
       case "action":
         console.log("Click Tob Bar btn: ", type);
+        this.props.showGroupProfile(this.props.chatroom);
         break;
       default:
         break;
@@ -143,7 +146,7 @@ class MainScreen extends React.Component {
         let { users } = group;
         if (users.length > 2) {
           name = group ? group.name : "";
-          icon = "users";
+          icon = "plus";
         } else {
           var profile;
           if (users.length === 1) {
@@ -152,7 +155,7 @@ class MainScreen extends React.Component {
             profile = getUserProfile(users.find(u => u !== currentUser));
           }
           name = profile ? profile.name : "";
-          icon = "user";
+          icon = "plus";
         }
       } else {
         name = "";
@@ -193,4 +196,13 @@ const mapStateToProps = state => {
     groups: state.chatReducer.groups
   };
 };
-export default connect(mapStateToProps)(MainScreen);
+
+const mapDispatchToProps = dispatch => ({
+  showGroupProfile: gid =>
+    dispatch({
+      type: SHOW_PROFILE,
+      payload: { type: 0, id: gid }
+    })
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainScreen);

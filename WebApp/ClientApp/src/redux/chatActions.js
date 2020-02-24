@@ -62,6 +62,10 @@ export const createGroup = (name, users) => {
   sendRequest("CreateGroup", { name, users });
 };
 
+export const updateGroup = (group, name, users) => {
+  sendRequest("UpdateGroup", { group, name, users });
+};
+
 export const changeGroupName = (group, name) =>
   sendRequest("ChangeGroupName", { group, name });
 

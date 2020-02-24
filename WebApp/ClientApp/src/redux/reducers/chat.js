@@ -8,18 +8,23 @@ export const UPDATE_USERS = "UPDATE_USERS";
 export const ADD_CHAT = "ADD_CHAT";
 export const ADD_CHATS = "ADD_CHATS";
 export const SWITCH_CHATROOM = "SWITCH_CHATROOM";
+export const SHOW_PROFILE = "SHOW_PROFILE";
 // data nodes
 export const GROUPS = "groups";
 export const USERS = "users";
 export const ONLINE_USERS = "onlineUsers";
+export const ALL_USERS = "allUsers";
 export const CHATROOM = "chatroom";
+export const PROFILE = "profile";
 
 export default function chatReducer(
   state = {
     [GROUPS]: [],
     [USERS]: [],
     [ONLINE_USERS]: [],
-    [CHATROOM]: null
+    [ALL_USERS]: [],
+    [CHATROOM]: null,
+    [PROFILE]: null
   },
   action
 ) {
@@ -30,7 +35,11 @@ export default function chatReducer(
       return { ...state, [GROUPS]: groups, [USERS]: users };
     case UPDATE_ONLINE_USER:
       console.log("[ChatReducer]:", action);
-      return { ...state, [ONLINE_USERS]: action.payload };
+      return {
+        ...state,
+        [ONLINE_USERS]: action.payload[ONLINE_USERS],
+        [ALL_USERS]: action.payload[ALL_USERS]
+      };
     case UPDATE_GROUP:
       console.log("[ChatReducer]:", action);
       return updateGroup(state, action.payload);
@@ -52,6 +61,8 @@ export default function chatReducer(
     case SWITCH_CHATROOM:
       console.log("[ChatReducer]:", action);
       return { ...state, [CHATROOM]: action.payload };
+    case SHOW_PROFILE:
+      return { ...state, [PROFILE]: action.payload };
     default:
       return state;
   }

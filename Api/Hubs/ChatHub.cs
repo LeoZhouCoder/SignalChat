@@ -90,11 +90,16 @@ namespace SignalRChat.Hubs
                         await AddToGroup(group, Context.ConnectionId);
                     }
                 }
-
+                // Get All Users
+                result = await _chatService.GetAllUsers();
                 await SendResponseToAll(new ChatResponse()
                 {
                     Type = ChatResponseType.UpdateOnlineUsers,
-                    Data = _connections.Keys
+                    Data = new
+                    {
+                        OnlineUsers = _connections.Keys,
+                        AllUsers = result.Data
+                    }
                 });
 
                 await base.OnConnectedAsync();

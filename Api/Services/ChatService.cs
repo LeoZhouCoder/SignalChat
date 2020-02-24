@@ -31,6 +31,21 @@ namespace Api.Services
             _chat = chat;
             _userRelation = userRelation;
         }
+        /// <summary>
+        /// Get All Users' ID
+        /// </summary>
+        public async Task<RequestResult> GetAllUsers()
+        {
+            try
+            {
+                var users = (await _user.Get(x=>!x.IsDeleted)).Select(x => x.Id).ToList();
+                return new RequestResult { Success = true, Data = users };
+            }
+            catch (Exception ex)
+            {
+                return new RequestResult { Success = false, Message = "GetAllUsers error - " + ex.Message };
+            }
+        }
 
         /// <summary>
         /// Get all groups and chat records related user
@@ -58,7 +73,7 @@ namespace Api.Services
                     groups.Add(groupView);
                     userIds = userIds.Union(groupView.Users).ToList();
                 }
-                
+
                 if (userIds.IndexOf(uid) == -1)
                 {
                     userIds.Add(uid);
