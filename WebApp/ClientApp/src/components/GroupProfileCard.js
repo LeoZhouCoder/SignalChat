@@ -36,7 +36,6 @@ class GroupProfileCard extends Component {
     if (this.state.isSelectMembers) {
       let newState = { ...this.state, isSelectMembers: false };
       if (!cancel) newState.users = this.state.temUsers;
-      console.log("[GroupProfileCard]: onClickButton", newState);
       this.setState(newState);
     } else {
       if (!cancel) {
@@ -151,7 +150,6 @@ class GroupProfileCard extends Component {
       : oldUsers.length > 2
       ? "Update"
       : "Create";
-    console.log("[GroupProfileCard]: render", this.state);
 
     return (
       <Popup width="30em" onClose={() => this.onClickButton(true)}>

@@ -10,14 +10,13 @@ export function ContactContent({
   collapsed,
   onClickItem,
   name,
-  photo,
+  photos,
   online
 }) {
   return (
     <ListItem
       data={data}
-      img={photo}
-      icon="user"
+      photos={photos}
       selected={selected}
       collapsed={collapsed}
       onClickItem={onClickItem}
@@ -35,7 +34,7 @@ const mapStateToProps = (state, props) => {
   const user = getUserProfile(data);
   return {
     name: user ? user.name : "",
-    photo: user ? user.profilePhoto : "",
+    photos: [user ? user.profilePhoto : ""],
     online: state.chatReducer.onlineUsers.includes(data)
   };
 };

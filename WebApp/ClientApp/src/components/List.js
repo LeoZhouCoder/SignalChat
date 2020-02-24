@@ -1,5 +1,5 @@
 import React from "react";
-import Avatar from "./Avatar";
+import Avatar, { AvatarMultiple } from "./Avatar";
 
 export function List({
   component: Component,
@@ -37,12 +37,11 @@ export function List({
 
 export function ListItem({
   data,
-  img,
+  photos,
   selected,
   collapsed,
   children,
-  onClickItem,
-  icon
+  onClickItem
 }) {
   let content = collapsed ? null : children;
   return (
@@ -53,7 +52,7 @@ export function ListItem({
       onClick={() => onClickItem(data)}
     >
       <div className="flexBox column center-v">
-        <Avatar src={img} icon={icon} />
+        <AvatarMultiple photos={photos} />
       </div>
       {content}
     </div>
