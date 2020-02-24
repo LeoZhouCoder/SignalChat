@@ -38,7 +38,8 @@ namespace Api.Services
         {
             try
             {
-                var users = (await _user.Get(x => !x.IsDeleted)).Select(x => x.Id).ToList();
+                var users = (await _user.Get(x => !x.IsDeleted))
+                .OrderByDescending(x => x.ActiveTime).Select(x => x.Id).ToList();
                 return new RequestResult { Success = true, Data = users };
             }
             catch (Exception ex)
@@ -80,6 +81,13 @@ namespace Api.Services
                 }
 
                 List<UserView> users = await GetUserProfileByIds(userIds);
+
+                var user = (await _user.Get(x => x.Id == uid)).FirstOrDefault();
+                if (user != null)
+                {
+                    user.ActiveTime = DateTime.UtcNow;
+                    await _user.Update(user);
+                }
 
                 return new RequestResult { Success = true, Data = new { groups, users } };
             }
@@ -414,7 +422,7 @@ namespace Api.Services
                         Users = (await GetGroupUsers(group.Id))
                     };
 
-                    return new RequestResult { Success = true, Data = new UpdateGroupResponse{ Group = groupView, DeletedUsers = deletedUser } };
+                    return new RequestResult { Success = true, Data = new UpdateGroupResponse { Group = groupView, DeletedUsers = deletedUser } };
                 }
                 else
                 {

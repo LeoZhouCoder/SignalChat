@@ -21,7 +21,7 @@ const mapStateToProps = state => {
   const chatroom = state.chatReducer.chatroom;
   const groups = state.chatReducer.groups;
   const group = groups.find(g => g.id === chatroom);
-  const onlineUsers = state.chatReducer.onlineUsers;
+  const allUsers = state.chatReducer.allUsers;
   const currentUser = state.authReducer.user.id;
   let selectedUser = null;
   if (group) {
@@ -34,7 +34,7 @@ const mapStateToProps = state => {
   }
 
   return {
-    users: onlineUsers,
+    users: allUsers,
     selectedUser: selectedUser
   };
 };

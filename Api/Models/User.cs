@@ -15,6 +15,7 @@ namespace Api.Models
         public string Name { get; set; }
         public string ProfilePhoto { get; set; }
         public DateTime CreatedOn { get; set; }
+        public DateTime ActiveTime { get; set; }
         public bool IsDeleted { get; set; }
     }
 }
