@@ -47,7 +47,7 @@ namespace Api.Services
                     Id = ObjectId.GenerateNewId().ToString(),
                     Email = user.Email,
                     PasswordHash = _encryptPassword.CreateHash(user.Password),
-                    Name = user.FirstName + " " + user.LastName,
+                    Name = user.Name,
                     ProfilePhoto = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTJ-mXuETtV9PelHdVOYG7yMwKVZpW1NGNpFwND484eFIxU8IBe",
                     CreatedOn = DateTime.UtcNow,
                     IsDeleted = false

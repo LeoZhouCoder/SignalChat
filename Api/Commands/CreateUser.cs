@@ -10,9 +10,7 @@ namespace Api.Commands
         public string Password { get; set; }
         [Required(ErrorMessage = "The Confirm Password field is required.")]
         public string ConfirmPassword { get; set; }
-        [Required(ErrorMessage = "The First Name field is required.")]
-        public string FirstName { get; set; }
-        [Required(ErrorMessage = "The Last Name field is required.")]
-        public string LastName { get; set; }
+        [Required(ErrorMessage = "The Name field is required.")]
+        public string Name { get; set; }
     }
 }
