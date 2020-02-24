@@ -22,10 +22,11 @@ import {
 } from "../redux/chatActions";
 
 import { SHOW_PROFILE } from "../redux/reducers/chat";
+import { MENU } from "../env/Env";
 
-const SCREEN_DIALOG = "DIALOG";
-export const SCREEN_CHATS = "CHATS";
-export const SCREEN_ONLINE_USERS = "ONLINE_USERS";
+const SCREEN_DIALOG = "dialog";
+const SCREEN_CHATS = MENU[0].value;
+const SCREEN_ONLINE_USERS = MENU[1].value;
 
 class MainScreen extends React.Component {
   constructor(props) {
@@ -116,7 +117,7 @@ class MainScreen extends React.Component {
     let screenType = this.getScreenType();
     let name, icon, isBack, ListComponent, footer;
     if (screenType === SCREEN_CHATS) {
-      name = "Chats";
+      name = screenType;
       icon = "plus";
       isBack = false;
       ListComponent = ChatHistory;
@@ -128,7 +129,7 @@ class MainScreen extends React.Component {
       );
       ListComponent = ChatList;
     } else if (screenType === SCREEN_ONLINE_USERS) {
-      name = "Online Users";
+      name = screenType;
       isBack = false;
       ListComponent = ChatHistory;
       footer = (

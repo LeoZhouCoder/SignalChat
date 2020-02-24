@@ -9,16 +9,10 @@ import ContactList from "./ContactList";
 import { SCREEN_BIG } from "../utils/Dimensions";
 import { CHATROOM, GROUPS } from "../redux/reducers/chat";
 import { changeChatroom, createGroup } from "../redux/chatActions";
-
-const MENU_CHATS = "Chats";
-const MENU_CONTACTS = "OnlineUsers";
-const options = [
-  { key: 1, text: MENU_CHATS, value: MENU_CHATS },
-  { key: 2, text: MENU_CONTACTS, value: MENU_CONTACTS }
-];
+import { MENU } from "../env/Env";
 
 class Sidebar extends Component {
-  state = { activeMenu: MENU_CHATS };
+  state = { activeMenu: MENU[0].value };
 
   handleMenuClick = name => this.setState({ activeMenu: name });
 
@@ -26,7 +20,7 @@ class Sidebar extends Component {
 
   handleItemClick = data => {
     const { chatroom, currentUser } = this.props;
-    if (this.state.activeMenu === MENU_CHATS) {
+    if (this.state.activeMenu === MENU[0].value ) {
       if (chatroom !== data.id) changeChatroom(data.id);
     } else {
       const { groups } = this.props;
@@ -55,7 +49,7 @@ class Sidebar extends Component {
     const { activeMenu } = this.state;
     const bigScreen = this.props.screenType === SCREEN_BIG;
     let ListComponent;
-    if (activeMenu === MENU_CHATS) {
+    if (activeMenu === MENU[0].value ) {
       ListComponent = ChatList;
     } else {
       ListComponent = ContactList;
@@ -71,7 +65,7 @@ class Sidebar extends Component {
           bigScreen={bigScreen}
           activeMenu={activeMenu}
           handleMenuClick={this.handleMenuClick}
-          options={options}
+          options={MENU}
         />
         <ListComponent
           collapsed={!bigScreen}
