@@ -1,15 +1,14 @@
 import React from "react";
-
 import Avatar from "./Avatar";
-import { RowList } from "./RowList";
+import RowList from "./RowList";
 import { getUserProfile } from "../redux/chatActions";
 
-export function UserRowList({ users, style }) {
+export default function UserRowList({ users, style }) {
   users = users || [];
   return (
     <RowList style={style}>
       {users.map((uid, i) => {
-        let user = getUserProfile(uid);
+        const user = getUserProfile(uid);
         return (
           <Avatar
             key={i}

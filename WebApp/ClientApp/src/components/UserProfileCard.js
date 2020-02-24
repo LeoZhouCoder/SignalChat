@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Popup } from "./Popup";
-import { UserRowList } from "./UserRowList";
+import Popup from "./Popup";
+import UserRowList from "./UserRowList";
 import SelectUserList from "./SelectUserList";
 
 export class UserProfileCard extends Component {

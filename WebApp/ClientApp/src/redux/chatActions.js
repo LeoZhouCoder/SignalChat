@@ -59,11 +59,13 @@ export const getChats = (group, position = 0, limit = 20) =>
   sendRequest("GetChats", { group, position, limit });
 
 export const createGroup = (name, users) => {
-  sendRequest("CreateGroup", { name, users });
+  console.log("[ChatAction]: createGroup", name, users);
+  //sendRequest("CreateGroup", { name, users });
 };
 
 export const updateGroup = (group, name, users) => {
-  sendRequest("UpdateGroup", { group, name, users });
+  console.log("[ChatAction]: updateGroup", group, name, users);
+  //sendRequest("UpdateGroup", { group, name, users });
 };
 
 export const changeGroupName = (group, name) =>

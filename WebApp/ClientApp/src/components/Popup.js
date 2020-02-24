@@ -1,6 +1,6 @@
 import React from "react";
 
-export function Popup({ children, width, onClose }) {
+export default function Popup({ children, width, onClose }) {
   return (
     <div className="flexBox maxParent center-v popup" onClick={() => onClose()}>
       <div

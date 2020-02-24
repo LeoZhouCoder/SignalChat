@@ -4,16 +4,20 @@ import SelectableUser from "./SelectableUser";
 
 import { getUserProfile } from "../redux/chatActions";
 
-function SelectUserList({ selectedUsers, searchKey, onClickItem, allUsers }) {
-  console.log("[SelectUserList]: render", selectedUsers, searchKey, allUsers);
+function SelectUserList({
+  selectedUsers,
+  searchKey,
+  onClickItem,
+  allUsers,
+  currentUser
+}) {
   return (
     <div
       style={{
         width: "100%",
         overflow: "hidden",
         padding: "0 1em 1em 1em",
-        minHeight: "8em",
-        height: "20em"
+        minHeight: "10em"
       }}
     >
       <div
@@ -30,12 +34,9 @@ function SelectUserList({ selectedUsers, searchKey, onClickItem, allUsers }) {
             const re = new RegExp(searchKey, "i");
             const isMatch = user ? re.test(user.name) : false;
             if (!isMatch) return null;
-            const selected = selectedUsers.includes(user.id);
-            const unselectable = selected && selectedUsers.length < 3;
-            if (selected) {
-              console.log("[SelectUserList]:", unselectable, selectedUsers);
-            }
-
+            const selected = selectedUsers.includes(uid) || currentUser === uid;
+            const unselectable =
+              (selected && selectedUsers.length <= 3) || currentUser === uid;
             return (
               <SelectableUser
                 key={i}

@@ -52,7 +52,6 @@ class MainScreen extends React.Component {
         }
         break;
       case "action":
-        console.log("Click Tob Bar btn: ", type);
         this.props.showGroupProfile(this.props.chatroom);
         break;
       default:

@@ -1,6 +1,6 @@
 import React from "react";
 
-export function ColumnList({ className, style, children, onClick }) {
+export default function ColumnList({ className, style, children, onClick }) {
   return (
     <div
       className={className}

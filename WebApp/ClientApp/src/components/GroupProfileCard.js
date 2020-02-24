@@ -2,14 +2,13 @@ import React, { Component } from "react";
 import { Input, Button } from "semantic-ui-react";
 import { connect } from "react-redux";
 
-import { Popup } from "./Popup";
-import { AvatarPicker } from "./AvatarPicker";
-import { UserRowList } from "./UserRowList";
+import Popup from "./Popup";
+import AvatarPicker from "./AvatarPicker";
+import UserRowList from "./UserRowList";
 import SelectUserList from "./SelectUserList";
 
 import { SHOW_PROFILE } from "../redux/reducers/chat";
-
-import { getUserProfile } from "../redux/chatActions";
+import { getUserProfile, createGroup, updateGroup } from "../redux/chatActions";
 
 class GroupProfileCard extends Component {
   constructor(props) {
@@ -22,8 +21,9 @@ class GroupProfileCard extends Component {
     const { users, name } = group;
     return {
       isSelectMembers: false,
-      name: name,
+      name: name ? name : "",
       users: users ? users : [],
+      temUsers: users ? users : [],
       searchKey: ""
     };
   };
@@ -33,34 +33,36 @@ class GroupProfileCard extends Component {
   }
 
   onClickButton = cancel => {
-    if (cancel) {
-      if (this.state.isSelectMembers) {
-        this.setState({ ...this.state, isSelectMembers: false });
-      } else {
-        this.props.hideGroupProfile();
-      }
+    if (this.state.isSelectMembers) {
+      let newState = { ...this.state, isSelectMembers: false };
+      if (!cancel) newState.users = this.state.temUsers;
+      console.log("[GroupProfileCard]: onClickButton", newState);
+      this.setState(newState);
     } else {
-      if (this.state.isSelectMembers) {
-        this.setState({ ...this.state, isSelectMembers: false });
+      if (cancel) {
+        this.props.hideGroupProfile();
       } else {
-        console.log(
-          "[GroupProfileCard]: Update Group",
-          this.props.gid,
-          this.state
-        );
+        const { group, gid } = this.props;
+        const oldUsers = group.users;
+        const { name, users } = this.state;
+
+        if (oldUsers.length < 3) {
+          createGroup(name, users);
+        } else {
+          updateGroup(gid, name, users);
+        }
       }
     }
   };
 
-  onClickItem = id => {
-    console.log("[GroupProfileCard]: onClickItem", id);
-    let { users } = this.state;
-    if (users.includes(id)) {
-      users = users.filter(uid => uid !== id);
+  onClickUser = uid => {
+    let { temUsers } = this.state;
+    if (temUsers.includes(uid)) {
+      temUsers = temUsers.filter(user => user !== uid);
     } else {
-      users = [...users, id];
+      temUsers = [...temUsers, uid];
     }
-    this.setState({ ...this.state, users: users });
+    this.setState({ ...this.state, temUsers: temUsers });
   };
 
   getName = () => {
@@ -69,13 +71,13 @@ class GroupProfileCard extends Component {
         <Input
           placeholder="Group Name"
           style={{ flex: 1 }}
-          onKeyDown={this.onKeyPress}
-          value={this.state.groupName}
+          value={this.state.name}
           onChange={e => this.setState({ ...this.state, name: e.target.value })}
         />
       </div>
     );
   };
+
   getAvatarPicker = () => {
     const { users } = this.state;
     let avatars = users.map(user => {
@@ -88,13 +90,17 @@ class GroupProfileCard extends Component {
         avatars={avatars}
         onClickItem={index => {
           if (index === 0)
-            this.setState({ ...this.state, isSelectMembers: true });
+            this.setState({
+              ...this.state,
+              isSelectMembers: true,
+              temUsers: this.state.users
+            });
         }}
       />
     );
   };
 
-  getEditMemberList = () => {
+  getUserRowList = () => {
     return (
       <UserRowList
         className="divider"
@@ -110,7 +116,6 @@ class GroupProfileCard extends Component {
         <Input
           placeholder="Search"
           style={{ flex: 1 }}
-          onKeyDown={this.onKeyPress}
           icon="search"
           iconPosition="left"
           value={this.state.searchKey}
@@ -125,9 +130,10 @@ class GroupProfileCard extends Component {
   getSelectUserList = () => {
     return (
       <SelectUserList
-        selectedUsers={this.state.users}
+        selectedUsers={this.state.temUsers}
         searchKey={this.state.searchKey}
-        onClickItem={this.onClickItem}
+        onClickItem={this.onClickUser}
+        currentUser={this.props.currentUser}
       />
     );
   };
@@ -135,7 +141,7 @@ class GroupProfileCard extends Component {
   render() {
     const { group } = this.props;
     const oldUsers = group.users;
-    const { isSelectMembers } = this.state;
+    const { isSelectMembers, users, name } = this.state;
     const title = isSelectMembers
       ? "Select Members"
       : oldUsers.length > 2
@@ -146,9 +152,10 @@ class GroupProfileCard extends Component {
       : oldUsers.length > 2
       ? "Update"
       : "Create";
+    console.log("[GroupProfileCard]: render", this.state);
 
     return (
-      <Popup width="30em" onClose={this.props.hideGroupProfile}>
+      <Popup width="30em" onClose={() => this.onClickButton(true)}>
         <div
           style={{
             display: "flex",
@@ -160,18 +167,25 @@ class GroupProfileCard extends Component {
           <div className="title single text_center unselect">{title}</div>
           {!isSelectMembers && this.getName()}
           {!isSelectMembers && this.getAvatarPicker()}
-          {isSelectMembers && this.getEditMemberList()}
+          {isSelectMembers && this.getUserRowList()}
           {isSelectMembers && this.getSearch()}
           {isSelectMembers && this.getSelectUserList()}
           <div
-            className="flexBox row"
-            style={{ justifyContent: "space-evenly" }}
+            style={{
+              display: "flex",
+              width: "100%",
+              justifyContent: "space-evenly"
+            }}
           >
-            {!isSelectMembers && (
-              <Button onClick={this.onClickButton}>Cancel</Button>
-            )}
-
-            <Button positive onClick={this.onClickButton}>
+            <Button fluid onClick={() => this.onClickButton(true)}>
+              Cancel
+            </Button>
+            <Button
+              fluid
+              disabled={!isSelectMembers && (!name || users.length < 3)}
+              positive
+              onClick={() => this.onClickButton(false)}
+            >
               {buttonName}
             </Button>
           </div>
@@ -183,7 +197,7 @@ class GroupProfileCard extends Component {
 
 const mapStateToProps = (state, props) => {
   const group = state.chatReducer.groups.find(g => g.id === props.gid);
-  return { group: group };
+  return { group: group, currentUser: state.authReducer.user.id };
 };
 
 const mapDispatchToProps = dispatch => ({

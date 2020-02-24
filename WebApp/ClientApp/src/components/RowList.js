@@ -1,6 +1,6 @@
 import React from "react";
 
-export function RowList({ children,style }) {
+export default function RowList({ children, style }) {
   return (
     <div
       style={{
@@ -10,7 +10,7 @@ export function RowList({ children,style }) {
         ...style
       }}
     >
-      <div style={{ display: "flex", "overflowX": "scroll" }}>
+      <div style={{ display: "flex", overflowX: "scroll" }}>
         <div style={{ display: "flex" }}>{children}</div>
       </div>
     </div>

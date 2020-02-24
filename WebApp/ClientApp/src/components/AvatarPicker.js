@@ -1,8 +1,8 @@
 import React from "react";
 import Avatar from "./Avatar";
-import { ColumnList } from "./ColumnList";
+import ColumnList from "./ColumnList";
 
-export function AvatarPicker({ avatars, onClickItem, selectIndex = -1 }) {
+export default function AvatarPicker({ avatars, onClickItem, selectIndex = -1 }) {
   return (
     <ColumnList style={{ padding: "1em", maxHeight: "20em" }}>
       <div style={{ display: "flex", flexFlow: "row wrap" }}>
