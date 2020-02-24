@@ -38,7 +38,7 @@ namespace Api.Services
         {
             try
             {
-                var users = (await _user.Get(x=>!x.IsDeleted)).Select(x => x.Id).ToList();
+                var users = (await _user.Get(x => !x.IsDeleted)).Select(x => x.Id).ToList();
                 return new RequestResult { Success = true, Data = users };
             }
             catch (Exception ex)
@@ -352,7 +352,8 @@ namespace Api.Services
         /// <param name="editor">"Editor ID"</param>
         /// <param name="gid">"Group ID"</param>
         /// <param name="name">"Group Name"</param>
-        public async Task<RequestResult> ChangeGroupName(string editor, string gid, string name)
+        /// <param name="users">"Group Users"</param>
+        public async Task<RequestResult> UpdateGroup(string editor, string gid, string name, List<string> users)
         {
             try
             {
@@ -365,6 +366,42 @@ namespace Api.Services
                 var group = (await _group.Get(x => x.Id == gid)).FirstOrDefault();
                 if (group != null && !group.IsDeleted)
                 {
+                    // Delete Users
+                    var oldUsers = (await _groupUser.Get(x => x.Gid == gid && !x.IsDeleted)).ToList();
+                    foreach (GroupUser user in oldUsers)
+                    {
+                        if (!users.Contains(user.Uid))
+                        {
+                            user.IsDeleted = true;
+                            await _groupUser.Update(user);
+                        }
+                    }
+                    // Add Users
+                    foreach (string uid in users)
+                    {
+                        var user = (await _groupUser.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
+                        if (user == null)
+                        {
+                            user = new GroupUser()
+                            {
+                                Id = ObjectId.GenerateNewId().ToString(),
+                                Gid = gid,
+                                Uid = uid,
+                                IsDeleted = false
+                            };
+                            await _groupUser.Add(user);
+                        }
+                        else
+                        {
+                            if (user.IsDeleted)
+                            {
+                                user.IsDeleted = false;
+                                await _groupUser.Update(user);
+                            }
+                        }
+                    }
+
+
                     group.Name = name;
                     await _group.Update(group);
 

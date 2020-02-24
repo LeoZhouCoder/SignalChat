@@ -235,11 +235,11 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public async Task ChangeGroupName(ChangeGroupNameRequest request)
+        public async Task UpdateGroup(UpdateGroupRequest request)
         {
             try
             {
-                var result = await _chatService.ChangeGroupName(Context.UserIdentifier, request.Group, request.Name);
+                var result = await _chatService.UpdateGroup(Context.UserIdentifier, request.Group, request.Name, request.Users);
                 ChatResponse response = new ChatResponse();
                 if (result.Success)
                 {

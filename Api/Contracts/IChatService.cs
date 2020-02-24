@@ -9,7 +9,7 @@ namespace Api.Services
         Task<RequestResult> GetGroupsAndRecords(string uid);
         Task<RequestResult> CreateGroup(string name, List<string> users);
         Task<RequestResult> DeleteGroup(string editor, string gid);
-        Task<RequestResult> ChangeGroupName(string editor, string gid, string name);
+        Task<RequestResult> UpdateGroup(string editor, string gid, string name, List<string> users);
         Task<RequestResult> AddUserToGroup(string editor, string gid, string uid);
         Task<RequestResult> RemoveUserFromGroup(string editor, string gid, string uid);
         Task<RequestResult> AddChat(string sender, ChatType type, string content, string gid = null, string receiver = null);
