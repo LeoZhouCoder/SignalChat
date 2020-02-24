@@ -39,9 +39,7 @@ class GroupProfileCard extends Component {
       console.log("[GroupProfileCard]: onClickButton", newState);
       this.setState(newState);
     } else {
-      if (cancel) {
-        this.props.hideGroupProfile();
-      } else {
+      if (!cancel) {
         const { group, gid } = this.props;
         const oldUsers = group.users;
         const { name, users } = this.state;
@@ -52,6 +50,7 @@ class GroupProfileCard extends Component {
           updateGroup(gid, name, users);
         }
       }
+      this.props.hideGroupProfile();
     }
   };
 
