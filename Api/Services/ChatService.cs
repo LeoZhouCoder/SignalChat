@@ -374,8 +374,8 @@ namespace Api.Services
                 var group = (await _group.Get(x => x.Id == gid)).FirstOrDefault();
                 if (group != null && !group.IsDeleted)
                 {
-                    List<string> deletedUser = new List<string>();
                     // Delete Users
+                    List<string> deletedUser = new List<string>();
                     var oldUsers = (await _groupUser.Get(x => x.Gid == gid && !x.IsDeleted)).ToList();
                     foreach (GroupUser user in oldUsers)
                     {
@@ -387,6 +387,7 @@ namespace Api.Services
                         }
                     }
                     // Add Users
+                    List<string> addedUsers = new List<string>();
                     foreach (string uid in users)
                     {
                         var user = (await _groupUser.Get(x => x.Gid == gid && x.Uid == uid)).FirstOrDefault();
@@ -400,6 +401,7 @@ namespace Api.Services
                                 IsDeleted = false
                             };
                             await _groupUser.Add(user);
+                            addedUsers.Add(uid);
                         }
                         else
                         {
@@ -407,6 +409,7 @@ namespace Api.Services
                             {
                                 user.IsDeleted = false;
                                 await _groupUser.Update(user);
+                                addedUsers.Add(uid);
                             }
                         }
                     }
@@ -422,7 +425,7 @@ namespace Api.Services
                         Users = (await GetGroupUsers(group.Id))
                     };
 
-                    return new RequestResult { Success = true, Data = new UpdateGroupResponse { Group = groupView, DeletedUsers = deletedUser } };
+                    return new RequestResult { Success = true, Data = new UpdateGroupResponse { Group = groupView, DeletedUsers = deletedUser,AddedUsers=addedUsers } };
                 }
                 else
                 {

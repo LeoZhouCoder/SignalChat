@@ -81,6 +81,7 @@ const sortGroups = groups => {
 };
 
 const updateGroup = (state, newGroup) => {
+  if (!newGroup.chats) newGroup.chats = [];
   let newGroups = [newGroup];
   state[GROUPS].forEach(group => {
     if (group.id !== newGroup.id) {

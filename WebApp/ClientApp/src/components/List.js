@@ -1,5 +1,5 @@
 import React from "react";
-import Avatar, { AvatarMultiple } from "./Avatar";
+import { AvatarMultiple } from "./Avatar";
 
 export function List({
   component: Component,

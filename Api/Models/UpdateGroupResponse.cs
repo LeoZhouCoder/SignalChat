@@ -5,5 +5,6 @@ namespace Api.Models
     {
         public GroupView Group { get; set; }
         public List<string> DeletedUsers { get; set; }
+        public List<string> AddedUsers { get; set; }
     }
 }
