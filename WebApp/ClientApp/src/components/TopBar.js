@@ -12,13 +12,15 @@ export const TopBar = ({ name, icon, onClickBtn, isBack = false }) => {
         />
       )}
       <div className="title single">{name}</div>
-      <Icon
-        style={{ marginLeft: "auto" }}
-        name={icon}
-        color="grey"
-        size="large"
-        onClick={() => onClickBtn("action")}
-      />
+      {icon && (
+        <Icon
+          style={{ marginLeft: "auto" }}
+          name={icon}
+          color="grey"
+          size="large"
+          onClick={() => onClickBtn("action")}
+        />
+      )}
     </div>
   );
 };

@@ -12,8 +12,7 @@ class Signup extends Component {
     super(props);
     this.state = {
       formData: {
-        firstName: "",
-        lastName: "",
+        name: "",
         email: "",
         password: "",
         confirmPassword: ""
@@ -51,8 +50,7 @@ class Signup extends Component {
   validateField = (key, value) => {
     let content = null;
     switch (key) {
-      case "firstName":
-      case "lastName":
+      case "name":
         if (!value || /^\s{1,}$/.test(value)) {
           content = key + " is required";
         }
@@ -113,8 +111,8 @@ class Signup extends Component {
             id="name"
             fluid
             placeholder="Name"
-            value={this.state.formData.firstName}
-            error={this.state.errors.firstName}
+            value={this.state.formData.name}
+            error={this.state.errors.name}
             onChange={this.handleInputChange}
           />
         </Form.Group>

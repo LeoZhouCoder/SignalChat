@@ -1,6 +1,6 @@
 import React from "react";
 
-export function Avatar({ src, style, selected, onClick }) {
+export default function Avatar({ src, style, selected, onClick }) {
   return (
     <div style={{ width: "4em", ...style }} onClick={onClick}>
       <div className={`avatar ${selected ? "selected" : ""}`}>

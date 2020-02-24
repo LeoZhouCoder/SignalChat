@@ -1,18 +1,19 @@
 import React from "react";
 
-import { Avatar } from "./Avatar";
+import Avatar from "./Avatar";
 import { RowList } from "./RowList";
 import { getUserProfile } from "../redux/chatActions";
 
-export function EditMemberList({ selectedUsers, style }) {
+export function UserRowList({ users, style }) {
+  users = users || [];
   return (
     <RowList style={style}>
-      {selectedUsers.map((uid, i) => {
-        let profile = getUserProfile(uid);
+      {users.map((uid, i) => {
+        let user = getUserProfile(uid);
         return (
           <Avatar
             key={i}
-            src={profile ? profile.profilePhoto : ""}
+            src={user ? user.profilePhoto : ""}
             style={{ margin: ".1em", width: "2em" }}
           />
         );

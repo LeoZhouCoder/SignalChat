@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 
 import { Popup } from "./Popup";
 import { AvatarPicker } from "./AvatarPicker";
-import { EditMemberList } from "./EditMemberList";
+import { UserRowList } from "./UserRowList";
 import SelectUserList from "./SelectUserList";
 
 import { SHOW_PROFILE } from "../redux/reducers/chat";
@@ -53,7 +53,7 @@ class GroupProfileCard extends Component {
   };
 
   onClickItem = id => {
-    console.log("[SelectMemberCard]: onClickItem", id);
+    console.log("[GroupProfileCard]: onClickItem", id);
     let { users } = this.state;
     if (users.includes(id)) {
       users = users.filter(uid => uid !== id);
@@ -96,10 +96,10 @@ class GroupProfileCard extends Component {
 
   getEditMemberList = () => {
     return (
-      <EditMemberList
+      <UserRowList
         className="divider"
         style={{ padding: "0 1em 0.5em 1em" }}
-        selectedUsers={this.state.users}
+        users={this.state.users}
       />
     );
   };

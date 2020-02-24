@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon } from "semantic-ui-react";
-import { Avatar } from "./Avatar";
+import Avatar from "./Avatar";
 
 export default function SelectableUser({
   user,

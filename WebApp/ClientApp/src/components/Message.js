@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Avatar } from "./Avatar";
+import Avatar from "./Avatar";
 import { getUserProfile } from "../redux/chatActions";
 import { getTimeString } from "../utils/Time";
 

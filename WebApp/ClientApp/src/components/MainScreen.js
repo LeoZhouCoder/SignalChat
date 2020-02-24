@@ -130,7 +130,6 @@ class MainScreen extends React.Component {
       ListComponent = ChatList;
     } else if (screenType === SCREEN_ONLINE_USERS) {
       name = "Online Users";
-      icon = "search";
       isBack = false;
       ListComponent = ChatHistory;
       footer = (
@@ -146,7 +145,7 @@ class MainScreen extends React.Component {
         let { users } = group;
         if (users.length > 2) {
           name = group ? group.name : "";
-          icon = "plus";
+          icon = "user plus";
         } else {
           var profile;
           if (users.length === 1) {
@@ -155,11 +154,10 @@ class MainScreen extends React.Component {
             profile = getUserProfile(users.find(u => u !== currentUser));
           }
           name = profile ? profile.name : "";
-          icon = "plus";
+          icon = "user plus";
         }
       } else {
         name = "";
-        icon = "";
       }
 
       isBack = screenSize === SCREEN_SMALL || screenSize === SCREEN_MEDIUM;
