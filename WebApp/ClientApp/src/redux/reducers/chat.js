@@ -9,6 +9,8 @@ export const ADD_CHAT = "ADD_CHAT";
 export const ADD_CHATS = "ADD_CHATS";
 export const SWITCH_CHATROOM = "SWITCH_CHATROOM";
 export const SHOW_PROFILE = "SHOW_PROFILE";
+export const ADD_MESSAGE = "ADD_MESSAGE";
+export const DELETE_MESSAGE = "DELETE_MESSAGE";
 // data nodes
 export const GROUPS = "groups";
 export const USERS = "users";
@@ -16,6 +18,7 @@ export const ONLINE_USERS = "onlineUsers";
 export const ALL_USERS = "allUsers";
 export const CHATROOM = "chatroom";
 export const PROFILE = "profile";
+export const MESSAGES = "messages";
 
 export default function chatReducer(
   state = {
@@ -24,7 +27,8 @@ export default function chatReducer(
     [ONLINE_USERS]: [],
     [ALL_USERS]: [],
     [CHATROOM]: null,
-    [PROFILE]: null
+    [PROFILE]: null,
+    [MESSAGES]: []
   },
   action
 ) {
@@ -62,7 +66,16 @@ export default function chatReducer(
       console.log("[ChatReducer]:", action);
       return { ...state, [CHATROOM]: action.payload };
     case SHOW_PROFILE:
+      console.log("[ChatReducer]:", action);
       return { ...state, [PROFILE]: action.payload };
+    case ADD_MESSAGE:
+      console.log("[ChatReducer]:", action);
+      return { ...state, [MESSAGES]: [...state[MESSAGES], action.payload] };
+    case DELETE_MESSAGE:
+      console.log("[ChatReducer]:", action);
+      let messages = state[MESSAGES];
+      messages.shift();
+      return { ...state, [MESSAGES]: messages };
     default:
       return state;
   }
@@ -73,12 +86,12 @@ const sortGroups = groups => {
   groups = groups.sort((a, b) => {
     let aChat = a.chats ? a.chats[a.chats.length - 1] : null;
     let bChat = b.chats ? b.chats[b.chats.length - 1] : null;
-    console.log("[Chat]:",aChat,bChat)
+    console.log("[Chat]:", aChat, bChat);
     if (aChat == null && bChat == null) return 0;
     if (aChat == null) return 1;
     if (bChat == null) return -1;
     let result = aChat.createOn > bChat.createOn ? -1 : 1;
-    console.log("[Chat]: result",result)
+    console.log("[Chat]: result", result);
     return result;
   });
   console.log("[Chat]: sorted", groups);

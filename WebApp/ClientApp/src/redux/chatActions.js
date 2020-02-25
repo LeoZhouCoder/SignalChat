@@ -16,7 +16,9 @@ import {
   UPDATE_USERS,
   ADD_CHAT,
   ADD_CHATS,
-  SWITCH_CHATROOM
+  SWITCH_CHATROOM,
+  ADD_MESSAGE,
+  DELETE_MESSAGE
 } from "./reducers/chat";
 
 const responseTypes = [
@@ -68,15 +70,6 @@ export const updateGroup = (group, name, users) => {
   sendRequest("UpdateGroup", { group, name, users });
 };
 
-export const changeGroupName = (group, name) =>
-  sendRequest("ChangeGroupName", { group, name });
-
-export const addUserToGroup = (group, user) =>
-  sendRequest("AddUserToGroup", { group, user });
-
-export const removeUserFromGroup = (group, user) =>
-  sendRequest("RemoveUserFromGroup", { group, user });
-
 export const deleteGroup = group => sendRequest("DeleteGroup", group);
 
 export const getUsersProfile = userIds =>
@@ -93,4 +86,12 @@ export const getUserProfile = uid => {
   if (userProfile) return userProfile;
   getUsersProfile([uid]);
   return null;
+};
+
+export const addMessage = (message, isError = false) => {
+  store.dispatch({ type: ADD_MESSAGE, payload: { message, isError } });
+};
+
+export const deleteMessage = () => {
+  store.dispatch({ type: DELETE_MESSAGE });
 };

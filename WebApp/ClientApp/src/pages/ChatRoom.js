@@ -35,7 +35,7 @@ class Chatroom extends Component {
     }
 
     return (
-      <div>
+      <div className="flexBox column">
         <MessageBox/>
         <div className={`flexBox max ${profileCard === null ? "" : "blur"}`}>
           {showSidebar && <Sidebar screenType={screenType} />}

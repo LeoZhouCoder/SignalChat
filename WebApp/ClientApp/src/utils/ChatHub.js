@@ -4,6 +4,8 @@ import {
   HttpTransportType
 } from "@aspnet/signalr";
 
+import { addMessage } from "../redux/chatActions";
+
 let hubConnection = null;
 let closeHubHandler = null;
 
@@ -46,12 +48,14 @@ export const hubStart = () => {
     .start()
     .then(() => {
       console.log("[ChatHub]: start successful:", hubConnection.state);
+      addMessage("[ChatHub]: start successful:" + hubConnection.state);
     })
     .catch(err => hubStop("[ChatHub]: start error: " + err));
 };
 
 const hubStop = message => {
   console.error(message);
+  addMessage(message, true);
   if (hubConnection && hubConnection.state) {
     console.log("[ChatHub]: stop:", hubConnection.state);
     hubConnection
