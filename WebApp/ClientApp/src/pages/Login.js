@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 
 import { AuthForm, AuthLink } from "../components/AuthForm";
+import MessageBox from "../components/MessageBox";
 import { login } from "../redux/actions";
 
 class Login extends Component {
@@ -102,6 +103,7 @@ class Login extends Component {
           type="password"
           onChange={this.handleInputChange}
         />
+        <MessageBox style={{marginBottom:"1em"}}/>
         <Button
           color="green"
           fluid

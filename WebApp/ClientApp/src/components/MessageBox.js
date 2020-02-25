@@ -4,7 +4,6 @@ import { deleteMessage } from "../redux/chatActions";
 
 class MessageBox extends Component {
   componentDidUpdate() {
-    //return;
     if (this.timeoutHandler) {
       clearTimeout(this.timeoutHandler);
       this.timeoutHandler = 0;
@@ -13,19 +12,17 @@ class MessageBox extends Component {
       clearTimeout(this.timeoutHandler);
       this.timeoutHandler = 0;
       deleteMessage();
-    }, 10000);
+    }, 5000);
   }
   render() {
-    console.log("[MessageBox]: render", this.props);
     const { msg, style } = this.props;
     if (msg == null) return null;
     const { message, isError } = msg;
     return (
-      <div className={`messageBox ${isError ? "error" : ""}`}>
+      <div style={style} className={`messageBox ${isError ? "error" : ""}`}>
         <div
           style={{
-            ...style,
-            flex:"1",
+            flex: "1",
             color: "inherit",
             padding: ".5em",
             maxWidth: "100%",
@@ -53,9 +50,7 @@ class MessageBox extends Component {
 
 const mapStateToProps = state => {
   const messages = state.chatReducer.messages;
-  console.log("[MessageBox]: mapStateToProps", messages);
   const msg = messages && messages.length > 0 ? messages[0] : null;
-  console.log("[MessageBox]:", msg);
   return { msg: msg };
 };
 export default connect(mapStateToProps)(MessageBox);

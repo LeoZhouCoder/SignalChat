@@ -2,6 +2,7 @@ import { WINDOW_RESIZE, USER_LOGIN, USER_FETCHING } from "./actionTypes";
 
 import { serverUrl } from "../env/Env";
 import { getScreenType } from "../utils/Dimensions";
+import { addMessage } from "../redux/chatActions";
 
 const loginUser = loginResult => ({
   type: USER_LOGIN,
@@ -27,11 +28,13 @@ export const login = user => {
           dispatch(loginUser(data));
           console.log("[login]: success", data);
         } else {
+          addMessage("[login]: error " + data.message, true);
           console.log("[login]: error", data.message);
         }
       })
       .catch(error => {
         dispatch({ type: USER_FETCHING, payload: false });
+        addMessage("[login]: fetch error " + error, true);
         console.log("[login]: fetch error", error);
       });
   };
@@ -55,12 +58,14 @@ export const register = request => {
           console.log("[register]: success", data);
           dispatch(loginUser(data));
         } else {
+          addMessage("[register]: error " + data.message, true);
           console.log("[register]: error", data.message);
         }
         dispatch({ type: USER_FETCHING, payload: false });
       })
       .catch(error => {
         dispatch({ type: USER_FETCHING, payload: false });
+        addMessage("[register]: fetch error " + error, true);
         console.log("[register]: fetch error", error);
       });
   };

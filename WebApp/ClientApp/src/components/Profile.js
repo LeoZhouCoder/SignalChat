@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 
 import Avatar from "./Avatar";
-import { getUserProfile } from "../redux/chatActions";
+import { onCloseHub, getUserProfile } from "../redux/chatActions";
 
 function Profile({ user, bigScreen, onClick }) {
   return (
@@ -15,7 +15,12 @@ function Profile({ user, bigScreen, onClick }) {
         style={{ width: "5em" }}
       />
       {bigScreen && (
-        <div className="title text_center space">{user ? user.name : ""}</div>
+        <div className="title text_center space extendable">{user ? user.name : ""}</div>
+      )}
+      {bigScreen && (
+        <div className="text_center secondary" onClick={() => onCloseHub()}>
+          Logout
+        </div>
       )}
     </div>
   );
