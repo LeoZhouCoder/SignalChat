@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/a1384418-5929-4898-99a3-a32fb6dc6f29/resourceGroups/signalChat/providers/Microsoft.Web/sites/signalChatroom",
+    "appService.deploySubpath": "WebApp/publish"
+}
