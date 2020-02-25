@@ -71,8 +71,9 @@ class Login extends Component {
   };
 
   render() {
-    if (this.props.token) {
-      const state = this.props.location.state;
+    const { token, location, isLoading } = this.props;
+    if (token) {
+      const state = location.state;
       return <Redirect to={state && state.referer ? state.referer : "/"} />;
     }
 
@@ -104,6 +105,7 @@ class Login extends Component {
         <Button
           color="green"
           fluid
+          loading={isLoading}
           size="large"
           disabled={this.isDisabled()}
           onClick={this.handleClickButton}
@@ -116,7 +118,8 @@ class Login extends Component {
 }
 
 const mapStateToProps = state => ({
-  token: state.authReducer.token
+  token: state.authReducer.token,
+  isLoading: state.authReducer.isLoading
 });
 
 const mapDispatchToProps = dispatch => ({

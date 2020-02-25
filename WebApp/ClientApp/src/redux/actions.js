@@ -1,4 +1,4 @@
-import { WINDOW_RESIZE, USER_LOGIN } from "./actionTypes";
+import { WINDOW_RESIZE, USER_LOGIN, USER_FETCHING } from "./actionTypes";
 
 import { serverUrl } from "../env/Env";
 import { getScreenType } from "../utils/Dimensions";
@@ -8,10 +8,10 @@ const loginUser = loginResult => ({
   payload: loginResult
 });
 
-
 export const login = user => {
   console.log("[login]: start", user);
   return dispatch => {
+    dispatch({ type: USER_FETCHING, payload: true });
     return fetch(serverUrl + "auth/signIn", {
       method: "POST",
       headers: {
@@ -22,6 +22,7 @@ export const login = user => {
     })
       .then(res => res.json())
       .then(data => {
+        dispatch({ type: USER_FETCHING, payload: false });
         if (data.success) {
           dispatch(loginUser(data));
           console.log("[login]: success", data);
@@ -29,13 +30,17 @@ export const login = user => {
           console.log("[login]: error", data.message);
         }
       })
-      .catch(error => console.log("[login]: fetch error", error));
+      .catch(error => {
+        dispatch({ type: USER_FETCHING, payload: false });
+        console.log("[login]: fetch error", error);
+      });
   };
 };
 
 export const register = request => {
   console.log("[register]: start", request);
   return dispatch => {
+    dispatch({ type: USER_FETCHING, payload: true });
     return fetch(serverUrl + "auth/signUp", {
       method: "POST",
       headers: {
@@ -52,8 +57,12 @@ export const register = request => {
         } else {
           console.log("[register]: error", data.message);
         }
+        dispatch({ type: USER_FETCHING, payload: false });
       })
-      .catch(error => console.log("[register]: fetch error", error));
+      .catch(error => {
+        dispatch({ type: USER_FETCHING, payload: false });
+        console.log("[register]: fetch error", error);
+      });
   };
 };
 
