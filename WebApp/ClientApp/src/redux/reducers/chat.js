@@ -32,7 +32,7 @@ export default function chatReducer(
     case UPDATE_CHATROOM:
       console.log("[ChatReducer]:", action);
       const { groups, users } = action.payload;
-      return { ...state, [GROUPS]: groups, [USERS]: users };
+      return { ...state, [GROUPS]: sortGroups(groups), [USERS]: users };
     case UPDATE_ONLINE_USER:
       console.log("[ChatReducer]:", action);
       return {
@@ -69,14 +69,19 @@ export default function chatReducer(
 }
 
 const sortGroups = groups => {
-  groups.sort((a, b) => {
+  console.log("[Chat]: sort start", groups);
+  groups = groups.sort((a, b) => {
     let aChat = a.chats ? a.chats[a.chats.length - 1] : null;
     let bChat = b.chats ? b.chats[b.chats.length - 1] : null;
+    console.log("[Chat]:",aChat,bChat)
     if (aChat == null && bChat == null) return 0;
-    if (aChat == null) return -1;
-    if (bChat == null) return 1;
-    return aChat.createOn > bChat.createOn ? 1 : -1;
+    if (aChat == null) return 1;
+    if (bChat == null) return -1;
+    let result = aChat.createOn > bChat.createOn ? -1 : 1;
+    console.log("[Chat]: result",result)
+    return result;
   });
+  console.log("[Chat]: sorted", groups);
   return groups;
 };
 

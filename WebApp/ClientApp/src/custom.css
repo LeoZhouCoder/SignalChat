@@ -322,3 +322,22 @@ p {
   align-self: center;
   overflow-y: scroll;
 }
+
+.messageBox{
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: 1px solid rgba(73, 202, 219, 1);
+  background-color: rgba(73, 202, 219, 0.2);
+}
+
+.messageBoxContent{
+  display: flex;
+  padding:.5em;
+  max-width: 100%;
+  color: rgb(46, 142, 155);
+  vertical-align: middle;
+  word-wrap: break-word;
+}
