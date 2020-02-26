@@ -104,7 +104,7 @@ namespace SignalRChat.Hubs
 
                 await base.OnConnectedAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -135,7 +135,7 @@ namespace SignalRChat.Hubs
 
                 await base.OnDisconnectedAsync(exception);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -169,7 +169,7 @@ namespace SignalRChat.Hubs
                     });
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -198,7 +198,7 @@ namespace SignalRChat.Hubs
                 // TODO: Update read last chat
                 await SendResponseToCaller(response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -229,7 +229,7 @@ namespace SignalRChat.Hubs
                     await SendResponseToCaller(response);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -274,7 +274,7 @@ namespace SignalRChat.Hubs
                     await SendResponseToCaller(response);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -300,7 +300,7 @@ namespace SignalRChat.Hubs
                     await SendResponseToCaller(response);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -326,7 +326,7 @@ namespace SignalRChat.Hubs
                     await SendResponseToCaller(response);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -352,7 +352,7 @@ namespace SignalRChat.Hubs
                     await SendResponseToCaller(response);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -376,7 +376,7 @@ namespace SignalRChat.Hubs
                 }
                 await SendResponseToCaller(response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

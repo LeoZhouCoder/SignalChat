@@ -7,14 +7,6 @@ namespace SignalRChat.Hubs
     {
         private readonly Dictionary<T, HashSet<string>> _connections =
             new Dictionary<T, HashSet<string>>();
-
-        public int Count
-        {
-            get
-            {
-                return _connections.Count;
-            }
-        }
         public List<T> Keys
         {
             get

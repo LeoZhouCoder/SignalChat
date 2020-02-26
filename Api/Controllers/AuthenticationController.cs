@@ -15,9 +15,11 @@ namespace Api.Controllers
     public class AuthenticationController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
-        public AuthenticationController(IAuthenticationService authenticationService)
+        private readonly IChatService _chatService;
+        public AuthenticationController(IAuthenticationService authenticationService, IChatService chatService)
         {
             _authenticationService = authenticationService;
+            _chatService = chatService;
         }
 
         /// <summary>
@@ -50,6 +52,9 @@ namespace Api.Controllers
                 }
 
                 var authenticatedToken = await _authenticationService.SignUp(command);
+
+                // Add welcome chat
+                await AddWelcomeChats(authenticatedToken.User.Id);
 
                 return Ok(authenticatedToken);
             }
@@ -89,6 +94,30 @@ namespace Api.Controllers
             {
                 return BadRequest(new { e.Message });
             }
+        }
+        private string[] chats = new string[]
+        {
+            "Hi, I'm Leo. Thank you for using my SignalChat!",
+            "This chat room's front-end is built with React, Redux and Semantic-UI. The Back-end is built with ASP.NET MVC and SignalR. The database is MongoDB. Currently, this demo is published on Azure free web server, so the max connect users at the same time is only 5.",
+            "This project is still in development, I'll add more features in the further. You can watch me on <a href=\"https://github.com/LeoZhouCoder/SignalChat\" target=\"_blank\">Github</a> and get the newest process. ",
+            "if you have any questions, you can send me a message here, or on <a href=\"https://www.linkedin.com/in/leo-zhou-coder\" target=\"_blank\">LinkedIn</a>.  Thank you very much and have fun."
+        };
+        private async Task<bool> AddWelcomeChats(string userId)
+        {
+            string admin = "5e4c448cbef07dff96f71f3c"; // Developer Test Account
+            if (userId == admin) return false;
+            List<string> users = new List<string>();
+            users.Add(admin);
+            users.Add(userId);
+            var result = await _chatService.CreateGroup(null, users);
+            if (!result.Success) return false;
+            var group = (GroupView)result.Data;
+
+            foreach (string chat in chats)
+            {
+                await _chatService.AddChat(admin, 0, chat, group.Id, userId);
+            }
+            return true;
         }
     }
 }

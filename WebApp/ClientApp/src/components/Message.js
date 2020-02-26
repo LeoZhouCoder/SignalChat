@@ -16,13 +16,11 @@ const Message = ({ chat, user, self }) => {
       </div>
 
       <div className="space flexBox row center extendable chat">
-        <div className="secondary single">
-          {user ? user.name : ""}
-        </div>
+        <div className="secondary single">{user ? user.name : ""}</div>
         <div className="tertiary space">{getTimeString(chat.createdOn)}</div>
         <div className="break" />
         <div className={`message multiple flexMaxWidth ${self ? "self" : ""}`}>
-          {chat.content}
+          {stringToHTML(chat.content)}
         </div>
       </div>
     </div>
@@ -36,6 +34,10 @@ const mapStateToProps = (state, props) => {
     user: getUserProfile(sender),
     self: state.authReducer.user.id === sender
   };
+};
+
+const stringToHTML = str => {
+  return <div dangerouslySetInnerHTML={{ __html: str }} />
 };
 
 export default connect(mapStateToProps)(Message);

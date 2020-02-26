@@ -12,24 +12,18 @@ namespace Api.Services
     {
         private IRepository<Group> _group;
         private IRepository<User> _user;
-        private IRepository<OnlineUser> _onlineUser;
         private IRepository<GroupUser> _groupUser;
         private IRepository<Chat> _chat;
-        private IRepository<UserRelation> _userRelation;
 
         public ChatService(IRepository<Group> group,
                             IRepository<User> user,
-                            IRepository<OnlineUser> onlineUser,
                             IRepository<GroupUser> groupUser,
-                            IRepository<Chat> chat,
-                            IRepository<UserRelation> userRelation)
+                            IRepository<Chat> chat)
         {
             _group = group;
             _user = user;
-            _onlineUser = onlineUser;
             _groupUser = groupUser;
             _chat = chat;
-            _userRelation = userRelation;
         }
         /// <summary>
         /// Get All Users' ID
@@ -712,42 +706,6 @@ namespace Api.Services
                 {
                     Success = false,
                     Message = "UpdateUserGroupReadChats error - " + ex.Message,
-                };
-            }
-        }
-
-        /// <summary>
-        /// Update User Read Chats
-        /// </summary>
-        /// <param name="sender">"Sender ID"</param>
-        /// <param name="receiver">"Receiver ID"</param>
-        /// <param name="cid">"Chat ID"</param>
-        public async Task<RequestResult> UpdateUserReadChats(string sender, string receiver, string cid)
-        {
-            try
-            {
-                var friend = (await _userRelation.Get(x => x.Owner == sender && x.Target == receiver)).FirstOrDefault();
-                if (friend != null)
-                {
-                    friend.ReadChatID = cid;
-                    await _userRelation.Update(friend);
-                    return new RequestResult { Success = true };
-                }
-                else
-                {
-                    return new RequestResult
-                    {
-                        Success = false,
-                        Message = "Can't find record."
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new RequestResult
-                {
-                    Success = false,
-                    Message = "UpdateUserReadChats error - " + ex.Message,
                 };
             }
         }
