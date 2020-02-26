@@ -1,29 +1,46 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Form, Grid, Header, Icon, Segment, Message } from "semantic-ui-react";
+import { Form, Header, Icon, Segment, Button } from "semantic-ui-react";
 
 function AuthForm(props) {
   return (
-    <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
-      <Grid.Column style={{ maxWidth: 450 }}>
-        <Header as="h2" color="green" textAlign="center">
-          <Icon name="chat" color="green" />
-          Let's Chat
-        </Header>
+    <div style={{ height: "100vh" }}>
+      <div className="bg-image" />
+      <div className="formBasic">
         <Form size="large">
-          <Segment>{props.children}</Segment>
+          <Segment >
+            <Header color="green" as="h2" textAlign="center">
+              <Icon color="green" name="chat" />
+              Let's Chat
+            </Header>
+            {props.children}
+          </Segment>
         </Form>
         {props.link}
-      </Grid.Column>
-    </Grid>
+      </div>
+      <LinkButtons/>
+    </div>
   );
 }
 
 function AuthLink(props) {
   return (
-    <Message>
+    <Segment>
       {props.msg} <Link to={props.link}>{props.buttonName}</Link>
-    </Message>
+    </Segment>
+  );
+}
+
+function LinkButtons() {
+  return (
+    <div className="linkButtons">
+      <Button color="black" onClick={()=>window.open("https://github.com/LeoZhouCoder/SignalChat",'_blank')}>
+        <Icon name="github" /> Source
+      </Button>
+      <Button color="linkedin" onClick={()=>window.open("https://www.linkedin.com/in/leo-zhou-coder",'_blank')}>
+        <Icon name="linkedin" /> LinkedIn
+      </Button>
+    </div>
   );
 }
 

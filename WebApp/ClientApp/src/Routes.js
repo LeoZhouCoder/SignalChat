@@ -30,7 +30,7 @@ export class Routes extends Component {
   render() {
     return (
       <BrowserRouter>
-        <div style={{ overflow: "hidden" }}>
+        <div style={{ overflow: "hidden", width: "100%", height: "100%" }}>
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
           <PrivateRoute

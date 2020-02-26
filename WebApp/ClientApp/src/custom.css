@@ -13,6 +13,47 @@ code {
   border-color: #1861ac;
 }
 
+.bg-image {
+  background-image: url("bg.jpg");
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.formBasic {
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 30em;
+  max-width: 80%;
+  text-align: center;
+}
+
+.linkButtons {
+  position: absolute;
+  bottom: 2em;
+  left: 2em;
+  animation: 1.5s ease-in-out 0s infinite normal none running floating;
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(0.35em);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 .link-button {
   background-color: transparent;
   border: none;
@@ -335,7 +376,7 @@ p {
   background-color: rgba(73, 202, 219, 0.2);
 }
 
-.messageBox.error{
+.messageBox.error {
   color: rgb(112, 26, 4);
   border: 1px solid rgb(231, 88, 63);
   background-color: rgba(219, 107, 73, 0.2);
