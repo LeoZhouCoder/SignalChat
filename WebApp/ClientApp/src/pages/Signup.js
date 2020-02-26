@@ -110,6 +110,8 @@ class Signup extends Component {
         <Form.Group widths="equal">
           <Form.Input
             id="name"
+            icon="user"
+            iconPosition="left"
             fluid
             placeholder="Name"
             value={this.state.formData.name}
@@ -120,7 +122,7 @@ class Signup extends Component {
         <Form.Input
           id="email"
           fluid
-          icon="user"
+          icon="mail"
           iconPosition="left"
           placeholder="E-mail address"
           value={this.state.formData.email}

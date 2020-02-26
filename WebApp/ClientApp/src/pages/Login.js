@@ -85,7 +85,7 @@ class Login extends Component {
         <Form.Input
           id="email"
           fluid
-          icon="user"
+          icon="mail"
           iconPosition="left"
           placeholder="E-mail address"
           value={this.state.formData.email}
