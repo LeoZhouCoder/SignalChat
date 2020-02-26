@@ -7,7 +7,7 @@ import ChatList from "./ChatList";
 import ContactList from "./ContactList";
 
 import { SCREEN_BIG } from "../utils/Dimensions";
-import { CHATROOM, GROUPS } from "../redux/reducers/chat";
+import { CHATROOM, GROUPS, SHOW_PROFILE } from "../redux/reducers/chat";
 import { changeChatroom, createGroup } from "../redux/chatActions";
 import { MENU } from "../env/Env";
 
@@ -16,11 +16,11 @@ class Sidebar extends Component {
 
   handleMenuClick = name => this.setState({ activeMenu: name });
 
-  onClickProfile = e => console.log("[Sidebar]: ClickProfile");
+  onClickProfile = e => this.props.showUserProfile(this.props.currentUser);
 
   handleItemClick = data => {
     const { chatroom, currentUser } = this.props;
-    if (this.state.activeMenu === MENU[0].value ) {
+    if (this.state.activeMenu === MENU[0].value) {
       if (chatroom !== data.id) changeChatroom(data.id);
     } else {
       const { groups } = this.props;
@@ -49,7 +49,7 @@ class Sidebar extends Component {
     const { activeMenu } = this.state;
     const bigScreen = this.props.screenType === SCREEN_BIG;
     let ListComponent;
-    if (activeMenu === MENU[0].value ) {
+    if (activeMenu === MENU[0].value) {
       ListComponent = ChatList;
     } else {
       ListComponent = ContactList;
@@ -80,4 +80,13 @@ const mapStateToProps = state => ({
   chatroom: state.chatReducer[CHATROOM],
   groups: state.chatReducer[GROUPS]
 });
-export default connect(mapStateToProps)(Sidebar);
+
+const mapDispatchToProps = dispatch => ({
+  showUserProfile: uid =>
+    dispatch({
+      type: SHOW_PROFILE,
+      payload: { type: 1, id: uid }
+    })
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

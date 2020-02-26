@@ -84,19 +84,15 @@ export default function chatReducer(state = initialState, action) {
 }
 
 const sortGroups = groups => {
-  console.log("[Chat]: sort start", groups);
   groups = groups.sort((a, b) => {
-    let aChat = a.chats ? a.chats[a.chats.length - 1] : null;
-    let bChat = b.chats ? b.chats[b.chats.length - 1] : null;
-    console.log("[Chat]:", aChat, bChat);
-    if (aChat == null && bChat == null) return 0;
-    if (aChat == null) return 1;
-    if (bChat == null) return -1;
-    let result = aChat.createOn > bChat.createOn ? -1 : 1;
-    console.log("[Chat]: result", result);
+    let aChat = a.chats ? a.chats[a.chats.length - 1] : undefined;
+    let bChat = b.chats ? b.chats[b.chats.length - 1] : undefined;
+    if (!aChat && !bChat) return 0;
+    if (!aChat) return 1;
+    if (!bChat) return -1;
+    let result = aChat.createdOn > bChat.createdOn ? -1 : 1;
     return result;
   });
-  console.log("[Chat]: sorted", groups);
   return groups;
 };
 

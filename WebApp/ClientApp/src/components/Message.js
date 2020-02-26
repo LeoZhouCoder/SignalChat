@@ -3,15 +3,17 @@ import { connect } from "react-redux";
 import Avatar from "./Avatar";
 import { getUserProfile } from "../redux/chatActions";
 import { getTimeString } from "../utils/Time";
+import { SHOW_PROFILE } from "../redux/reducers/chat";
 
-const Message = ({ chat, user, self }) => {
+const Message = ({ chat, user, self, showUserProfile }) => {
   return (
     <div className="flexBox maxWidth padding">
-      <div className="flexBox column">
+      <div className="flexBox column pointer">
         <Avatar
           style={{ width: "3em" }}
           src={user ? user.profilePhoto : ""}
           icon="user"
+          onClick={() => showUserProfile(user.id)}
         />
       </div>
 
@@ -26,6 +28,9 @@ const Message = ({ chat, user, self }) => {
     </div>
   );
 };
+const stringToHTML = str => {
+  return <div dangerouslySetInnerHTML={{ __html: str }} />;
+};
 
 const mapStateToProps = (state, props) => {
   const { chat } = props;
@@ -36,8 +41,12 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const stringToHTML = str => {
-  return <div dangerouslySetInnerHTML={{ __html: str }} />
-};
+const mapDispatchToProps = dispatch => ({
+  showUserProfile: uid =>
+    dispatch({
+      type: SHOW_PROFILE,
+      payload: { type: 1, id: uid }
+    })
+});
 
-export default connect(mapStateToProps)(Message);
+export default connect(mapStateToProps, mapDispatchToProps)(Message);

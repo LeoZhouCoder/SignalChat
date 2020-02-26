@@ -1,38 +1,79 @@
 import React, { Component } from "react";
-import Popup from "./Popup";
-import UserRowList from "./UserRowList";
-import SelectUserList from "./SelectUserList";
+import { connect } from "react-redux";
+import { Button } from "semantic-ui-react";
 
-export class UserProfileCard extends Component {
+import Popup from "./Popup";
+import Avatar from "./Avatar";
+import { SHOW_PROFILE } from "../redux/reducers/chat";
+import {
+  getUserProfile,
+  createGroup,
+  changeChatroom,
+  addMessage
+} from "../redux/chatActions";
+
+
+class UserProfileCard extends Component {
   state = { type: "display" };
-  onClose = () => {
-    console.log("[UserProfileCard]: onClose");
+
+  onClickButton = () => {
+    const { uid, currentUser, chatroom, groups } = this.props;
+    // edit profile
+    if (uid === currentUser) {
+      addMessage("[UserProfileCard]: Edit profile is not implemented yet.", true);
+      this.props.hideProfile();
+      return;
+    }
+
+    // send message
+    let group = groups.find(group => {
+      let { users } = group;
+      if (users.length > 2) return false;
+      if (users.length === 1) return users[0] === uid && uid === currentUser;
+      return users.includes(uid) && users.includes(currentUser);
+    });
+
+    if (group) {
+      if (chatroom !== group.id) changeChatroom(group.id);
+    } else {
+      if (currentUser === uid) {
+        createGroup(null, [uid]);
+      } else {
+        createGroup(null, [currentUser, uid]);
+      }
+    }
+    this.props.hideProfile();
   };
+
   render() {
+    const { user, uid, currentUser } = this.props;
     return (
-      <Popup width="30em" onClose={this.onClose}>
-        <UserRowList />
-        <SelectUserList />
+      <Popup width="20em" onClose={() => this.props.hideProfile()}>
+        <Avatar
+          src={user.profilePhoto}
+          style={{ width: "10em", alignSelf: "center" }}
+          onClick={() => this.setState({ type: "editingAvatar" })}
+        />
+        <div className="title text_center padding">{user.name}</div>
+        <Button positive onClick={this.onClickButton}>
+          {uid === currentUser ? "Edit" : "Send Message"}
+        </Button>
       </Popup>
     );
   }
 }
-/**<Avatar
-          src="https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
-          style={{ width: "10em",alignSelf: "center" }}
-          onClick={() => this.setState({ type: "editingAvatar" })}
-        />
-        <div className="title text_center padding">Leo Zhou</div>
-        <Button positive>Send Message</Button>
- * <EditMemberList/>
- * <div className="flexBox row padding maxWidth center-v text_center">
-          {avatars.map((avatar, i) => (
-            <Avatar
-              key={i}
-              src={avatar}
-              style={{ width: "4em" }}
-              onClick={() => this.setState({ type: "editingAvatar" })}
-            />
-          ))}
-        </div>
- */
+
+const mapStateToProps = (state, props) => {
+  return {
+    user: getUserProfile(props.uid),
+    chatroom: state.chatReducer.chatroom,
+    currentUser: state.authReducer.user.id,
+    groups: state.chatReducer.groups
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  hideProfile: () => dispatch({ type: SHOW_PROFILE, payload: null })
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserProfileCard);

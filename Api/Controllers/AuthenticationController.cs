@@ -98,8 +98,8 @@ namespace Api.Controllers
         private string[] chats = new string[]
         {
             "Hi, I'm Leo. Thank you for using my SignalChat!",
-            "This chat room's front-end is built with React, Redux and Semantic-UI. The Back-end is built with ASP.NET MVC and SignalR. The database is MongoDB. Currently, this demo is published on Azure free web server, so the max connect users at the same time is only 5.",
-            "This project is still in development, I'll add more features in the further. You can watch me on <a href=\"https://github.com/LeoZhouCoder/SignalChat\" target=\"_blank\">Github</a> and get the newest process. ",
+            "This chat room's front-end is built with React, Redux and Semantic-UI. The Back-end is built with ASP.NET MVC and SignalR. The database is MongoDB. It's a responsive web application so it works well on mobile too. Currently, this demo is published on Azure free web server, so the max connect users at the same time is only 5.",
+            "This project is still in development, I'll add more features. You can watch me on <a href=\"https://github.com/LeoZhouCoder/SignalChat\" target=\"_blank\">Github</a> and get the newest process. ",
             "if you have any questions, you can send me a message here, or on <a href=\"https://www.linkedin.com/in/leo-zhou-coder\" target=\"_blank\">LinkedIn</a>.  Thank you very much and have fun."
         };
         private async Task<bool> AddWelcomeChats(string userId)

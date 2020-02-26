@@ -6,8 +6,8 @@ import { SCREEN_NORMAL, SCREEN_BIG } from "../utils/Dimensions";
 import Sidebar from "../components/Sidebar";
 import MainScreen from "../components/MainScreen";
 import GroupProfileCard from "../components/GroupProfileCard";
+import UserProfileCard from "../components/UserProfileCard";
 import MessageBox from "../components/MessageBox";
-import { UserProfileCard } from "../components/UserProfileCard";
 import { hubStart } from "../utils/ChatHub";
 
 class Chatroom extends Component {
