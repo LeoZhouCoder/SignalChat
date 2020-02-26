@@ -4,6 +4,8 @@ A simple chatroom built with React, ASP.NET MVC and SignalR.
 
 ## [DEMO](https://signalchatroom.azurewebsites.net/)
 
+Demo published on Azure free web server, the max user number can connect at same time is 5.
+
 ### TODO
 
 - [x] Authenticate
