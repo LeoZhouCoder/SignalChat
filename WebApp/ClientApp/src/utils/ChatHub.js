@@ -53,16 +53,18 @@ export const hubStart = () => {
     .catch(err => hubStop("[ChatHub]: start error: " + err));
 };
 
-const hubStop = message => {
-  console.error(message);
-  addMessage(message, true);
+export const hubStop = message => {
+  if (message) {
+    console.error(message);
+    addMessage(message, true);
+  }
   if (hubConnection && hubConnection.state) {
     console.log("[ChatHub]: stop:", hubConnection.state);
     hubConnection
       .stop()
       .catch(err => console.error("[ChatHub]: stop error:", err));
   }
-  if (closeHubHandler != null) closeHubHandler();
+  if (closeHubHandler != null && message) closeHubHandler();
 };
 
 export const sendRequest = (type, data) => {

@@ -1,4 +1,4 @@
-// actions
+import { USER_LOGOUT } from "../actionTypes";
 export const UPDATE_CHATROOM = "CHAT_UPDATE_CHATROOM";
 export const UPDATE_ONLINE_USER = "UPDATE_ONLINE_USER";
 export const UPDATE_GROUP = "UPDATE_GROUP";
@@ -20,19 +20,21 @@ export const CHATROOM = "chatroom";
 export const PROFILE = "profile";
 export const MESSAGES = "messages";
 
-export default function chatReducer(
-  state = {
-    [GROUPS]: [],
-    [USERS]: [],
-    [ONLINE_USERS]: [],
-    [ALL_USERS]: [],
-    [CHATROOM]: null,
-    [PROFILE]: null,
-    [MESSAGES]: []
-  },
-  action
-) {
+const initialState = {
+  [GROUPS]: [],
+  [USERS]: [],
+  [ONLINE_USERS]: [],
+  [ALL_USERS]: [],
+  [CHATROOM]: null,
+  [PROFILE]: null,
+  [MESSAGES]: []
+};
+
+export default function chatReducer(state = initialState, action) {
   switch (action.type) {
+    case USER_LOGOUT:
+      console.log("[AuthReducer]:", action);
+      return initialState;
     case UPDATE_CHATROOM:
       console.log("[ChatReducer]:", action);
       const { groups, users } = action.payload;

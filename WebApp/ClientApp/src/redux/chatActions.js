@@ -1,5 +1,5 @@
 import { store } from "./store";
-import { sendRequest } from "../utils/ChatHub";
+import { sendRequest, hubStop } from "../utils/ChatHub";
 
 import {
   USER_LOGOUT,
@@ -49,6 +49,7 @@ export const chatResponseHandler = response => {
 };
 
 export const onCloseHub = () => {
+  hubStop();
   store.dispatch({ type: USER_LOGOUT });
 };
 
