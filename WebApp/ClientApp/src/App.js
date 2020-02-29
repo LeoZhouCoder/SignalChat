@@ -6,6 +6,8 @@ import Routes from "./Routes";
 
 import "./custom.css";
 
+import './css/custom.scss';
+
 import { serverUrl } from "./env/Env";
 import { hubInit } from "./utils/ChatHub";
 import {
