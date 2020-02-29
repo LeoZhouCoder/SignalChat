@@ -1,15 +1,16 @@
 import React from "react";
+import BasicList from "./BasicList";
 
 export default function Popup({ children, width, onClose }) {
   return (
     <div className="flexBox maxParent center-v popup" onClick={() => onClose()}>
-      <div
-        className="popupContent"
-        style={{ width: width }}
+      <BasicList
+        className="popup-content"
+        style={{ width: width, height:"auto" }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flexBox column list center maxWidth">{children}</div>
-      </div>
+        {children}
+      </BasicList>
     </div>
   );
 }

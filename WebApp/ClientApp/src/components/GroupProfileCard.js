@@ -103,7 +103,7 @@ class GroupProfileCard extends Component {
       <UserRowList
         className="divider"
         style={{ padding: "0 1em 0.5em 1em" }}
-        users={this.state.users}
+        users={this.state.temUsers}
       />
     );
   };
@@ -154,38 +154,37 @@ class GroupProfileCard extends Component {
     return (
       <Popup width="30em" onClose={() => this.onClickButton(true)}>
         <div
+          className="title single text_center unselect"
           style={{
-            display: "flex",
-            flexFlow: "column",
-            width: "100%",
-            alignItems: "center"
+            padding: "1em"
           }}
         >
-          <div className="title single text_center unselect">{title}</div>
-          {!isSelectMembers && this.getName()}
-          {!isSelectMembers && this.getAvatarPicker()}
-          {isSelectMembers && this.getUserRowList()}
-          {isSelectMembers && this.getSearch()}
-          {isSelectMembers && this.getSelectUserList()}
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-              justifyContent: "space-evenly"
-            }}
+          {title}
+        </div>
+        {!isSelectMembers && this.getName()}
+        {!isSelectMembers && this.getAvatarPicker()}
+        {isSelectMembers && this.getUserRowList()}
+        {isSelectMembers && this.getSearch()}
+        {isSelectMembers && this.getSelectUserList()}
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "space-evenly",
+            padding: "1em"
+          }}
+        >
+          <Button fluid onClick={() => this.onClickButton(true)}>
+            Cancel
+          </Button>
+          <Button
+            fluid
+            disabled={!isSelectMembers && (!name || users.length < 3)}
+            positive
+            onClick={() => this.onClickButton(false)}
           >
-            <Button fluid onClick={() => this.onClickButton(true)}>
-              Cancel
-            </Button>
-            <Button
-              fluid
-              disabled={!isSelectMembers && (!name || users.length < 3)}
-              positive
-              onClick={() => this.onClickButton(false)}
-            >
-              {buttonName}
-            </Button>
-          </div>
+            {buttonName}
+          </Button>
         </div>
       </Popup>
     );

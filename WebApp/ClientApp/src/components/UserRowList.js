@@ -1,12 +1,12 @@
 import React from "react";
 import Avatar from "./Avatar";
-import RowList from "./RowList";
 import { getUserProfile } from "../redux/chatActions";
+import BasicList from "./BasicList";
 
 export default function UserRowList({ users, style }) {
   users = users || [];
   return (
-    <RowList style={style}>
+    <BasicList style={style} type="row">
       {users.map((uid, i) => {
         const user = getUserProfile(uid);
         return (
@@ -17,6 +17,6 @@ export default function UserRowList({ users, style }) {
           />
         );
       })}
-    </RowList>
+    </BasicList>
   );
 }

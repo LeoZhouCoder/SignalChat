@@ -1,19 +1,31 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import { List } from "./List";
+import BasicList from "./BasicList";
 import ContactContent from "./ContactContent.js";
 
 function ContactList({ collapsed, onClickItem, users, selectedUser }) {
+  if (!users || users.length === 0) {
+    return (
+      <div className="list column center maxParent center-v">
+        <div className="flexBox column maxParent center-v secondary padding">
+          No user online right now.
+        </div>
+      </div>
+    );
+  }
   return (
-    <List
-      component={ContactContent}
-      list={users}
-      selectedData={selectedUser}
-      onClickItem={onClickItem}
-      collapsed={collapsed}
-      placeHolder={"No user online right now."}
-    />
+    <BasicList>
+      {users.map((user, index) => (
+        <ContactContent
+          key={index}
+          onClickItem={onClickItem}
+          data={user}
+          selected={selectedUser === user}
+          collapsed={collapsed}
+        />
+      ))}
+    </BasicList>
   );
 }
 

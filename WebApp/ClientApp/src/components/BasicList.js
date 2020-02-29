@@ -73,7 +73,7 @@ export default class BasicList extends Component {
   };
 
   render() {
-    let { style, type } = this.props;
+    let { style, type, className, onClick } = this.props;
     type = type ? type : "column";
     let content;
     if (type === "rowWrap") {
@@ -84,7 +84,11 @@ export default class BasicList extends Component {
       content = this.getColumnList();
     }
     return (
-      <div className="list-contain" style={style}>
+      <div
+        className={`list-contain ${className?className:""}`}
+        style={style}
+        onClick={onClick}
+      >
         <div className="list-scroll-contain">{content}</div>
       </div>
     );

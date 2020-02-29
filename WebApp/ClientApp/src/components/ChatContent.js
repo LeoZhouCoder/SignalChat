@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { ListItem } from "./List";
+import { AvatarMultiple } from "./Avatar";
 import { getUserProfile } from "../redux/chatActions";
 import { getTimeString } from "../utils/Time";
 
@@ -13,14 +13,9 @@ export function ChatContent({
   collapsed,
   onClickItem
 }) {
-  return (
-    <ListItem
-      photos={photos}
-      data={data}
-      selected={selected}
-      collapsed={collapsed}
-      onClickItem={onClickItem}
-    >
+  let content = null;
+  if (!collapsed)
+    content = (
       <div className="flexBox row extendable center space">
         <div className="subtitle single extendable unselect">{name}</div>
         <div className="secondary unselect">
@@ -30,7 +25,19 @@ export function ChatContent({
           {chat ? chat.content : "No records."}
         </div>
       </div>
-    </ListItem>
+    );
+  return (
+    <div
+      className={`flexBox maxWidth padding pointer center-v divider ${
+        selected ? "selected" : ""
+      }`}
+      onClick={() => onClickItem(data)}
+    >
+      <div className="flexBox column center-v">
+        <AvatarMultiple photos={photos} />
+      </div>
+      {content}
+    </div>
   );
 }
 

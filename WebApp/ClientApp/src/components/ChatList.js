@@ -1,19 +1,29 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import { List } from "./List";
+import BasicList from "./BasicList";
 import ChatContent from "./ChatContent.js";
 
 function ChatList({ collapsed, onClickItem, groups, selectGroup }) {
+  if (!groups || groups.length === 0) {
+    return (
+      <div className="box-extendable-center secondary">
+        No chat record, go to OnlineUsers find more friends.
+      </div>
+    );
+  }
   return (
-    <List
-      component={ChatContent}
-      list={groups}
-      selectedData={selectGroup}
-      onClickItem={onClickItem}
-      collapsed={collapsed}
-      placeHolder={"No chat record, go to OnlineUsers find more friends."}
-    />
+    <BasicList>
+      {groups.map((group, index) => (
+        <ChatContent
+          key={index}
+          onClickItem={onClickItem}
+          data={group}
+          selected={selectGroup === group}
+          collapsed={collapsed}
+        />
+      ))}
+    </BasicList>
   );
 }
 
