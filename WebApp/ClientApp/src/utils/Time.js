@@ -8,9 +8,10 @@ export const getTimeString = dateString => {
   ) {
     return numberToString(date.getHours()) + ":" + numberToString(date.getMinutes());
   } else {
-    return date.getFullYear() + "-" + numberToString(date.getMonth()) + "-" + numberToString(date.getDate());
+    return date.getFullYear() + "-" + numberToString(date.getMonth()+1) + "-" + numberToString(date.getDate());
   }
 };
+
 const numberToString = num => {
   return num < 10 ? "0" + num : num.toString();
 };
