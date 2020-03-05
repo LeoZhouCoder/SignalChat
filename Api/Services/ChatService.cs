@@ -66,7 +66,7 @@ namespace Api.Services
                         continue;
                     }
                     groups.Add(groupView);
-                    userIds = userIds.Union(groupView.Users).ToList();
+                    //userIds = userIds.Union(groupView.Users).ToList();
                 }
 
                 if (userIds.IndexOf(uid) == -1)
@@ -611,7 +611,7 @@ namespace Api.Services
                 Id = group.Id,
                 Name = group.Name,
                 Users = groupUsers,
-                Chats = await GetGroupChats(groupId, 0, 20)
+                Chats = await GetGroupChats(groupId, 0, 1)
             };
         }
 
